@@ -1,0 +1,26 @@
+{
+ "capa-admin-propuesta-claude-": {
+  "bloqueada": false,
+  "color": "#2f9fd8",
+  "creado": "2026-11-02T15:16:20.638Z",
+  "nombre": "Admin (propuesta Claude)",
+  "orden": 2580638,
+  "visible": true
+ },
+ "capa-administraci-n-propuesta-claude-": {
+  "bloqueada": false,
+  "color": "#7b4fd8",
+  "creado": "2026-11-02T16:50:29.734Z",
+  "nombre": "Administración (propuesta Claude)",
+  "orden": 8229734,
+  "visible": true
+ },
+ "capa-entrada-propuesta-claude-": {
+  "bloqueada": false,
+  "color": "#ff8f00",
+  "creado": "2026-11-02T03:19:27.686Z",
+  "nombre": "Entrada (propuesta Claude)",
+  "orden": 9567686,
+  "visible": true
+ }
+}

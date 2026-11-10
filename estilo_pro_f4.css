@@ -1,0 +1,31 @@
+/* Editor del mapa (2.1, Map Editor Pro fase 4): biblioteca de materiales, variantes del catálogo y parámetros de prefabs. */
+.matpro-acc{flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.matpro-acc button{flex:1 1 auto}
+.matpro-grupo{border:1px solid var(--line);border-radius:8px;margin:6px 0;padding:2px 8px}
+.matpro-grupo > summary{cursor:pointer;padding:5px 0;font-weight:500;font-size:12.5px}
+.matpro-grupo > summary small{color:var(--fg2);font-weight:400;margin-left:4px}
+.muestras.matpro{grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}
+.muestras.matpro .muestra span:last-child{font-size:11px;line-height:1.2;white-space:normal;text-align:center;max-height:2.4em}
+.matpro-ed{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.matpro-prev{display:flex;gap:8px;align-items:center;justify-content:center;background:var(--hover);border-radius:8px;padding:6px}
+.matpro-prev canvas{width:300px;max-width:70%;height:auto;aspect-ratio:2}
+.matpro-prev img{width:72px;height:72px;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.matpro-color{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.matpro-color input[type=color]{width:42px;height:30px;padding:0}
+.matpro-color input[type=text]{width:84px;font-family:'IBM Plex Mono',monospace}
+.matpro-sw{display:inline-flex;flex-wrap:wrap;gap:3px;align-items:center}
+.matpro-sw button{width:20px;height:20px;min-height:0;padding:0;border-radius:4px;border:1px solid var(--line)}
+.matpro-sw small{color:var(--fg2);font-size:11px}
+.matpro-pal{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+.matpro-pal select{max-width:150px}
+.matpro-pal button{min-height:0;padding:3px 8px}
+.matpro-ambito{border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+.matpro-ambito .chk{display:flex;gap:6px;align-items:center;margin:3px 0}
+.item .var{position:absolute;left:3px;bottom:26px;min-height:0;height:20px;padding:0 6px;font-size:10.5px;border:0;border-radius:10px;background:color-mix(in srgb,var(--panel) 80%,transparent);color:var(--fg);box-shadow:0 0 0 1px var(--line)}
+.item .var:hover{background:var(--acc);color:#fff}
+.catalogo.lista .item .var{position:static;margin-left:4px}
+.menu-var > button img{width:40px;height:40px;border-radius:5px;background:var(--hover);flex:none}
+.menu-var .menu-tit{font-size:11.5px;color:var(--fg2);padding:4px 8px}
+.var-fila{flex-wrap:wrap;gap:4px}
+.var-fila button{min-height:0;padding:3px 8px;font-size:12px}
+.var-fila button.on{background:var(--acc-suave);color:var(--acc)}

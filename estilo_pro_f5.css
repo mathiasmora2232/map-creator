@@ -1,0 +1,41 @@
+/* Editor del mapa (2.1, Map Editor Pro fase 5): transformar, vértices, jerarquía, historial y versiones, buscar, aislar y pantalla limpia. */
+.aviso-aislado{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:7;display:flex;gap:10px;align-items:center;padding:6px 8px 6px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--acc);box-shadow:var(--sombra);font-size:12.5px}
+.aviso-aislado[hidden]{display:none}
+.aviso-aislado button{min-height:0;padding:3px 10px}
+.pop-historial{width:360px}
+.pop .lista.historial{max-height:280px;overflow:auto;margin:0;padding:0}
+.lista.historial .paso button{width:100%;display:flex;justify-content:space-between;gap:8px;text-align:left;border:0;background:transparent;padding:4px 6px;border-radius:6px;min-height:0}
+.lista.historial .paso button:hover{background:var(--hover)}
+.lista.historial .paso.actual button{background:color-mix(in srgb,var(--acc) 18%,transparent);font-weight:500}
+.lista.historial .paso.rehacer button{opacity:.55;font-style:italic}
+.lista.historial small,.tipos-prod small{color:var(--fg2);font-family:'IBM Plex Mono',monospace;white-space:nowrap}
+.lista.versiones{max-height:220px;overflow:auto}
+.lista.versiones .cambio{display:flex;gap:6px;align-items:center}
+.lista.versiones button{min-height:0;padding:3px 8px}
+.tipos-prod{max-height:220px;overflow:auto;margin:0;padding:0}
+.tipos-prod button{width:100%;display:flex;justify-content:space-between;border:0;background:transparent;padding:4px 6px;border-radius:6px;min-height:0;text-align:left}
+.tipos-prod button:hover{background:var(--hover)}
+.pop kbd,.fila kbd{font-size:10.5px;opacity:.7;margin-left:4px}
+table.vert input{width:84px}
+table.vert td button{min-height:0;padding:0 7px}
+table.atajos5 td button{min-height:0;padding:2px 8px}
+table.atajos5 td button.mod{outline:1px solid var(--acc)}
+button.lnk{border:0;background:none;padding:0;min-height:0;color:var(--acc);text-decoration:underline;cursor:pointer;font:inherit}
+#menuJer{min-width:220px;max-height:70vh;overflow:auto;z-index:50}
+#bSalirLimpia{position:fixed;top:10px;right:12px;z-index:60;padding:6px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--sombra)}
+#bSalirLimpia[hidden]{display:none}
+body.oo-limpia #barra,body.oo-limpia #herramientas,body.oo-limpia #colIzq,body.oo-limpia #colDer,body.oo-limpia #colAbajo,body.oo-limpia #barraFlot,body.oo-limpia #barraFlotDer,body.oo-limpia #navDer,body.oo-limpia #barraVista,body.oo-limpia .divisor{display:none!important}
+body.oo-limpia #app{grid-template-rows:1fr}
+body.oo-limpia #cuerpo{grid-template-columns:minmax(0,1fr)!important}
+/* (2.1 pro f6) con las columnas ocultas (display:none) el centro caía en la primera columna, de ancho 0 (se veía en Edge sin ventana y con ventanas estrechas): ocupa todo */
+body.oo-limpia #centro{grid-column:1/-1!important;grid-row:1/-1!important;min-width:0}
+body.oo-limpia #centro{grid-template-rows:minmax(0,1fr)!important}
+.notas-pro{border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:8px}
+.notas-pro h3 small{color:var(--fg2);font-weight:400;margin-left:4px}
+.notas-lista{margin:6px 0 0;padding:0;max-height:300px;overflow:auto}
+.nota-item{display:flex;align-items:center;gap:6px}
+.nota-item > button{flex:1;display:flex;align-items:center;gap:8px;text-align:left;border:0;background:transparent;padding:4px;border-radius:6px;min-height:0}
+.nota-item > button:hover{background:var(--hover)}
+.nota-item img,.nota-item .sin-foto{width:44px;height:44px;object-fit:cover;border-radius:5px;flex:none;background:var(--hover)}
+.nota-item.hecha span{text-decoration:line-through;opacity:.65}
+.nota-grande img{max-width:100%;border-radius:8px;margin-bottom:8px}

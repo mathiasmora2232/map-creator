@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Editor del mapa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" href="estilo_pro_f4.css">
+<link rel="stylesheet" href="estilo_pro_f5.css">
+<link rel="stylesheet" href="estilo_notas_caminar.css">
+<script src="local.js"></script>
+</head>
+<body>
+<!-- (2.1, editor v2) Disposición del concepto aprobado: barra superior, barra de herramientas con menús a la izquierda, columnas de
+     paneles acoplables (izquierda, derecha y abajo, ui_paneles.js), la vista 3D en el centro con sus barras flotantes. -->
+<div id="app" class="sin-assets">
+  <header id="barra">
+    <div class="marca"><span class="logo" data-ic="logo"></span><span>Editor del mapa</span></div>
+    <label class="selmapa" title="Mapa que se edita"><span data-ic="capas"></span><span class="sr">Mapa</span>
+      <select id="selMapa"><option value="complejo">Complejo</option><option value="parqueadero">Parqueadero</option></select></label>
+    <div class="seg seg-vista" role="group" aria-label="Tipo de vista">
+      <button data-vista="3d" class="on" title="Vista 3D (tecla 4 = isométrica)">3D</button>
+      <button data-vista="planta" title="Planta desde arriba (tecla 1)">Planta</button>
+      <button data-vista="caminar" title="Caminar en primera persona (tecla 5)"><span data-ic="caminar"></span>Caminar</button>
+    </div>
+    <div class="grupo-btn">
+      <button id="bDeshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"><span data-ic="deshacer"></span></button>
+      <button id="bRehacer" title="Rehacer (Ctrl+Y)" aria-label="Rehacer"><span data-ic="rehacer"></span></button>
+    </div>
+    <span class="esp"></span>
+    <span id="estado" class="estado carg" title=""><i></i><span>Conectando…</span></span>
+    <button id="bContador" class="contador" title="Ver la lista de cambios">0 cambios</button>
+    <button id="bAtajos" title="Hoja de atajos (tecla ?)"><span data-ic="teclado"></span><span class="lbl">Atajos</span></button>
+    <button id="bAjustes" title="Ajustes"><span data-ic="ajustes"></span><span class="lbl">Ajustes</span></button>
+    <button id="bTema" title="Tema claro u oscuro" aria-label="Cambiar tema"><span data-ic="tema"></span></button>
+    <button id="bPanel" aria-expanded="true" title="Mostrar u ocultar los paneles (clic derecho: elegir paneles)" data-menu="menuPaneles"><span data-ic="panel"></span></button>
+    <button id="bExportar" class="prim" data-menu="menuExportar" title="Exportar e importar"><span class="lbl">Exportar</span><span data-ic="abajo"></span></button>
+  </header>
+  <div id="cuerpo">
+    <nav id="herramientas" aria-label="Herramientas"></nav>
+    <div id="colIzq" class="dock" data-dock="izq">
+      <section class="pnl" data-pnl="jerarquia" data-titulo="Jerarquía (Escena)">
+        <div class="pnl-acc"><button data-a="ctx-agrupar" title="Agrupar la selección (Ctrl+G)" aria-label="Agrupar"><span data-ic="mas"></span></button></div>
+        <div class="pnl-cuerpo">
+          <label class="buscador-ic"><span data-ic="buscar"></span><input type="search" id="jerBuscar" placeholder="Buscar en la escena…" aria-label="Buscar en la escena" autocomplete="off"></label>
+          <div id="jerArbol" class="arbol" role="tree" aria-label="Jerarquía de la escena"></div>
+          <div id="secciones" hidden></div>
+        </div>
+      </section>
+      <section class="pnl" data-pnl="capas" data-titulo="Capas">
+        <div class="pnl-acc"><button data-a="capa-nueva" title="Nueva capa de trabajo (los objetos nuevos van a la capa activa)" aria-label="Nueva capa"><span data-ic="mas"></span></button></div>
+        <div class="pnl-cuerpo">
+          <ul id="capasCat" class="capas-cat"></ul>
+          <details class="sec" id="capasTrabajo"><summary>Capas de trabajo <small>objetos nuevos</small></summary>
+            <p class="ayuda">Los objetos nuevos van a la capa activa. Ojo = mostrar, candado = bloquear.</p>
+            <ul id="capas" class="lista"></ul>
+          </details>
+        </div>
+      </section>
+      <section class="pnl" data-pnl="minimapa" data-titulo="Mini-mapa del proyecto">
+        <div class="pnl-acc"><button data-a="minimapa-grande" title="Ampliar o reducir el minimapa" aria-label="Ampliar"><span data-ic="expandir"></span></button></div>
+        <div class="pnl-cuerpo sin-relleno">
+          <canvas id="minimapa" width="340" height="340" title="Minimapa: clic o arrastra para mover la cámara"></canvas>
+        </div>
+      </section>
+    </div>
+    <div id="centro">
+      <main id="vista">
+        <canvas id="rejilla" aria-hidden="true"></canvas>
+        <div id="etiquetas" aria-hidden="true"></div>
+        <div id="rect" hidden></div>
+        <div id="barraFlot" class="flot" role="toolbar" aria-label="Edición">
+          <button data-a="herr-sel" data-h="sel" title="Seleccionar (Espacio)" aria-label="Seleccionar"><span data-ic="sel"></span></button>
+          <button data-a="gz" data-v="translate" class="on" title="Mover (M)" aria-label="Mover"><span data-ic="mover"></span></button>
+          <button data-a="gz" data-v="rotate" title="Girar (G)" aria-label="Girar"><span data-ic="girar"></span></button>
+          <button data-a="gz" data-v="scale" title="Escalar (K): un lado fijo; con Ctrl desde el centro" aria-label="Escalar"><span data-ic="escalar"></span></button>
+          <button data-a="encuadrar-sel" title="Encuadrar la selección (F)" aria-label="Encuadrar"><span data-ic="objeto"></span></button>
+          <button data-a="snap" id="bSnap" title="Ajuste a la rejilla" aria-label="Ajuste a la rejilla"><span data-ic="imantar"></span></button>
+        </div>
+        <div id="barraFlotDer" class="flot" role="toolbar" aria-label="Vista">
+          <button data-pop="popAmbiente" title="Ambiente: hora del día, sol, clima" aria-label="Ambiente"><span data-ic="sol"></span></button>
+          <button data-pop="popVista" title="Corte por altura y qué se ve" aria-label="Vista"><span data-ic="objeto"></span></button>
+          <button data-a="rejilla" id="bRejilla" title="Rejilla" aria-label="Rejilla"><span data-ic="rejilla"></span></button>
+          <button data-a="panel-capas" title="Panel de capas" aria-label="Capas"><span data-ic="capas"></span></button>
+        </div>
+        <div id="popVista" class="pop" hidden>
+          <h3>Corte por altura</h3>
+          <div class="corte"><input type="range" id="corte" min="0" max="50" step="0.1" value="50" aria-label="Altura de corte"><output id="corteVal">Todo</output></div>
+          <div class="fila"><button data-a="corte-techos">Sin techos (2,6 m)</button><button data-a="corte-todo">Todo</button></div>
+          <h3>Mostrar</h3>
+          <label class="chk"><input type="checkbox" id="verLuces"> Ver luces</label>
+          <label class="chk"><input type="checkbox" id="verNotas" checked> Ver notas</label>
+          <label class="chk"><input type="checkbox" id="verRejilla" checked> Ver rejilla</label>
+          <div class="fila"><button data-a="mostrar-ocultos" id="bOcultos" hidden>Mostrar lo ocultado</button><button data-a="medidas-borrar">Borrar medidas</button></div>
+          <p class="ayuda">Coordenadas del juego original (Godot): X hacia el este, Z hacia el sur. La avenida queda al norte.</p>
+        </div>
+        <div id="popAmbiente" class="pop" hidden></div>
+        <div id="pista"><span class="txt"></span></div>
+        <div id="mira" hidden></div>
+        <div id="navDer">
+          <button id="brujula" data-a="norte" title="Brújula: clic para mirar hacia el norte (la avenida)" aria-label="Mirar al norte"><svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="27" fill="none" stroke="currentColor" stroke-opacity=".25"/><g id="aguja"><path d="M30 7 L36 30 L30 27 L24 30 Z" fill="#e5484d"/><path d="M30 53 L36 30 L30 33 L24 30 Z" fill="#8a929c"/><text x="30" y="20" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="IBM Plex Sans, sans-serif">N</text></g></svg></button>
+          <div id="vistasRap" role="group" aria-label="Vistas rápidas">
+            <button data-a="vista-rap" data-v="1" title="Planta (1)">Planta</button>
+            <button data-a="vista-rap" data-v="2" title="Frente desde el sur (2)">Frente</button>
+            <button data-a="vista-rap" data-v="3" title="Lateral desde el este (3)">Lateral</button>
+            <button data-a="vista-rap" data-v="4" title="Isométrica (4)">Iso</button>
+            <button data-a="vista-rap" data-v="5" title="Primera persona (5)">1.ª p.</button>
+            <button data-a="todo-mapa" title="Ver todo el mapa (Inicio)">Todo</button>
+          </div>
+        </div>
+        <div id="barraVista">
+          <div id="escalaGraf" class="flot" title="Escala gráfica"><canvas width="220" height="34"></canvas></div>
+          <div class="flot centro-barra">
+            <label title="Paso de la rejilla y del ajuste">Grilla: <select id="selGrilla"><option value="0.05">5 cm</option><option value="0.1">10 cm</option><option value="0.25">25 cm</option><option value="0.5">50 cm</option><option value="1">1.0 m</option><option value="5">5.0 m</option></select></label>
+            <label class="chk"><input type="checkbox" id="chkSnap"> Snap</label>
+            <label class="chk"><input type="checkbox" id="verCol"> Colisiones</label>
+            <label class="chk"><input type="checkbox" id="chkEjes"> Ejes</label>
+          </div>
+          <div id="coords" class="flot"></div>
+        </div>
+        <div id="visorFlotante" hidden>
+          <div class="cab"><span id="visorTit">Foto de referencia</span><button data-a="visor-ant" title="Anterior">&lsaquo;</button><button data-a="visor-sig" title="Siguiente">&rsaquo;</button><button data-a="visor-cerrar" title="Cerrar">&times;</button></div>
+          <img id="visorImg" alt="Foto de referencia">
+        </div>
+        <div id="carga"><div class="tarjeta"><div class="giro"></div><span id="cargaTxt">Cargando…</span></div></div>
+      </main>
+      <div id="colAbajo" class="dock" data-dock="abajo">
+        <section class="pnl" data-pnl="catalogo" data-titulo="Catálogo" data-tabs>
+          <div class="pestanas" role="tablist">
+            <button role="tab" data-ctab="todo" aria-selected="true"><span data-ic="rejilla"></span>Catálogo</button>
+            <button role="tab" data-ctab="recientes" aria-selected="false"><span data-ic="reloj"></span>Piezas recientes</button>
+            <button role="tab" data-ctab="favoritos" aria-selected="false"><span data-ic="estrella"></span>Favoritos</button>
+          </div>
+          <div class="pnl-cuerpo cat-cuerpo" data-panel="catalogo">
+            <ul id="catCats" class="cat-cats" aria-label="Categorías"></ul>
+            <div class="cat-der">
+              <div class="cat-barra">
+                <label class="buscador-ic"><span data-ic="buscar"></span><input type="search" id="catBuscar" placeholder="Buscar en el catálogo…" aria-label="Buscar en el catálogo" autocomplete="off"></label>
+                <div class="chips" id="catFiltros" role="group" aria-label="Filtros"></div>
+                <span class="esp"></span>
+                <div class="seg" role="group" aria-label="Vista del catálogo"><button data-a="cat-modo" data-v="rejilla" title="Rejilla" class="on"><span data-ic="rejilla"></span></button><button data-a="cat-modo" data-v="lista" title="Lista"><span data-ic="lista"></span></button></div>
+                <input type="range" id="catTam" min="70" max="150" step="5" value="96" aria-label="Tamaño de las tarjetas" title="Tamaño de las tarjetas">
+                <button data-a="importar-catalogo" title="Importar más catálogos (JSON de prefabs o modelos GLB)"><span data-ic="subir"></span></button>
+              </div>
+              <div class="catalogo" id="catItems"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div id="colDer" class="dock" data-dock="der">
+      <section class="pnl" data-pnl="inspector" data-titulo="Inspector" data-tabs>
+        <div class="pestanas" role="tablist">
+          <button role="tab" data-tab="obj" aria-selected="true">Objeto</button>
+          <button role="tab" data-tab="material" aria-selected="false">Material</button>
+          <button role="tab" data-tab="luz" aria-selected="false">Iluminación</button>
+          <button role="tab" data-tab="mas" aria-selected="false">Más</button>
+        </div>
+        <div class="pnl-cuerpo" data-panel="obj"><div id="objCuerpo"></div></div>
+        <div class="pnl-cuerpo" data-panel="material" hidden><div id="insMaterial"></div></div>
+        <div class="pnl-cuerpo" data-panel="luz" hidden><div id="insLuz"></div></div>
+        <div class="pnl-cuerpo" data-panel="mas" hidden><div id="insMas"></div></div>
+      </section>
+      <section class="pnl" data-pnl="recursos" data-titulo="Recursos" data-tabs>
+        <div class="pestanas" role="tablist">
+          <button role="tab" data-tab="assets" aria-selected="false" title="Modelos y texturas importados">Catálogo</button>
+          <button role="tab" data-tab="fotos" aria-selected="true">Fotos</button>
+          <button role="tab" data-tab="calcos" aria-selected="false" title="Calcos: mapas satelitales, croquis">Referencias</button>
+          <button role="tab" data-tab="notas" aria-selected="false">Notas</button>
+          <button role="tab" data-tab="cambios" aria-selected="false">Cambios</button>
+        </div>
+        <div class="pnl-cuerpo" data-panel="assets" hidden><div id="listaAssets"></div></div>
+        <div class="pnl-cuerpo" data-panel="fotos">
+          <div class="fila req-assets"><button data-a="foto-subir-galeria"><span data-ic="subir"></span>Subir fotos</button><button data-a="galeria-recargar"><span data-ic="recargar"></span>Actualizar</button></div>
+          <label class="buscador-ic req-assets"><span data-ic="buscar"></span><input type="search" id="filtroFotos" placeholder="Buscar por carpeta o nombre…" aria-label="Buscar fotos"></label>
+          <p class="msg-sin-assets">Las fotos no están disponibles en esta vista.</p>
+          <div id="galeria" class="galeria"></div>
+        </div>
+        <div class="pnl-cuerpo" data-panel="calcos" hidden>
+          <p class="ayuda">Un calco es una imagen (vista satelital, croquis…) puesta sobre el suelo para comparar con el mapa.</p>
+          <div class="fila"><button data-a="calco-satelital" class="prim"><span data-ic="mapa"></span>Mapa satelital (elegir en el mapa)</button><button data-a="calco-coordenadas" title="Escribir las coordenadas a mano">Coordenadas…</button></div>
+          <div class="fila req-assets"><button data-a="calco-nuevo-galeria">Añadir desde la galería</button><button data-a="calco-subir">Subir imagen</button></div>
+          <p class="msg-sin-assets">Para añadir calcos de la galería hace falta poder subir imágenes en esta vista.</p>
+          <ul id="listaCalcos" class="lista"></ul>
+          <div id="calcoEditor"></div>
+        </div>
+        <div class="pnl-cuerpo" data-panel="notas" hidden><div id="listaNotas"></div></div>
+        <div class="pnl-cuerpo" data-panel="cambios" hidden>
+          <div class="fila">
+            <label class="sr" for="filtroAccion">Acción</label>
+            <select id="filtroAccion"><option value="">Todas las acciones</option><option value="agregar">Agregados</option><option value="modificar">Modificados</option><option value="borrar">Borrados</option><option value="nota">Notas</option><option value="propiedades">Propiedades</option></select>
+            <label class="sr" for="filtroTipo">Tipo</label>
+            <select id="filtroTipo"><option value="">Todos los tipos</option></select>
+          </div>
+          <div class="fila"><button data-a="copiar" class="prim">Copiar cambios (JSON)</button><button data-a="descargar">Descargar JSON</button></div>
+          <ul id="listaCambios" class="lista"></ul>
+        </div>
+      </section>
+      <section class="pnl" data-pnl="zonas" data-titulo="Zonas">
+        <div class="pnl-acc"><button data-zona-nueva="rect" title="Dibujar una zona rectangular en planta" aria-label="Nueva zona"><span data-ic="mas"></span></button></div>
+        <div class="pnl-cuerpo"><div id="listaZonas"></div></div>
+      </section>
+    </div>
+  </div>
+</div>
+<div id="menuHerr" class="menu-flot" role="menu" hidden></div>
+<div id="menuPaneles" class="menu-flot" role="menu" hidden></div>
+<div id="menuExportar" class="menu-flot" role="menu" hidden>
+  <div class="menu-tit">Exportar a otros motores</div>
+  <button role="menuitem" data-a="exp-glb-todo">Todo el mapa (.glb)<small>glTF: Unity, Godot, Unreal</small></button>
+  <button role="menuitem" data-a="exp-glb-sel">La selección (.glb)</button>
+  <button role="menuitem" data-a="exp-glb-zona">Una zona (.glb)…</button>
+  <button role="menuitem" data-a="exp-godot-todo">Godot 4.4: escena .tscn + .glb<small>colisiones y metadatos</small></button>
+  <button role="menuitem" data-a="exp-godot-zona">Godot 4.4: una zona…</button>
+  <button role="menuitem" data-a="exp-unity-todo">Unity: .glb + escena .json + LEEME</button>
+  <hr>
+  <div class="menu-tit">Exportar para el juego</div>
+  <button role="menuitem" data-a="validar-mapa">Revisar el mapa (avisos)<small>escaleras, pendientes, flotando, anclajes, materiales</small></button>
+  <button role="menuitem" data-a="exp-enviar-juego" class="destacado">Enviar al juego (Unity)<small>lo aplica al compilar: colisiones, puertas y bots</small></button>
+  <button role="menuitem" data-a="exp-juego">Cambios para el juego (.json)<small>generadores Godot / Unity</small></button>
+  <button role="menuitem" data-a="exp-json-todo">Escena del juego (.json)</button>
+  <button role="menuitem" data-a="exp-json-zona">Zona como escena (.json)…</button>
+  <button role="menuitem" data-a="exp-prefabs">Mis prefabs (.json)</button>
+  <button role="menuitem" data-a="exp-alturas">Terreno: alturas (.png + .r16 + .json)<small>Godot / Unity</small></button>
+  <button role="menuitem" data-a="copiar">Copiar cambios (JSON)</button>
+  <button role="menuitem" data-a="descargar">Descargar cambios (JSON)</button>
+  <hr>
+  <div class="menu-tit">Importar</div>
+  <button role="menuitem" data-a="imp-escena">Escena o zona (.json, .glb, .gltf)<small>objetos editables</small></button>
+  <button role="menuitem" data-a="imp-modelo">Modelo 3D al catálogo (.glb)</button>
+  <button role="menuitem" data-a="imp-textura">Textura para materiales (.png, .jpg)</button>
+  <button role="menuitem" data-a="importar-catalogo">Catálogo de prefabs (.json)</button>
+</div>
+<div id="menuCtx" role="menu" hidden></div>
+<div id="modal" class="modal" hidden><div class="caja" role="dialog" aria-modal="true" id="modalCaja"></div></div>
+<input type="file" id="archivo" accept="image/*" multiple hidden>
+<input type="file" id="archivoGen" hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/TransformControls.js"></script>
+<script src="catalogo.js"></script>
+<script src="catalogo_extra.js"></script>
+<script src="presets_muro.js"></script>
+<script src="modelos_juego.js"></script>
+<script src="carteles.js"></script>
+<script src="mallas_reales.js"></script>
+<script src="ui_paneles.js"></script>
+<script src="importar.js"></script>
+<script src="prefabs_proc.js"></script>
+<script src="kits_edificios.js"></script>
+<script src="vegetacion.js"></script>
+<script src="entidades.js"></script>
+<script src="editor.js"></script>
+<script src="huecos.js"></script>
+<script src="jerarquia.js"></script>
+<script src="catalogo_ui.js"></script>
+<script src="mapa_satelital.js"></script>
+<script src="ambiente.js"></script>
+<script src="prefabs.js"></script>
+<script src="zonas.js"></script>
+<script src="exportar.js"></script>
+<script src="planner2d.js"></script>
+<script src="materiales.js"></script>
+<script src="texturas_proc.js"></script>
+<script src="materiales_pro.js"></script>
+<script src="iluminacion.js"></script>
+<script src="comportamientos.js"></script>
+<script src="destruccion.js"></script>
+<script src="terreno.js"></script>
+<script src="asas.js"></script>
+<script src="anclajes.js"></script>
+<script src="fundaciones.js"></script>
+<script src="paredes.js"></script>
+<script src="habitaciones.js"></script>
+<script src="niveles.js"></script>
+<script src="techos.js"></script>
+<script src="escaleras.js"></script>
+<script src="plataformas.js"></script>
+<script src="revestimientos.js"></script>
+<script src="iman.js"></script>
+<script src="catalogo_pro.js"></script>
+<script src="importar_pro.js"></script>
+<!-- (2.1 pro f5) productividad y modelado -->
+<script src="cubiertas_l.js"></script>
+<script src="transformar.js"></script>
+<script src="geometria.js"></script>
+<script src="escaleras_pro.js"></script>
+<script src="jerarquia_pro.js"></script>
+<script src="terreno_pro.js"></script>
+<script src="productividad.js"></script>
+<script src="notas_pro.js"></script>
+<script src="notas_editor.js"></script>
+<script src="caminar_pro.js"></script>
+<!-- (2.1 pro f6) calidad y exportación al juego -->
+<script src="validacion.js"></script>
+<script src="juego_unity.js"></script>
+<script src="vistas_render.js"></script>
+<script src="capas_vista.js"></script>
+<script src="cuartos_pro.js"></script>
+<script src="mapas_nuevos.js"></script>
+</body>
+</html>

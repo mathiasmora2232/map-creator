@@ -1,0 +1,185 @@
+{
+ "grp-complejo-mvzahkd5": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T13:23:14.393Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p15803",
+   "p15802"
+  ],
+  "nombre": "Grupo 2"
+ },
+ "grp-complejo-mvzai6n8": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T13:23:43.268Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p5221",
+   "p5222",
+   "p5223",
+   "p5224"
+  ],
+  "nombre": "Grupo 3"
+ },
+ "grp-complejo-mvzaifrb": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T13:23:55.079Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p5225",
+   "p5226",
+   "p5227",
+   "p5228"
+  ],
+  "nombre": "Grupo 4"
+ },
+ "grp-complejo-mvzaj4kw": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T13:24:27.248Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p5184",
+   "p5185",
+   "p5186",
+   "p5187",
+   "p5188",
+   "p5189",
+   "p5190"
+  ],
+  "nombre": "Grupo 5"
+ },
+ "grp-complejo-mvzajxp6": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T13:25:04.986Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p26648",
+   "p26649",
+   "p26651",
+   "p8987",
+   "p8988",
+   "p8989",
+   "p8993",
+   "p8994",
+   "p8995",
+   "p8996",
+   "p8998",
+   "p8986",
+   "p24106",
+   "p26647",
+   "p26650",
+   "p8979",
+   "p8983",
+   "p8984",
+   "p8985",
+   "p8997",
+   "p8990",
+   "p8992"
+  ],
+  "nombre": "Grupo 6"
+ },
+ "grp-complejo-mvzakawu": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T13:25:22.110Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p26648",
+   "p26649",
+   "p26650",
+   "p26651",
+   "p8987",
+   "p8988",
+   "p8989",
+   "p8990",
+   "p8991",
+   "p8993",
+   "p8994",
+   "p8995",
+   "p8997",
+   "p8998",
+   "p8983",
+   "p8984",
+   "p8985",
+   "p8986",
+   "p8996",
+   "p24106",
+   "p26647",
+   "p8979",
+   "p8992"
+  ],
+  "nombre": "Grupo 7"
+ },
+ "grp-complejo-mvzbwgn6": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T14:02:49.026Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p7022",
+   "p7021",
+   "p7023",
+   "p7017"
+  ],
+  "nombre": "Grupo 10"
+ },
+ "grp-complejo-mvzbwues": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T14:03:06.868Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p6989",
+   "p6970",
+   "p6971",
+   "p6972",
+   "p6973",
+   "p6974",
+   "p6975",
+   "p6976",
+   "p6986",
+   "p6992",
+   "p6985"
+  ],
+  "nombre": "Grupo 11"
+ },
+ "grp-complejo-mvzbx3bm": {
+  "autor": "local",
+  "capa": "General",
+  "creado": "2026-11-02T14:03:18.418Z",
+  "mapa": "complejo",
+  "miembros": [
+   "p7002",
+   "p7003",
+   "p7005",
+   "p7006",
+   "p7007",
+   "p7008",
+   "p7001"
+  ],
+  "nombre": "Grupo 12"
+ },
+ "sinauto-complejo-a186_1040_18": {
+  "autor": "local",
+  "creado": "2026-11-02T13:58:56.702Z",
+  "mapa": "complejo",
+  "sin_auto": "a186_1040_18"
+ },
+ "sinauto-complejo-a851_726_12": {
+  "autor": "local",
+  "creado": "2026-11-04T14:27:45.415Z",
+  "mapa": "complejo",
+  "sin_auto": "a851_726_12"
+ },
+ "sinauto-complejo-a93_-202_275": {
+  "autor": "local",
+  "creado": "2026-11-01T22:27:22.420Z",
+  "mapa": "complejo",
+  "sin_auto": "a93_-202_275"
+ }
+}
