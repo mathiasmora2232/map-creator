@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Verifica tu correo · Map Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/sitio/css/sitio.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e2690b'/%3E%3Cpath d='M8 9h9v6h7v8H8z' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="pag-cuenta">
+  <div class="lado-form">
+    <a class="logo" href="/" data-logo>Map Creator</a>
+    <div class="form-caja" id="caja">
+      <h1>Verifica tu correo</h1>
+      <p class="sub" id="subVer">Te enviamos un código de 6 dígitos. Escríbelo para empezar a usar Map Creator.</p>
+      <form id="formVer" novalidate>
+        <label class="campo"><span>Código</span><input type="text" name="codigo" required autofocus></label>
+        <small class="ayuda-codigo">Caduca en 15 minutos. Si no lo ves, mira en la carpeta de spam.</small>
+        <p class="error-form" id="errVer" role="alert"></p>
+        <button class="btn prim grande" type="submit">Verificar</button>
+      </form>
+      <p class="alt"><button class="enlace-btn" type="button" id="bReenviar">Reenviar código</button> · <button class="enlace-btn" type="button" id="bSalir">Entrar con otra cuenta</button></p>
+    </div>
+  </div>
+  <div class="lado-arte" aria-hidden="true">
+    <div id="arte"></div>
+    <blockquote>Verificar el correo sirve para que puedas recuperar tu cuenta si olvidas la contraseña y para que te lleguen las invitaciones.<small>TU CUENTA</small></blockquote>
+  </div>
+</div>
+<script src="/sitio/js/comun.js"></script>
+<script src="/sitio/js/verificar.js"></script>
+</body>
+</html>

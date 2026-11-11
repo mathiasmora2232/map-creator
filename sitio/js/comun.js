@@ -10,7 +10,9 @@
     const r = await fetch(ruta, { method: o.method, headers: cab, body: o.body, credentials: 'same-origin', cache: 'no-store' });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) {
-      if (r.status === 401 && !o.sinRedirigir) { location.href = '/entrar?siguiente=' + encodeURIComponent(location.pathname + location.search); }
+      const aqui = encodeURIComponent(location.pathname + location.search + location.hash);
+      if (r.status === 401 && !o.sinRedirigir) { location.href = '/entrar?siguiente=' + aqui; }
+      if (r.status === 403 && j.code === 'email_no_verificado' && !o.sinRedirigir) { location.href = '/verificar?siguiente=' + aqui; }
       const e = new Error(j.error || 'Algo salió mal (' + r.status + ').'); e.code = j.code; e.status = r.status; throw e;
     }
     return j;
@@ -75,5 +77,45 @@
   if (cab) { const f = () => cab.classList.toggle('con-borde', scrollY > 8); addEventListener('scroll', f, { passive: true }); f(); }
   document.querySelectorAll('[data-logo]').forEach(el => el.insertAdjacentHTML('afterbegin', LOGO));
 
-  window.MC = { api, esc, aviso, fechaRel, miniatura, LOGO };
+  /* Registro cerrado (solo por invitación): los botones «Crear cuenta» de la landing pasan a «Entrar» y la página de registro lo
+     explica en vez de mostrar un formulario que fallaría al final. */
+  const conRegistro = document.querySelectorAll('[data-registro],[data-registro-alt],[data-si-correo],#formCuenta[data-modo=registro]');
+  if (conRegistro.length) fetch('/api/config', { cache: 'no-store' }).then(r => r.json()).then(c => {
+    if (c.correo) document.querySelectorAll('[data-si-correo]').forEach(el => { el.hidden = false; });
+    if (c.registro_abierto) return;
+    document.querySelectorAll('[data-registro]').forEach(a => { a.href = '/entrar'; a.textContent = a.dataset.registro; });
+    document.querySelectorAll('[data-registro-alt]').forEach(p => { p.textContent = '¿No tienes cuenta? El registro es solo por invitación: pide un enlace a quien te quiera dar acceso.'; });
+    const f = document.querySelector('#formCuenta[data-modo=registro]');
+    if (f) {
+      const caja = f.closest('.form-caja');
+      caja.innerHTML = '<h1>Registro por invitación</h1><p class="sub">En este servidor solo se puede crear una cuenta con un enlace de invitación. '
+        + 'Pídeselo a quien te quiera compartir un mapa o al administrador, y ábrelo: allí mismo podrás crear tu cuenta.</p>'
+        + '<a class="btn prim grande" href="/entrar">Ya tengo cuenta: entrar</a>';
+    }
+  }).catch(() => { });
+
+  /* ?siguiente= solo si es una ruta de esta web. */
+  const siguiente = (defecto) => { const s = new URLSearchParams(location.search).get('siguiente') || ''; return /^\/(?!\/)/.test(s) && !s.includes('\\') ? s : (defecto || '/app'); };
+
+  /* Campo de código de 6 dígitos: solo cifras, y al completar los 6 llama a alCompletar (p. ej. enviar el formulario). */
+  function campoCodigo(input, alCompletar) {
+    input.setAttribute('inputmode', 'numeric'); input.setAttribute('autocomplete', 'one-time-code'); input.setAttribute('maxlength', '7');
+    input.setAttribute('pattern', '[0-9 ]*'); input.classList.add('codigo-input');
+    input.addEventListener('input', () => {
+      const d = input.value.replace(/\D/g, '').slice(0, 6);
+      input.value = d.length > 3 ? d.slice(0, 3) + ' ' + d.slice(3) : d;
+      if (d.length === 6 && alCompletar) alCompletar(d);
+    });
+    return () => input.value.replace(/\D/g, '');
+  }
+
+  /* Botón «Reenviar código» con cuenta atrás. */
+  function cuentaAtras(boton, segundos) {
+    const texto = boton.dataset.texto || (boton.dataset.texto = boton.textContent);
+    let s = segundos; boton.disabled = true;
+    const paso = () => { if (s <= 0) { boton.disabled = false; boton.textContent = texto; return; } boton.textContent = texto + ' (' + s + ' s)'; s--; setTimeout(paso, 1000); };
+    paso();
+  }
+
+  window.MC = { api, esc, aviso, fechaRel, miniatura, LOGO, siguiente, campoCodigo, cuentaAtras };
 })();

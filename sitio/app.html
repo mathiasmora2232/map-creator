@@ -18,13 +18,20 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nuevo mapa
     </button>
     <nav class="menu">
+      <a href="#inicio" data-vista="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Inicio</a>
       <a href="#mapas" data-vista="mapas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 4h10v7h8v9H3z"/><path d="M13 11v9"/></svg>Mis mapas<span class="cuenta-n" data-n="mapas"></span></a>
       <a href="#compartidos" data-vista="compartidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5A5 5 0 0 1 21 19"/></svg>Compartidos conmigo<span class="cuenta-n" data-n="compartidos"></span></a>
+      <a href="#favoritos" data-vista="favoritos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Favoritos<span class="cuenta-n" data-n="favoritos"></span></a>
       <a href="#plantillas" data-vista="plantillas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Plantillas</a>
       <a href="#papelera" data-vista="papelera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Papelera</a>
     </nav>
+    <div class="titulo-menu" data-solo-admin hidden>Servidor</div>
+    <nav class="menu" data-solo-admin hidden>
+      <a href="#admin" data-vista="admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Administración</a>
+    </nav>
     <div class="titulo-menu">Ayuda</div>
     <nav class="menu">
+      <a href="#" data-a="recorrido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Recorrido guiado</a>
       <a href="#atajos" data-vista="atajos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>Atajos del editor</a>
       <a href="#cuenta" data-vista="cuenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Cuenta</a>
     </nav>
@@ -68,17 +75,62 @@
 </dialog>
 
 <!-- Compartir -->
-<dialog id="dlgCompartir" aria-labelledby="tCompartir">
+<dialog id="dlgCompartir" class="medio" aria-labelledby="tCompartir">
   <div class="dlg-cab"><h2 id="tCompartir">Compartir</h2><button class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
   <div class="dlg-cuerpo">
-    <form class="invitar" id="formInvitar">
-      <input type="email" name="email" placeholder="correo@ejemplo.com" required aria-label="Correo de la persona">
-      <select name="rol" aria-label="Permiso"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select>
-      <button class="btn prim" type="submit">Invitar</button>
-    </form>
-    <p class="error-form" id="errInvitar" role="alert"></p>
-    <div class="miembros" id="listaMiembros"></div>
+    <section class="comp-sec" id="secEnlace" hidden>
+      <h3>Enlace de invitación</h3>
+      <p class="ayuda">Quien abra el enlace entra al mapa. Si no tiene cuenta, la crea en ese momento, aunque el registro esté cerrado.</p>
+      <form class="enlace-form" id="formEnlace">
+        <label><span>Permiso</span><select name="rol"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select></label>
+        <label><span>Caduca</span><select name="dias"><option value="1">En 1 día</option><option value="7" selected>En 7 días</option><option value="30">En 30 días</option><option value="">Nunca</option></select></label>
+        <label><span>Usos</span><select name="usos_max"><option value="1">1 persona</option><option value="5">5 personas</option><option value="25">25 personas</option><option value="" selected>Sin límite</option></select></label>
+        <button class="btn prim" type="submit">Crear enlace</button>
+      </form>
+      <div class="enlace-nuevo" id="enlaceNuevo" hidden>
+        <input type="text" readonly id="enlaceUrl" aria-label="Enlace de invitación">
+        <button class="btn prim" type="button" data-a="copiar-enlace">Copiar</button>
+        <small>Cópialo ahora: por seguridad no se puede volver a mostrar. Si lo pierdes, crea otro.</small>
+      </div>
+      <div class="enlaces" id="listaEnlaces"></div>
+    </section>
+    <section class="comp-sec" id="secCorreo" hidden>
+      <h3>Invitar por correo</h3>
+      <p class="ayuda" id="ayudaCorreo">Para personas que ya tienen cuenta en este servidor.</p>
+      <form class="invitar" id="formInvitar">
+        <input type="email" name="email" placeholder="correo@ejemplo.com" required aria-label="Correo de la persona">
+        <select name="rol" aria-label="Permiso"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select>
+        <button class="btn" type="submit">Invitar</button>
+      </form>
+      <p class="error-form" id="errInvitar" role="alert"></p>
+    </section>
+    <section class="comp-sec">
+      <h3>Personas con acceso</h3>
+      <div class="miembros" id="listaMiembros"></div>
+    </section>
   </div>
+</dialog>
+
+<!-- Enlace de registro (administración) -->
+<dialog id="dlgRegistro" aria-labelledby="tRegistro">
+  <form method="dialog" id="formRegistro" novalidate>
+    <div class="dlg-cab"><h2 id="tRegistro">Enlace de registro</h2><button type="button" class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
+    <div class="dlg-cuerpo">
+      <p class="ayuda">Permite crear una cuenta aunque el registro esté cerrado. No da acceso a ningún mapa.</p>
+      <label class="campo"><span>Para quién (nota opcional)</span><input type="text" name="nota" maxlength="120" placeholder="Equipo de diseño"></label>
+      <label class="campo" id="campoEmailReg"><span>Enviar por correo a (opcional)</span><input type="email" name="email" placeholder="persona@ejemplo.com"><small>Si lo pones, el enlace sirve para una persona y se le envía.</small></label>
+      <div class="fila2 dos">
+        <label class="campo"><span>Caduca</span><select name="dias"><option value="1">En 1 día</option><option value="7" selected>En 7 días</option><option value="30">En 30 días</option><option value="">Nunca</option></select></label>
+        <label class="campo"><span>Usos</span><select name="usos_max"><option value="1" selected>1 persona</option><option value="5">5 personas</option><option value="25">25 personas</option><option value="">Sin límite</option></select></label>
+      </div>
+      <div class="enlace-nuevo" id="registroNuevo" hidden>
+        <input type="text" readonly id="registroUrl" aria-label="Enlace de registro">
+        <button class="btn prim" type="button" data-a="copiar-registro">Copiar</button>
+        <small>Cópialo ahora: no se puede volver a mostrar.</small>
+      </div>
+    </div>
+    <div class="dlg-pie"><button type="button" class="btn" data-a="cerrar-dlg">Cerrar</button><button class="btn prim" id="bCrearRegistro">Crear enlace</button></div>
+  </form>
 </dialog>
 
 <!-- Renombrar -->
@@ -94,6 +146,7 @@
 </dialog>
 
 <script src="/sitio/js/comun.js"></script>
+<script src="/sitio/js/recorrido.js"></script>
 <script src="/sitio/js/panel.js"></script>
 </body>
 </html>

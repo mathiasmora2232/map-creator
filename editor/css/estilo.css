@@ -201,6 +201,7 @@ body.arrastrando-panel .dock.vacio{padding:6px;min-width:60px;min-height:60px;ou
 #rect[hidden]{display:none}
 .pop{position:absolute;z-index:6;width:310px;max-height:calc(100% - 80px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sombra);padding:10px 14px 12px}
 .pop[hidden]{display:none}
+.flot[hidden]{display:none!important} /* barras flotantes con display en línea (p. ej. #barraNiveles): «hidden» debe ganar */
 .pop h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg2);margin:10px 0 6px}
 .pop h3:first-child{margin-top:2px}
 #carga{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--view) 80%,transparent);z-index:8}
@@ -494,5 +495,7 @@ details.zona input[type=color]{width:30px;height:26px}
 .nube-nombre{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:26ch}
 .nube-rol{font:500 11px/1 var(--mono);padding:4px 6px;border-radius:5px;background:var(--panel3);color:var(--fg2);white-space:nowrap}
 .nube-rol.rol-lector{background:var(--acc-suave);color:var(--acc)}
+.nube-guia{font:500 12px/1 var(--sans);padding:6px 9px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--fg2);cursor:pointer;white-space:nowrap}
+.nube-guia:hover{background:var(--hover);color:var(--fg)}
 .nube-aviso{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9000;background:var(--panel);color:var(--fg);border:1px solid var(--line);box-shadow:var(--sombra);border-radius:8px;padding:9px 14px;font-size:13px;max-width:min(640px,92vw)}
 .nube-aviso a{color:var(--acc)}
