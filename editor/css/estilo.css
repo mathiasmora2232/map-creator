@@ -201,6 +201,7 @@ body.arrastrando-panel .dock.vacio{padding:6px;min-width:60px;min-height:60px;ou
 #rect[hidden]{display:none}
 .pop{position:absolute;z-index:6;width:310px;max-height:calc(100% - 80px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sombra);padding:10px 14px 12px}
 .pop[hidden]{display:none}
+.flot[hidden]{display:none!important} /* barras flotantes con display en línea (p. ej. #barraNiveles): «hidden» debe ganar */
 .pop h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg2);margin:10px 0 6px}
 .pop h3:first-child{margin-top:2px}
 #carga{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--view) 80%,transparent);z-index:8}
