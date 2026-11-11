@@ -32,6 +32,14 @@ services:
       OO_COOKIE_SEGURA: ${OO_COOKIE_SEGURA:-false}
       OO_REGISTRO_ABIERTO: ${OO_REGISTRO_ABIERTO:-true}
       OO_ADMINS: ${OO_ADMINS:-}
+      OO_URL_PUBLICA: ${OO_URL_PUBLICA:-}
+      OO_IP_CABECERA: ${OO_IP_CABECERA:-}
+      # Correo: sin SMTP_HOST queda desactivado. En producción las inyecta el panel desde la bóveda (map-creator-app).
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
       OO_MAX_SUBIDA_MB: ${OO_MAX_SUBIDA_MB:-50}
       OO_MAX_PROYECTOS: ${OO_MAX_PROYECTOS:-50}
     volumes:

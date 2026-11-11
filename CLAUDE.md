@@ -27,3 +27,15 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
 
 - Stack `map-creator` en el VPS, publicado en https://map-creator.stellarcodestudio.com (Cloudflare Tunnel).
 - `OO_COOKIE_SEGURA=true` y `OO_REGISTRO_ABIERTO=false`: solo entran las cuentas ya creadas.
+- Recomendado en el `.env` de producción: `OO_URL_PUBLICA=https://map-creator.stellarcodestudio.com` (enlaces de los correos) y
+  `OO_IP_CABECERA=cf-connecting-ip` (IP real detrás de Cloudflare, para limitar intentos de entrada por IP).
+- GitHub Actions (`.github/workflows/deploy.yml`) despliega solo lo que llega a la rama **`production`**, no `main`. Antes de tocar
+  la base hace un `pg_dump` en `/opt/map-creator/backups`.
+
+## Cómo está hecho el correo
+
+- `api/app/correo.py` (envío SMTP en un hilo, plantillas) y `api/app/codigos.py` (códigos de 6 dígitos, límite de intentos).
+- Con correo activo: verificación del correo al registrarse, «¿Olvidaste tu contraseña?», dos pasos opcional, cambiar el correo,
+  invitaciones por correo y avisos. Detalles en `docs/ARQUITECTURA.md` → «Correo y códigos de verificación».
+- Pruebas: `api/pruebas/prueba_correo.py` contra un servidor con `OO_CORREO_ARCHIVO=<carpeta>` (escribe los correos como JSON en
+  vez de enviarlos). Nunca pruebes contra el SMTP real enviando correos sin que el dueño lo pida.

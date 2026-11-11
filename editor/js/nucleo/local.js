@@ -52,6 +52,7 @@
   };
   function sinSesion(r) {
     if (r.status === 401) location.href = '/entrar?siguiente=' + encodeURIComponent(location.pathname + location.search);
+    if (r.status === 403 && NUBE) r.clone().json().then(j => { if (j && j.code === 'email_no_verificado') location.href = '/verificar?siguiente=' + encodeURIComponent(location.pathname + location.search); }).catch(() => { });
     if (r.status === 404 && NUBE && /^\/api\//.test(new URL(r.url).pathname)) r.clone().json().then(j => { if (j && j.code === 'not_found' && /proyecto/.test(j.error || '')) location.href = '/app'; }).catch(() => { });
     return r;
   }

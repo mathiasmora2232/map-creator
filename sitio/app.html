@@ -95,12 +95,12 @@
       <div class="enlaces" id="listaEnlaces"></div>
     </section>
     <section class="comp-sec" id="secCorreo" hidden>
-      <h3>Añadir por correo</h3>
-      <p class="ayuda">Para personas que ya tienen cuenta en este servidor.</p>
+      <h3>Invitar por correo</h3>
+      <p class="ayuda" id="ayudaCorreo">Para personas que ya tienen cuenta en este servidor.</p>
       <form class="invitar" id="formInvitar">
         <input type="email" name="email" placeholder="correo@ejemplo.com" required aria-label="Correo de la persona">
         <select name="rol" aria-label="Permiso"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select>
-        <button class="btn" type="submit">Añadir</button>
+        <button class="btn" type="submit">Invitar</button>
       </form>
       <p class="error-form" id="errInvitar" role="alert"></p>
     </section>
@@ -118,6 +118,7 @@
     <div class="dlg-cuerpo">
       <p class="ayuda">Permite crear una cuenta aunque el registro esté cerrado. No da acceso a ningún mapa.</p>
       <label class="campo"><span>Para quién (nota opcional)</span><input type="text" name="nota" maxlength="120" placeholder="Equipo de diseño"></label>
+      <label class="campo" id="campoEmailReg"><span>Enviar por correo a (opcional)</span><input type="email" name="email" placeholder="persona@ejemplo.com"><small>Si lo pones, el enlace sirve para una persona y se le envía.</small></label>
       <div class="fila2 dos">
         <label class="campo"><span>Caduca</span><select name="dias"><option value="1">En 1 día</option><option value="7" selected>En 7 días</option><option value="30">En 30 días</option><option value="">Nunca</option></select></label>
         <label class="campo"><span>Usos</span><select name="usos_max"><option value="1" selected>1 persona</option><option value="5">5 personas</option><option value="25">25 personas</option><option value="">Sin límite</option></select></label>

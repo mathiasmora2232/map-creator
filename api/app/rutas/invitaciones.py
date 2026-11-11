@@ -10,10 +10,10 @@ enlace completo se devuelve una sola vez, al crearlo.
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from .. import config, db
+from .. import config, correo, db
 from ..seguridad import _hash_token, exigir_rol, parsear_uuid, usuario_actual, usuario_admin
 from .proyectos import _fila
 
@@ -41,12 +41,14 @@ class NuevaInvitacion(BaseModel):
     dias: int | None = Field(default=7, ge=1, le=365)          # None: no caduca
     usos_max: int | None = Field(default=None, ge=1, le=1000)  # None: sin límite
     nota: str = Field(default="", max_length=120)
+    email: str | None = Field(default=None, max_length=254)    # si viene, se le envía el enlace por correo
 
 
 class NuevaInvitacionRegistro(BaseModel):
     dias: int | None = Field(default=7, ge=1, le=365)
     usos_max: int | None = Field(default=1, ge=1, le=1000)
     nota: str = Field(default="", max_length=120)
+    email: str | None = Field(default=None, max_length=254)
 
 
 async def _crear(usuario, proyecto_id, rol, dias, usos_max, nota):
@@ -68,14 +70,40 @@ async def _exigir_dueno(pid, usuario):
 
 
 # ───────────────────────── Enlaces de un proyecto ─────────────────────────
+async def enviar_invitacion(request, usuario, ficha, email, proyecto_nombre=None) -> bool:
+    """Manda por correo el enlace recién creado. Lanza 400 si el correo no está configurado o la dirección no vale."""
+    if not config.CORREO_ACTIVO:
+        raise HTTPException(400, {"error": "Este servidor no tiene el correo configurado: copia el enlace y envíalo tú.", "code": "failed_precondition"})
+    url = correo.url_base(request) + ficha["ruta"]
+    dias = None
+    if ficha.get("expira"):
+        dias = max(1, round((datetime.fromisoformat(ficha["expira"]) - datetime.now(timezone.utc)).total_seconds() / 86400))
+    return await correo.enviar(email, *correo.invitacion(usuario["nombre"], proyecto_nombre, ficha["rol"], url, dias))
+
+
+def _email_valido(email: str) -> str:
+    from .cuenta import EMAIL
+    e = email.strip().lower()
+    if not EMAIL.match(e):
+        raise HTTPException(400, {"error": "Ese correo no parece válido.", "code": "invalid_argument"})
+    return e
+
+
 @router.post("/proyectos/{pid}/invitaciones", status_code=201)
-async def crear_de_proyecto(pid: str, datos: NuevaInvitacion, usuario=Depends(usuario_actual)):
+async def crear_de_proyecto(pid: str, datos: NuevaInvitacion, request: Request, usuario=Depends(usuario_actual)):
     p = await _exigir_dueno(pid, usuario)
+    email = _email_valido(datos.email) if datos.email else None
+    if email and not config.CORREO_ACTIVO:
+        raise HTTPException(400, {"error": "Este servidor no tiene el correo configurado: copia el enlace y envíalo tú.", "code": "failed_precondition"})
     async with db.pool.acquire() as con:
         n = await con.fetchval("SELECT count(*) FROM invitaciones i WHERE i.proyecto_id = $1 AND " + VALIDA, p)
+        nombre = await con.fetchval("SELECT nombre FROM proyectos WHERE id = $1", p)
     if n >= 50:
         raise HTTPException(400, {"error": "Este mapa ya tiene 50 enlaces activos. Revoca alguno.", "code": "resource_exhausted"})
-    return await _crear(usuario, p, datos.rol, datos.dias, datos.usos_max, datos.nota)
+    ficha = await _crear(usuario, p, datos.rol, datos.dias, 1 if email else datos.usos_max, datos.nota or (email or ""))
+    if email:
+        ficha["enviado"] = await enviar_invitacion(request, usuario, ficha, email, nombre)
+    return ficha
 
 
 @router.get("/proyectos/{pid}/invitaciones")
@@ -88,8 +116,14 @@ async def listar_de_proyecto(pid: str, usuario=Depends(usuario_actual)):
 
 # ───────────────────────── Enlaces de registro (administrador) ─────────────────────────
 @router.post("/invitaciones", status_code=201)
-async def crear_de_registro(datos: NuevaInvitacionRegistro, usuario=Depends(usuario_admin)):
-    return await _crear(usuario, None, None, datos.dias, datos.usos_max, datos.nota)
+async def crear_de_registro(datos: NuevaInvitacionRegistro, request: Request, usuario=Depends(usuario_admin)):
+    email = _email_valido(datos.email) if datos.email else None
+    if email and not config.CORREO_ACTIVO:
+        raise HTTPException(400, {"error": "Este servidor no tiene el correo configurado: copia el enlace y envíalo tú.", "code": "failed_precondition"})
+    ficha = await _crear(usuario, None, None, datos.dias, 1 if email else datos.usos_max, datos.nota or (email or ""))
+    if email:
+        ficha["enviado"] = await enviar_invitacion(request, usuario, ficha, email)
+    return ficha
 
 
 @router.get("/invitaciones")

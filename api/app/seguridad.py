@@ -73,16 +73,30 @@ async def usuario_opcional(request: Request):
     if token:
         async with db.pool.acquire() as con:
             usuario = await con.fetchrow(
-                "SELECT u.id, u.email, u.nombre, u.es_admin FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id "
+                "SELECT u.id, u.email, u.nombre, u.es_admin, u.email_verificado, u.dos_pasos FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id "
                 "WHERE s.token_hash = $1 AND s.expira > now()", _hash_token(token))
     request.state.usuario = usuario
     return usuario
 
 
-async def usuario_actual(request: Request):
+def verificado(usuario) -> bool:
+    """Sin correo configurado no se puede verificar nada, así que todos cuentan como verificados."""
+    return usuario["email_verificado"] is not None or not config.CORREO_ACTIVO
+
+
+async def usuario_sesion(request: Request):
+    """Cualquier sesión válida, aunque el correo no esté verificado (para verificarlo, salir o ver «yo»)."""
     usuario = await usuario_opcional(request)
     if usuario is None:
         raise HTTPException(401, {"error": "Tienes que entrar con tu cuenta.", "code": "unauthenticated"})
+    return usuario
+
+
+async def usuario_actual(request: Request):
+    """Sesión válida y correo verificado: lo que exige casi toda la API."""
+    usuario = await usuario_sesion(request)
+    if not verificado(usuario):
+        raise HTTPException(403, {"error": "Verifica tu correo para continuar.", "code": "email_no_verificado"})
     return usuario
 
 

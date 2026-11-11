@@ -5,10 +5,10 @@ import shutil
 import unicodedata
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from .. import config, db
+from .. import config, correo, db
 from ..seguridad import ROLES_ESCRITURA, exigir_rol, parsear_uuid, usuario_actual
 
 router = APIRouter(prefix="/api", tags=["proyectos"])
@@ -222,17 +222,30 @@ async def miembros(pid: str, usuario=Depends(usuario_actual)):
 
 
 @router.post("/proyectos/{pid}/miembros", status_code=201)
-async def invitar(pid: str, datos: NuevoMiembro, usuario=Depends(usuario_actual)):
+async def invitar(pid: str, datos: NuevoMiembro, request: Request, usuario=Depends(usuario_actual)):
+    """Añade a alguien por correo. Si ya tiene cuenta entra en el acto (y se le avisa por correo). Si no, y el correo está
+    configurado, se le envía una invitación de un solo uso para que cree su cuenta."""
     if await exigir_rol(pid, usuario) != "dueno":
         raise HTTPException(403, {"error": "Solo el dueño puede compartir el proyecto.", "code": "permission_denied"})
+    p = parsear_uuid(pid)
     async with db.pool.acquire() as con:
-        uid = await con.fetchval("SELECT id FROM usuarios WHERE lower(email) = lower($1)", datos.email.strip())
-        if uid is None:
-            raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Crea un enlace de invitación y envíaselo.", "code": "not_found"})
-        await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, $3) "
-                          "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol WHERE miembros.rol <> 'dueno'",
-                          parsear_uuid(pid), uid, datos.rol)
-    return {"ok": True}
+        destino = await con.fetchrow("SELECT id, email FROM usuarios WHERE lower(email) = lower($1)", datos.email.strip())
+        nombre = await con.fetchval("SELECT nombre FROM proyectos WHERE id = $1", p)
+        if destino is not None:
+            await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, $3) "
+                              "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol WHERE miembros.rol <> 'dueno'",
+                              p, destino["id"], datos.rol)
+            mapa = await con.fetchval("SELECT mapa_inicial FROM proyectos WHERE id = $1", p)
+    if destino is not None:
+        if destino["id"] != usuario["id"]:
+            url = "%s/editor/?p=%s&m=%s" % (correo.url_base(request), p, mapa)
+            await correo.enviar(destino["email"], *correo.compartido(usuario["nombre"], nombre, datos.rol, url))
+        return {"ok": True, "invitado": False}
+    if not config.CORREO_ACTIVO:
+        raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Crea un enlace de invitación y envíaselo.", "code": "not_found"})
+    from .invitaciones import NuevaInvitacion, crear_de_proyecto
+    ficha = await crear_de_proyecto(pid, NuevaInvitacion(rol=datos.rol, dias=7, email=datos.email), request, usuario)
+    return {"ok": True, "invitado": True, "enviado": ficha.get("enviado", False)}
 
 
 @router.patch("/proyectos/{pid}/miembros/{uid}")

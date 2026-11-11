@@ -65,7 +65,8 @@
       const b = f.querySelector('button[type=submit]'); b.disabled = true;
       try {
         const r = await api('/api/cuenta/registro', { method: 'POST', json: Object.assign(d, { invitacion: token }), sinRedirigir: true });
-        location.href = r.proyecto ? urlEditor(r.proyecto) : '/app';
+        const destino = r.proyecto ? urlEditor(r.proyecto) : '/app';
+        location.href = r.verificar ? '/verificar?siguiente=' + encodeURIComponent(destino) : destino;
       } catch (ex) {
         err.innerHTML = esc(ex.message) + (ex.code === 'already_exists' ? ` <a href="/entrar?siguiente=${volver}">Entrar</a>` : '');
         b.disabled = false;

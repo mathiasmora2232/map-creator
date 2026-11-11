@@ -180,16 +180,47 @@
   }
 
   function vistaCuenta() {
+    const correo = yo.correo_activo;
     principal.innerHTML = cabecera('Cuenta') + `<div class="ajustes">
       <form class="caja" id="formNombre"><h2>Perfil</h2>
         <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required value="${esc(yo.nombre)}"></label>
-        <label class="campo"><span>Correo</span><input type="email" value="${esc(yo.email)}" disabled></label>
         <div><button class="btn prim" type="submit">Guardar</button></div></form>
-      <form class="caja" id="formClave"><h2>Contraseña</h2><p class="ayuda">Al cambiarla se cierran tus sesiones en otros dispositivos.</p>
+
+      <div class="caja" id="cajaCorreo"><h2>Correo</h2>
+        <div class="fila-correo"><span class="mono">${esc(yo.email)}</span>${correo ? (yo.email_verificado ? '<span class="insignia ok">Verificado</span>' : '<span class="insignia">Sin verificar</span>') : ''}
+          ${correo ? '<button class="btn peq" type="button" data-a="cambiar-correo">Cambiar</button>' : ''}</div>
+        ${correo ? '' : '<p class="ayuda">Este servidor no tiene el correo configurado: no se envían códigos ni avisos.</p>'}
+        <form id="formCorreo" class="sub-form" hidden novalidate>
+          <label class="campo"><span>Correo nuevo</span><input type="email" name="email_nuevo" autocomplete="email" required></label>
+          <label class="campo"><span>Contraseña actual</span><input type="password" name="clave_actual" autocomplete="current-password" required></label>
+          <p class="error-form" id="errCorreo" role="alert"></p>
+          <div class="fila-btn"><button class="btn prim" type="submit">Enviar código al correo nuevo</button><button class="btn fantasma" type="button" data-a="cancelar-correo">Cancelar</button></div>
+        </form>
+        <form id="formCorreo2" class="sub-form" hidden novalidate>
+          <p class="ayuda" id="txtCorreo2"></p>
+          <label class="campo"><span>Código</span><input type="text" name="codigo" required></label>
+          <p class="error-form" id="errCorreo2" role="alert"></p>
+          <div class="fila-btn"><button class="btn prim" type="submit">Confirmar el cambio</button><button class="btn fantasma" type="button" data-a="cancelar-correo">Cancelar</button></div>
+        </form>
+      </div>
+
+      <form class="caja" id="formClave"><h2>Contraseña</h2><p class="ayuda">Al cambiarla se cierran tus sesiones en otros dispositivos${correo ? ' y te avisamos por correo' : ''}.</p>
         <label class="campo"><span>Contraseña actual</span><input type="password" name="clave_actual" autocomplete="current-password" required></label>
         <label class="campo"><span>Contraseña nueva</span><input type="password" name="clave_nueva" autocomplete="new-password" minlength="8" required><small>Mínimo 8 caracteres.</small></label>
         <p class="error-form" id="errClave" role="alert"></p>
         <div><button class="btn prim" type="submit">Cambiar contraseña</button></div></form>
+
+      <div class="caja"><h2>Verificación en dos pasos</h2>
+        <p class="ayuda">Al entrar, además de la contraseña te pediremos un código que llega a tu correo. Así nadie entra solo con tu contraseña.</p>
+        <div class="fila-correo"><span class="insignia ${yo.dos_pasos ? 'ok' : ''}">${yo.dos_pasos ? 'Activada' : 'Desactivada'}</span>
+          ${correo || yo.dos_pasos ? `<button class="btn peq" type="button" data-a="dos-pasos">${yo.dos_pasos ? 'Desactivar' : 'Activar'}</button>` : '<span class="tenue">Necesita el correo configurado en el servidor.</span>'}</div>
+        <form id="formDosPasos" class="sub-form" hidden novalidate>
+          <label class="campo"><span>Confirma con tu contraseña</span><input type="password" name="clave_actual" autocomplete="current-password" required></label>
+          <p class="error-form" id="errDosPasos" role="alert"></p>
+          <div class="fila-btn"><button class="btn prim" type="submit">${yo.dos_pasos ? 'Desactivar' : 'Activar'}</button><button class="btn fantasma" type="button" data-a="cancelar-dos-pasos">Cancelar</button></div>
+        </form>
+      </div>
+
       <div class="caja"><h2>Ayuda</h2><p class="ayuda">Vuelve a ver los recorridos guiados y la lista de primeros pasos.</p>
         <div class="fila-btn"><button class="btn" data-a="recorrido">Recorrido del panel</button><button class="btn" data-a="reiniciar-ayuda">Volver a mostrar toda la ayuda</button></div></div>
     </div>`;
@@ -204,6 +235,32 @@
       if (d.clave_nueva.length < 8) { $('#errClave').textContent = 'La contraseña nueva necesita al menos 8 caracteres.'; return; }
       try { await api('/api/cuenta/yo', { method: 'PATCH', json: d }); e.target.reset(); aviso('Contraseña cambiada.'); }
       catch (ex) { $('#errClave').textContent = ex.message; }
+    });
+    // Cambiar el correo: 1) correo nuevo + contraseña → código al correo nuevo; 2) código → cambiado.
+    const f1 = $('#formCorreo'), f2 = $('#formCorreo2');
+    const valorCodigo = MC.campoCodigo(f2.codigo, () => f2.requestSubmit());
+    f1.addEventListener('submit', async e => {
+      e.preventDefault(); $('#errCorreo').textContent = '';
+      const d = Object.fromEntries(new FormData(f1));
+      try {
+        const r = await api('/api/cuenta/correo', { method: 'POST', json: d });
+        f1.hidden = true; f2.hidden = false; f2.reset();
+        $('#txtCorreo2').innerHTML = `Enviamos un código a <b>${esc(d.email_nuevo)}</b>. Escríbelo para confirmar que es tuyo.`;
+        f2.codigo.focus();
+      } catch (ex) { $('#errCorreo').textContent = ex.message; }
+    });
+    f2.addEventListener('submit', async e => {
+      e.preventDefault(); $('#errCorreo2').textContent = '';
+      if (valorCodigo().length !== 6) { $('#errCorreo2').textContent = 'Escribe los 6 dígitos.'; return; }
+      try { await api('/api/cuenta/correo/confirmar', { method: 'POST', json: { codigo: valorCodigo() } }); await cargarYo(); vistaCuenta(); aviso('Correo cambiado.'); }
+      catch (ex) { $('#errCorreo2').textContent = ex.message; }
+    });
+    $('#formDosPasos').addEventListener('submit', async e => {
+      e.preventDefault(); $('#errDosPasos').textContent = '';
+      try {
+        await api('/api/cuenta/yo', { method: 'PATCH', json: { dos_pasos: !yo.dos_pasos, clave_actual: e.target.clave_actual.value } });
+        await cargarYo(); vistaCuenta(); aviso(yo.dos_pasos ? 'Verificación en dos pasos activada.' : 'Verificación en dos pasos desactivada.');
+      } catch (ex) { $('#errDosPasos').textContent = ex.message; }
     });
   }
 
@@ -381,6 +438,7 @@
     const dueno = p.rol === 'dueno';
     $('#tCompartir').textContent = (dueno ? 'Compartir «' : 'Acceso a «') + p.nombre + '»';
     $('#secEnlace').hidden = !dueno; $('#secCorreo').hidden = !dueno;
+    $('#ayudaCorreo').textContent = yo.correo_activo ? 'Si ya tiene cuenta entra al momento y le avisamos. Si no, le enviamos una invitación para que la cree.' : 'Para personas que ya tienen cuenta en este servidor.';
     $('#errInvitar').textContent = ''; $('#enlaceNuevo').hidden = true; $('#listaEnlaces').innerHTML = '';
     $('#listaMiembros').innerHTML = '<div class="cargando">Cargando…</div>';
     $('#dlgCompartir').showModal();
@@ -402,7 +460,11 @@
   $('#formInvitar').addEventListener('submit', async e => {
     e.preventDefault(); $('#errInvitar').textContent = '';
     const d = Object.fromEntries(new FormData(e.target));
-    try { await api('/api/proyectos/' + compartiendo.id + '/miembros', { method: 'POST', json: d }); e.target.reset(); await pintarMiembros(); aviso('Añadido: ya puede abrir el mapa.'); refrescar(); }
+    try {
+      const r = await api('/api/proyectos/' + compartiendo.id + '/miembros', { method: 'POST', json: d }); e.target.reset();
+      if (r.invitado) { await pintarEnlaces(); aviso(r.enviado ? 'No tenía cuenta: le enviamos una invitación por correo.' : 'Se creó la invitación, pero el correo no salió. Revisa la configuración SMTP.', r.enviado ? '' : 'err'); }
+      else { await pintarMiembros(); aviso('Añadido: ya puede abrir el mapa' + (yo.correo_activo ? ' y le avisamos por correo.' : '.')); refrescar(); }
+    }
     catch (ex) { $('#errInvitar').textContent = ex.message; }
   });
   $('#listaMiembros').addEventListener('change', async e => {
@@ -420,7 +482,8 @@
     e.preventDefault();
     const d = Object.fromEntries(new FormData(e.target)), b = $('#bCrearRegistro'); b.disabled = true;
     try {
-      const r = await api('/api/invitaciones', { method: 'POST', json: { nota: d.nota, dias: numONulo(d.dias), usos_max: numONulo(d.usos_max) } });
+      const r = await api('/api/invitaciones', { method: 'POST', json: { nota: d.nota, dias: numONulo(d.dias), usos_max: numONulo(d.usos_max), email: d.email || null } });
+      if (d.email) aviso(r.enviado ? 'Invitación enviada a ' + d.email + '.' : 'El enlace se creó, pero el correo no salió.', r.enviado ? '' : 'err');
       $('#registroUrl').value = location.origin + r.ruta; $('#registroNuevo').hidden = false; $('#registroUrl').select();
       if ((location.hash || '').slice(1) === 'admin') mostrar();
     } catch (ex) { aviso(ex.message, 'err'); }
@@ -465,9 +528,13 @@
     else if (a === 'paso-recorrido') { const p = proyectos.find(x => x.rol !== 'lector') || proyectos[0]; if (p) location.href = urlEditor(p, '&recorrido=1'); else abrirNuevo(); }
     else if (a === 'paso-compartir') { const p = proyectos.find(x => x.rol === 'dueno'); if (p) abrirCompartir(p); else abrirNuevo(); }
     else if (a === 'paso-favorito') location.hash = '#mapas';
+    else if (a === 'cambiar-correo') { $('#formCorreo').hidden = false; $('#formCorreo2').hidden = true; $('#formCorreo').email_nuevo.focus(); }
+    else if (a === 'cancelar-correo') { $('#formCorreo').hidden = true; $('#formCorreo2').hidden = true; }
+    else if (a === 'dos-pasos') { $('#formDosPasos').hidden = false; $('#formDosPasos').clave_actual.focus(); }
+    else if (a === 'cancelar-dos-pasos') $('#formDosPasos').hidden = true;
     else if (a === 'copiar-enlace') copiar($('#enlaceUrl').value);
     else if (a === 'copiar-registro') copiar($('#registroUrl').value);
-    else if (a === 'nuevo-registro') { $('#formRegistro').reset(); $('#registroNuevo').hidden = true; $('#dlgRegistro').showModal(); }
+    else if (a === 'nuevo-registro') { $('#formRegistro').reset(); $('#registroNuevo').hidden = true; $('#campoEmailReg').hidden = !yo.correo_activo; $('#dlgRegistro').showModal(); }
     else if (a === 'revocar') {
       if (!confirm('¿Revocar este enlace? Quien lo tenga ya no podrá usarlo (las personas que ya entraron siguen dentro).')) return;
       api('/api/invitaciones/' + id, { method: 'DELETE' })

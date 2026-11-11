@@ -375,3 +375,21 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .inv-ficha b{display:block;font-weight:600}
 .inv-ficha small{color:var(--fg3);font-size:13px}
 .pag-cuenta .form-caja h1 + .inv-ficha{margin-top:14px}
+
+/* ───────── Correo: códigos, verificación y seguridad ───────── */
+.codigo-input{font:600 26px/1 var(--mono)!important;letter-spacing:.35em;text-align:center;height:56px!important}
+.ayuda-codigo{color:var(--fg3);font-size:13px;margin-top:-8px}
+.enlace-btn{all:unset;cursor:pointer;color:var(--acc);font-weight:500}
+.enlace-btn:hover{text-decoration:underline}
+.enlace-btn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.enlace-btn[disabled]{color:var(--fg3);cursor:default;text-decoration:none}
+.etq-fila{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.etq-fila a{font-weight:500;font-size:13px;color:var(--acc);text-decoration:none}
+.etq-fila a:hover{text-decoration:underline}
+.fila-correo{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fila-correo .mono{font-size:14px}
+.fila-correo .btn{margin-left:auto}
+.insignia{font:500 11px/1 var(--mono);padding:5px 8px;border-radius:5px;background:var(--bg2);color:var(--fg3)}
+.insignia.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.sub-form{display:grid;gap:14px;padding-top:14px;border-top:1px solid var(--line)}
+.sub-form[hidden]{display:none}

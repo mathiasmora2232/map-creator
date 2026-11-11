@@ -7,47 +7,14 @@ lector, ajeno), subidas y /_blob, duplicar con reescritura de referencias, papel
 favoritos, administración y la lista blanca de estáticos del editor.
 Solo usa la biblioteca estándar. Sale con código 1 si algo falla.
 """
-import http.cookiejar
 import json
 import secrets
 import sys
-import urllib.error
-import urllib.request
+from pathlib import Path
 
-BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000").rstrip("/")
-fallos = 0
-
-
-def comprobar(cond, texto):
-    global fallos
-    print(("BIEN " if cond else "FALLA") + "  " + texto)
-    fallos += 0 if cond else 1
-
-
-class Cliente:
-    def __init__(self):
-        self.op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
-
-    def pedir(self, metodo, ruta, json_=None, cuerpo=None, cab=None):
-        cab = dict(cab or {})
-        if json_ is not None:
-            cuerpo = json.dumps(json_).encode()
-            cab["Content-Type"] = "application/json"
-        req = urllib.request.Request(BASE + ruta, data=cuerpo, method=metodo, headers=cab)
-        try:
-            with self.op.open(req) as r:
-                datos = r.read()
-                return r.status, dict(r.headers), datos
-        except urllib.error.HTTPError as e:
-            return e.code, dict(e.headers), e.read()
-
-    def j(self, metodo, ruta, json_=None, **k):
-        st, cab, d = self.pedir(metodo, ruta, json_, **k)
-        try:
-            return st, json.loads(d) if d else None
-        except ValueError:
-            return st, d
-
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import cliente  # noqa: E402
+from cliente import BASE, Cliente, comprobar  # noqa: E402
 
 sufijo = secrets.token_hex(4)
 ana, beto, carla = Cliente(), Cliente(), Cliente()
@@ -271,5 +238,5 @@ for ruta in ("/editor/local/servidor.py", "/editor/local/datos_usuario/cambios.j
     st, _, _ = ana.pedir("GET", ruta)
     comprobar(st == 404, "no se sirve " + ruta)
 
-print("fallos=%d" % fallos)
-sys.exit(1 if fallos else 0)
+print("fallos=%d" % cliente.fallos)
+sys.exit(1 if cliente.fallos else 0)

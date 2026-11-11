@@ -89,6 +89,25 @@ las pide en `/_blob/<proyecto>/<archivo>`. Al duplicar un proyecto se copian las
 - **Administrador**: `usuarios.es_admin`. Los correos de `OO_ADMINS` lo son; si no hay ninguno, el usuario más antiguo pasa a serlo
   al entrar.
 
+## Correo y códigos de verificación
+
+- `app/correo.py` envía por SMTP (STARTTLS en 587, TLS directo en 465) en un hilo aparte. Sin `SMTP_HOST` no envía nada y
+  `CORREO_ACTIVO` es falso: las cuentas nuevas quedan verificadas y la recuperación de contraseña dice que no está disponible.
+- `app/codigos.py`: códigos de 6 dígitos en la tabla `codigos` (`003_correo.sql`), con solo el SHA-256 de (id + código). Caducan en
+  15 minutos, admiten 5 intentos, hay que esperar 60 s entre uno y otro y como mucho 6 por hora. Pedir uno nuevo anula el anterior.
+- **Verificar el correo**: con correo activo, la cuenta nueva recibe un código y hasta verificarlo la API responde 403
+  `email_no_verificado` (salvo `/api/cuenta/yo`, verificar, reenviar y salir); `/app` y el editor llevan a `/verificar`. Las cuentas
+  que existían antes de la migración quedan verificadas.
+- **Olvidé mi contraseña** (`/recuperar`): la respuesta es la misma exista o no la cuenta. Con el código se cambia la contraseña, se
+  cierran todas las sesiones, el correo queda verificado y llega un aviso.
+- **Dos pasos** (opcional, `usuarios.dos_pasos`): tras la contraseña correcta no hay sesión; se devuelve un `desafio` (el id del
+  código) y la sesión se crea con `/api/cuenta/entrar/codigo`.
+- **Cambiar el correo**: pide la contraseña, envía el código a la dirección nueva y avisa a la vieja.
+- **Límite de intentos**: 8 fallos por correo en 15 minutos (contraseña o recuperación) → 429. Por IP solo si `OO_IP_CABECERA` dice
+  de qué cabecera leerla (detrás de Cloudflare, `cf-connecting-ip`); sin ella, la IP es la del proxy y limitarla bloquearía a todos.
+- Avisos: contraseña cambiada, correo cambiado, te compartieron un mapa, e invitaciones por correo (a quien no tiene cuenta se le
+  crea un enlace de un solo uso).
+
 ## Ayuda en la interfaz
 
 - `sitio/js/recorrido.js`: recorrido guiado sin dependencias (resalta un elemento y pone una ficha; teclado ← → Esc). Lo usan el
@@ -107,8 +126,6 @@ satelital automático (`/api/satelital`). La exportación a GLB, Godot y Unity f
 
 1. **Tiempo real**: cambiar el sondeo cada 2 s por SSE o WebSocket con `LISTEN/NOTIFY` de Postgres (ya hay versión por colección para
    notificar solo lo que cambió).
-2. **Enviar las invitaciones por correo** (hoy se copia el enlace) y recuperar la contraseña (SMTP).
-3. **Archivos en S3/MinIO** en vez del volumen, si hay más de una réplica de `app`.
-4. **Límite de intentos** en `/api/cuenta/entrar` (por IP y por correo).
-5. **Copias de seguridad**: `pg_dump` programado y copia del volumen `archivos`.
-6. **Mapas base en la base de datos** (tabla `mapas_base`) para que los usuarios suban sus propias plantillas.
+2. **Archivos en S3/MinIO** en vez del volumen, si hay más de una réplica de `app`.
+3. **Copias del volumen `archivos`** (la base ya se respalda con `pg_dump` en cada despliegue de Actions).
+4. **Mapas base en la base de datos** (tabla `mapas_base`) para que los usuarios suban sus propias plantillas.

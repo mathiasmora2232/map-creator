@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config, db
 from .rutas import admin, cuenta, editor_datos, invitaciones, proyectos
-from .seguridad import usuario_opcional
+from .seguridad import usuario_opcional, verificado
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
@@ -71,8 +71,9 @@ async def salud():
 
 
 # ───────────────────────── Sitio ─────────────────────────
-PAGINAS = {"/": "index.html", "/entrar": "entrar.html", "/registro": "registro.html", "/app": "app.html"}
-PRIVADAS = {"/app"}
+PAGINAS = {"/": "index.html", "/entrar": "entrar.html", "/registro": "registro.html", "/app": "app.html",
+           "/verificar": "verificar.html", "/recuperar": "recuperar.html"}
+PRIVADAS = {"/app", "/verificar"}
 
 
 def _pagina(nombre):
@@ -85,12 +86,21 @@ def _siguiente_seguro(request: Request) -> str:
     return s if s.startswith("/") and not s.startswith("//") and "\\" not in s else "/app"
 
 
+def _a_verificar(siguiente: str):
+    return RedirectResponse("/verificar?siguiente=" + quote(siguiente, safe=""), 302)
+
+
 for _ruta, _archivo in PAGINAS.items():
     async def _servir(request: Request, _r=_ruta, _a=_archivo):
-        if _r in PRIVADAS and await usuario_opcional(request) is None:
+        u = await usuario_opcional(request)
+        if _r in PRIVADAS and u is None:
             return RedirectResponse("/entrar?siguiente=" + quote(_r), 302)
-        if _r in ("/entrar", "/registro") and await usuario_opcional(request) is not None:
+        if _r == "/app" and not verificado(u):
+            return _a_verificar("/app")
+        if _r == "/verificar" and verificado(u):
             return RedirectResponse(_siguiente_seguro(request), 302)
+        if _r in ("/entrar", "/registro") and u is not None:
+            return RedirectResponse(_siguiente_seguro(request) if verificado(u) else "/verificar", 302)
         return _pagina(_a)
     app.add_api_route(_ruta, _servir, methods=["GET"], include_in_schema=False)
 
@@ -116,9 +126,12 @@ async def editor_sin_barra(request: Request):
 
 @app.get("/editor/", include_in_schema=False)
 async def editor_index(request: Request):
-    if await usuario_opcional(request) is None:
-        siguiente = "/editor/" + ("?" + request.url.query if request.url.query else "")
+    u = await usuario_opcional(request)
+    siguiente = "/editor/" + ("?" + request.url.query if request.url.query else "")
+    if u is None:
         return RedirectResponse("/entrar?siguiente=" + quote(siguiente, safe=""), 302)
+    if not verificado(u):
+        return _a_verificar(siguiente)
     return FileResponse(config.DIR_EDITOR / "index.html", headers={"Cache-Control": "no-cache"})
 
 
