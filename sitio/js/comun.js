@@ -75,5 +75,21 @@
   if (cab) { const f = () => cab.classList.toggle('con-borde', scrollY > 8); addEventListener('scroll', f, { passive: true }); f(); }
   document.querySelectorAll('[data-logo]').forEach(el => el.insertAdjacentHTML('afterbegin', LOGO));
 
+  /* Registro cerrado (solo por invitación): los botones «Crear cuenta» de la landing pasan a «Entrar» y la página de registro lo
+     explica en vez de mostrar un formulario que fallaría al final. */
+  const conRegistro = document.querySelectorAll('[data-registro],[data-registro-alt],#formCuenta[data-modo=registro]');
+  if (conRegistro.length) fetch('/api/config', { cache: 'no-store' }).then(r => r.json()).then(c => {
+    if (c.registro_abierto) return;
+    document.querySelectorAll('[data-registro]').forEach(a => { a.href = '/entrar'; a.textContent = a.dataset.registro; });
+    document.querySelectorAll('[data-registro-alt]').forEach(p => { p.textContent = '¿No tienes cuenta? El registro es solo por invitación: pide un enlace a quien te quiera dar acceso.'; });
+    const f = document.querySelector('#formCuenta[data-modo=registro]');
+    if (f) {
+      const caja = f.closest('.form-caja');
+      caja.innerHTML = '<h1>Registro por invitación</h1><p class="sub">En este servidor solo se puede crear una cuenta con un enlace de invitación. '
+        + 'Pídeselo a quien te quiera compartir un mapa o al administrador, y ábrelo: allí mismo podrás crear tu cuenta.</p>'
+        + '<a class="btn prim grande" href="/entrar">Ya tengo cuenta: entrar</a>';
+    }
+  }).catch(() => { });
+
   window.MC = { api, esc, aviso, fechaRel, miniatura, LOGO };
 })();

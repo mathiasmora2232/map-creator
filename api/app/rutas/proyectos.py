@@ -41,6 +41,10 @@ class CambioProyecto(BaseModel):
     descripcion: str | None = Field(default=None, max_length=500)
 
 
+class Favorito(BaseModel):
+    favorito: bool
+
+
 class NuevoMiembro(BaseModel):
     email: str = Field(max_length=254)
     rol: str = Field(pattern="^(editor|lector)$")
@@ -71,7 +75,7 @@ def _fila(r):
 
 SQL_LISTA = """
 SELECT p.id, p.nombre, p.descripcion, p.plantilla, p.mapa_inicial, p.creado, p.actualizado, p.archivado, m.rol,
-       u.nombre AS dueno_nombre, p.dueno_id,
+       m.favorito, m.abierto, u.nombre AS dueno_nombre, p.dueno_id,
        (SELECT count(*) FROM miembros x WHERE x.proyecto_id = p.id) AS n_miembros,
        (SELECT count(*) FROM documentos d WHERE d.proyecto_id = p.id AND d.coleccion = 'cambios') AS n_cambios
 FROM proyectos p
@@ -120,10 +124,22 @@ async def crear(datos: NuevoProyecto, usuario=Depends(usuario_actual)):
 
 @router.get("/proyectos/{pid}")
 async def ver(pid: str, usuario=Depends(usuario_actual)):
+    """Lo pide el editor al abrir el proyecto: queda como «abierto ahora» para Recientes y Continuar."""
     await exigir_rol(pid, usuario)
     async with db.pool.acquire() as con:
+        await con.execute("UPDATE miembros SET abierto = now() WHERE proyecto_id = $1 AND usuario_id = $2", parsear_uuid(pid), usuario["id"])
         fila = await con.fetchrow(SQL_LISTA + "WHERE p.id = $2", usuario["id"], parsear_uuid(pid))
     return _fila(fila)
+
+
+@router.put("/proyectos/{pid}/favorito")
+async def marcar_favorito(pid: str, datos: Favorito, usuario=Depends(usuario_actual)):
+    """Favorito de cada persona (no del proyecto): cada miembro tiene los suyos."""
+    await exigir_rol(pid, usuario)
+    async with db.pool.acquire() as con:
+        await con.execute("UPDATE miembros SET favorito = $3 WHERE proyecto_id = $1 AND usuario_id = $2",
+                          parsear_uuid(pid), usuario["id"], datos.favorito)
+    return {"ok": True, "favorito": datos.favorito}
 
 
 @router.patch("/proyectos/{pid}")
@@ -212,7 +228,7 @@ async def invitar(pid: str, datos: NuevoMiembro, usuario=Depends(usuario_actual)
     async with db.pool.acquire() as con:
         uid = await con.fetchval("SELECT id FROM usuarios WHERE lower(email) = lower($1)", datos.email.strip())
         if uid is None:
-            raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Pídele que se registre primero.", "code": "not_found"})
+            raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Crea un enlace de invitación y envíaselo.", "code": "not_found"})
         await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, $3) "
                           "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol WHERE miembros.rol <> 'dueno'",
                           parsear_uuid(pid), uid, datos.rol)

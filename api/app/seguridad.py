@@ -41,10 +41,19 @@ async def crear_sesion(respuesta: Response, request: Request, usuario_id) -> Non
             "INSERT INTO sesiones (token_hash, usuario_id, expira, user_agent, ip) VALUES ($1, $2, $3, $4, $5::inet)",
             _hash_token(token), usuario_id, expira, (request.headers.get("user-agent") or "")[:300], ip)
         await con.execute("UPDATE usuarios SET ultimo_acceso = now() WHERE id = $1", usuario_id)
+        await asegurar_admin(con)
         # Limpieza perezosa de sesiones vencidas.
         await con.execute("DELETE FROM sesiones WHERE expira < now()")
     respuesta.set_cookie(config.COOKIE_SESION, token, max_age=config.DIAS_SESION * 86400, httponly=True,
                          secure=config.COOKIE_SEGURA, samesite="lax", path="/")
+
+
+async def asegurar_admin(con) -> None:
+    """Los correos de OO_ADMINS son administradores; si aun así no hay ninguno, lo es el usuario más antiguo."""
+    if config.ADMINS:
+        await con.execute("UPDATE usuarios SET es_admin = true WHERE lower(email) = ANY($1::text[]) AND NOT es_admin", list(config.ADMINS))
+    await con.execute("UPDATE usuarios SET es_admin = true WHERE id = (SELECT id FROM usuarios ORDER BY creado LIMIT 1) "
+                      "AND NOT EXISTS (SELECT 1 FROM usuarios WHERE es_admin)")
 
 
 async def cerrar_sesion(respuesta: Response, request: Request) -> None:
@@ -64,7 +73,7 @@ async def usuario_opcional(request: Request):
     if token:
         async with db.pool.acquire() as con:
             usuario = await con.fetchrow(
-                "SELECT u.id, u.email, u.nombre FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id "
+                "SELECT u.id, u.email, u.nombre, u.es_admin FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id "
                 "WHERE s.token_hash = $1 AND s.expira > now()", _hash_token(token))
     request.state.usuario = usuario
     return usuario
@@ -74,6 +83,13 @@ async def usuario_actual(request: Request):
     usuario = await usuario_opcional(request)
     if usuario is None:
         raise HTTPException(401, {"error": "Tienes que entrar con tu cuenta.", "code": "unauthenticated"})
+    return usuario
+
+
+async def usuario_admin(request: Request):
+    usuario = await usuario_actual(request)
+    if not usuario["es_admin"]:
+        raise HTTPException(403, {"error": "Solo el administrador puede hacer esto.", "code": "permission_denied"})
     return usuario
 
 

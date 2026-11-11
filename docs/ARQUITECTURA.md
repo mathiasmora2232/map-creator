@@ -45,6 +45,11 @@ Archivo: `api/migraciones/001_esquema.sql`.
 | `documentos` | **los datos del editor**: un documento JSONB por (proyecto, colección, id) | (`proyecto_id`, `coleccion`, `doc_id`) |
 | `colecciones` | versión de cada colección; sube con cada escritura y es el ETag | (`proyecto_id`, `coleccion`) |
 | `archivos` | ficha de fotos, calcos, GLB y texturas; el contenido va al volumen | (`proyecto_id`, `id`) |
+| `invitaciones` | enlaces `/invitacion/<token>`: de un proyecto (con rol) o de registro (sin proyecto); caducidad, usos, revocada | `id`; `token_hash` único |
+
+`002_invitaciones.sql` añade también `usuarios.es_admin`, `usuarios.preferencias` (JSONB pequeño: recorridos vistos, primeros pasos
+ocultos) y, en `miembros`, `favorito` y `abierto` (última vez que esa persona abrió el proyecto), que son de cada persona y no del
+proyecto.
 
 **Por qué JSONB y no una tabla por colección.** El editor tiene unas 14 colecciones (`cambios`, `capas`, `grupos`, `zonas`, `terreno`,
 `materiales`, `componentes`, `versiones`, `notas`…) y cada versión del editor les añade campos. Modelarlas como tablas obligaría a migrar la
@@ -72,6 +77,26 @@ las pide en `/_blob/<proyecto>/<archivo>`. Al duplicar un proyecto se copian las
   `datos_usuario`) no se sirve nunca y ni siquiera entra en la imagen de Docker (`.dockerignore`).
 - Límites: 8 MB por documento, 50 MB por subida (por trozos, sin cargarla entera en memoria) y 50 proyectos por usuario (configurables).
 
+## Invitaciones por enlace
+
+- **De un proyecto** (las crea su dueño desde «Compartir»): rol editor o lector, caducidad (1, 7, 30 días o nunca) y número de usos.
+  Quien abre el enlace entra al proyecto; si no tiene cuenta, la crea en la misma página **aunque el registro esté cerrado**.
+- **De registro** (las crea el administrador en «Administración»): solo permiten crear una cuenta.
+- Como con las sesiones, solo se guarda el SHA-256 del token: el enlace se muestra una vez, al crearlo. Se puede revocar.
+- Usar un enlace es atómico (`UPDATE … SET usos = usos + 1 WHERE <válida> RETURNING`), así dos personas no se cuelan en el último uso;
+  si el registro falla, la transacción deshace también el uso. Aceptar un enlace nunca baja el rol de quien ya es miembro, y si ya
+  tiene ese acceso no gasta un uso.
+- **Administrador**: `usuarios.es_admin`. Los correos de `OO_ADMINS` lo son; si no hay ninguno, el usuario más antiguo pasa a serlo
+  al entrar.
+
+## Ayuda en la interfaz
+
+- `sitio/js/recorrido.js`: recorrido guiado sin dependencias (resalta un elemento y pone una ficha; teclado ← → Esc). Lo usan el
+  panel (primera visita, Ayuda → Recorrido guiado o tecla `?`) y el editor en modo nube (`nube.js`: primera vez, `?recorrido=1` o
+  botón «Guía»). Lo visto se guarda en `usuarios.preferencias`, así no se repite en otro dispositivo.
+- Panel: **Inicio** con «Continuar» (lo último que abriste) y **Primeros pasos**, que se deducen de los datos (crear, abrir, recorrido,
+  compartir, favorito). Favoritos, orden (editado, abierto, nombre, creado) y vista en cuadrícula o lista.
+
 ## Funciones solo del modo local
 
 Dependen del repo del juego (Unity/Godot) o de descargar teselas, así que en la nube responden 501 y el editor sigue funcionando:
@@ -82,7 +107,7 @@ satelital automático (`/api/satelital`). La exportación a GLB, Godot y Unity f
 
 1. **Tiempo real**: cambiar el sondeo cada 2 s por SSE o WebSocket con `LISTEN/NOTIFY` de Postgres (ya hay versión por colección para
    notificar solo lo que cambió).
-2. **Invitaciones por correo** a quien todavía no tiene cuenta (tabla `invitaciones` con token) y recuperar la contraseña (SMTP).
+2. **Enviar las invitaciones por correo** (hoy se copia el enlace) y recuperar la contraseña (SMTP).
 3. **Archivos en S3/MinIO** en vez del volumen, si hay más de una réplica de `app`.
 4. **Límite de intentos** en `/api/cuenta/entrar` (por IP y por correo).
 5. **Copias de seguridad**: `pg_dump` programado y copia del volumen `archivos`.

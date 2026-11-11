@@ -22,3 +22,5 @@ REGISTRO_ABIERTO = _bool("OO_REGISTRO_ABIERTO", True)
 MAX_SUBIDA_MB = int(os.environ.get("OO_MAX_SUBIDA_MB", "50"))
 MAX_DOC_MB = int(os.environ.get("OO_MAX_DOC_MB", "8"))       # un documento (p. ej. el mapa de alturas del terreno)
 MAX_PROYECTOS = int(os.environ.get("OO_MAX_PROYECTOS", "50"))  # por usuario
+# Correos de administradores, separados por comas. Si está vacío, el usuario más antiguo es el administrador.
+ADMINS = {e.strip().lower() for e in os.environ.get("OO_ADMINS", "").split(",") if e.strip()}

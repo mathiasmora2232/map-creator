@@ -31,6 +31,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-mapcreator}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-mapcreator}
       OO_COOKIE_SEGURA: ${OO_COOKIE_SEGURA:-false}
       OO_REGISTRO_ABIERTO: ${OO_REGISTRO_ABIERTO:-true}
+      OO_ADMINS: ${OO_ADMINS:-}
       OO_MAX_SUBIDA_MB: ${OO_MAX_SUBIDA_MB:-50}
       OO_MAX_PROYECTOS: ${OO_MAX_PROYECTOS:-50}
     volumes:

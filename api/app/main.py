@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db
-from .rutas import cuenta, editor_datos, proyectos
+from .rutas import admin, cuenta, editor_datos, invitaciones, proyectos
 from .seguridad import usuario_opcional
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -56,6 +56,9 @@ async def error_validacion(_request, exc: RequestValidationError):
 
 
 app.include_router(cuenta.router)
+app.include_router(cuenta.publico)
+app.include_router(invitaciones.router)
+app.include_router(admin.router)
 app.include_router(proyectos.router)
 app.include_router(editor_datos.router)
 
@@ -76,14 +79,26 @@ def _pagina(nombre):
     return FileResponse(config.DIR_SITIO / nombre, headers={"Cache-Control": "no-cache"})
 
 
+def _siguiente_seguro(request: Request) -> str:
+    """?siguiente= solo si es una ruta de esta misma web (evita redirigir a otro dominio)."""
+    s = request.query_params.get("siguiente", "")
+    return s if s.startswith("/") and not s.startswith("//") and "\\" not in s else "/app"
+
+
 for _ruta, _archivo in PAGINAS.items():
     async def _servir(request: Request, _r=_ruta, _a=_archivo):
         if _r in PRIVADAS and await usuario_opcional(request) is None:
             return RedirectResponse("/entrar?siguiente=" + quote(_r), 302)
         if _r in ("/entrar", "/registro") and await usuario_opcional(request) is not None:
-            return RedirectResponse("/app", 302)
+            return RedirectResponse(_siguiente_seguro(request), 302)
         return _pagina(_a)
     app.add_api_route(_ruta, _servir, methods=["GET"], include_in_schema=False)
+
+
+@app.get("/invitacion/{token}", include_in_schema=False)
+async def pagina_invitacion(token: str):
+    # Pública: la página pide los datos a /api/invitacion/<token> y ofrece entrar, crear la cuenta o unirse.
+    return FileResponse(config.DIR_SITIO / "invitacion.html", headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
 
 app.mount("/sitio", StaticFiles(directory=config.DIR_SITIO), name="sitio")
 

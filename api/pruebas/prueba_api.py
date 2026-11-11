@@ -3,7 +3,8 @@
     python api/pruebas/prueba_api.py http://127.0.0.1:8000
 
 Cubre cuentas, proyectos desde plantilla, la interfaz /api/db del editor (ETag, PATCH con __delete__), permisos (dueño, editor,
-lector, ajeno), subidas y /_blob, duplicar con reescritura de referencias, papelera y la lista blanca de estáticos del editor.
+lector, ajeno), subidas y /_blob, duplicar con reescritura de referencias, papelera, invitaciones por enlace, preferencias,
+favoritos, administración y la lista blanca de estáticos del editor.
 Solo usa la biblioteca estándar. Sale con código 1 si algo falla.
 """
 import http.cookiejar
@@ -177,6 +178,82 @@ ana.j("DELETE", "/api/proyectos/%s" % pid)
 st, _ = ana.j("DELETE", "/api/proyectos/%s?definitivo=true" % pid)
 st2, cab, d = ana.pedir("GET", f["url"])
 comprobar(st == 200 and st2 == 404, "borrado para siempre, con sus archivos")
+
+# ── Invitaciones por enlace ──
+st, q = ana.j("POST", "/api/proyectos", {"nombre": "Invitaciones", "plantilla": "vacio"})
+qid = q["id"]
+st, inv = ana.j("POST", "/api/proyectos/%s/invitaciones" % qid, {"rol": "editor", "dias": 7, "usos_max": 1})
+comprobar(st == 201 and inv["ruta"].startswith("/invitacion/") and inv["estado"] == "activa", "la dueña crea un enlace de invitación")
+token = inv["token"]
+st, _ = beto.j("POST", "/api/proyectos/%s/invitaciones" % qid, {"rol": "editor"})
+comprobar(st == 404, "quien no es miembro no crea enlaces (404)")
+st, info = Cliente().j("GET", "/api/invitacion/" + token)
+comprobar(st == 200 and info["proyecto"] == "Invitaciones" and info["rol"] == "editor" and info["invita"] == "Ana", "el enlace se ve sin sesión")
+st, _ = Cliente().j("GET", "/api/invitacion/token-falso")
+comprobar(st == 404, "un token inventado da 404")
+st, cab, d = Cliente().pedir("GET", "/invitacion/" + token)
+comprobar(st == 200 and b"invitacion.js" in d, "página pública de la invitación")
+dario = Cliente()
+st, u = dario.j("POST", "/api/cuenta/registro", {"nombre": "Darío", "email": "dario-%s@prueba.test" % sufijo, "clave": "clave-segura-4", "invitacion": token})
+comprobar(st == 200 and u["proyecto"]["id"] == qid, "registro con invitación: entra al proyecto")
+st, lista = dario.j("GET", "/api/proyectos")
+comprobar(any(x["id"] == qid and x["rol"] == "editor" for x in lista), "Darío es editor del proyecto")
+st, _ = Cliente().j("POST", "/api/cuenta/registro", {"nombre": "Eva", "email": "eva-%s@prueba.test" % sufijo, "clave": "clave-segura-5", "invitacion": token})
+comprobar(st == 400, "el enlace de un solo uso ya no sirve")
+st, _ = Cliente().j("POST", "/api/cuenta/entrar", {"email": "eva-%s@prueba.test" % sufijo, "clave": "clave-segura-5"})
+comprobar(st == 401, "y no se creó la cuenta a medias")
+st, enlaces = ana.j("GET", "/api/proyectos/%s/invitaciones" % qid)
+comprobar(st == 200 and enlaces == [], "el enlace agotado ya no sale entre los activos")
+st, inv2 = ana.j("POST", "/api/proyectos/%s/invitaciones" % qid, {"rol": "lector", "dias": None, "usos_max": None})
+st, r = carla.j("POST", "/api/invitacion/%s/aceptar" % inv2["token"])
+comprobar(st == 200 and r["proyecto"]["id"] == qid, "Carla (con cuenta) acepta el enlace de lectora")
+st, _ = dario.j("POST", "/api/invitacion/%s/aceptar" % inv2["token"])
+st, lista = dario.j("GET", "/api/proyectos")
+comprobar(any(x["id"] == qid and x["rol"] == "editor" for x in lista), "un enlace de lector no baja a un editor")
+st, enlaces = ana.j("GET", "/api/proyectos/%s/invitaciones" % qid)
+comprobar(len(enlaces) == 1 and enlaces[0]["usos"] == 1, "aceptar sin cambiar nada no gasta usos")
+st, _ = dario.j("DELETE", "/api/invitaciones/" + inv2["id"])
+comprobar(st == 404, "un editor no revoca enlaces ajenos")
+st, _ = ana.j("DELETE", "/api/invitaciones/" + inv2["id"])
+st2, _ = Cliente().j("GET", "/api/invitacion/" + inv2["token"])
+comprobar(st == 200 and st2 == 404, "la dueña revoca el enlace y deja de servir")
+st, _ = dario.j("GET", "/api/proyectos/%s/invitaciones" % qid)
+comprobar(st == 403, "un editor no ve los enlaces del proyecto (403)")
+
+# ── Preferencias, favoritos, abierto ──
+st, yo2 = ana.j("PATCH", "/api/cuenta/yo", {"preferencias": {"recorrido_panel": True, "x": 1}})
+st, yo2 = ana.j("PATCH", "/api/cuenta/yo", {"preferencias": {"x": None}})
+comprobar(st == 200 and yo2["preferencias"] == {"recorrido_panel": True}, "las preferencias se fusionan y null borra")
+st, _ = ana.j("PATCH", "/api/cuenta/yo", {"preferencias": {"grande": "x" * 9000}})
+comprobar(st == 400, "preferencias demasiado grandes: 400")
+st, _ = ana.j("PUT", "/api/proyectos/%s/favorito" % qid, {"favorito": True})
+ana.j("GET", "/api/proyectos/%s" % qid)
+st, lista = ana.j("GET", "/api/proyectos")
+qq = next(x for x in lista if x["id"] == qid)
+comprobar(qq["favorito"] is True and qq["abierto"], "favorito y «abierto» quedan guardados")
+st, lista = dario.j("GET", "/api/proyectos")
+comprobar(next(x for x in lista if x["id"] == qid)["favorito"] is False, "los favoritos son de cada persona")
+st, cfg = Cliente().j("GET", "/api/config")
+comprobar(st == 200 and "registro_abierto" in cfg, "configuración pública")
+
+# ── Administración ──
+st, yoa = ana.j("GET", "/api/cuenta/yo")
+if yoa.get("es_admin"):
+    st, reg = ana.j("POST", "/api/invitaciones", {"nota": "prueba", "dias": 1, "usos_max": 2})
+    comprobar(st == 201 and reg["proyecto_id"] is None, "el administrador crea un enlace de registro")
+    st, info = Cliente().j("GET", "/api/invitacion/" + reg["token"])
+    comprobar(st == 200 and info["tipo"] == "registro", "el enlace de registro se ve")
+    st, u = Cliente().j("POST", "/api/cuenta/registro", {"nombre": "Fede", "email": "fede-%s@prueba.test" % sufijo, "clave": "clave-segura-6", "invitacion": reg["token"]})
+    comprobar(st == 200 and u["proyecto"] is None, "registro con enlace de registro (sin proyecto)")
+    st, res = ana.j("GET", "/api/admin/resumen")
+    comprobar(st == 200 and res["usuarios"] >= 4, "resumen del servidor")
+    st, us = ana.j("GET", "/api/admin/usuarios")
+    comprobar(st == 200 and any(x["email"].startswith("fede-") for x in us), "lista de usuarios")
+else:
+    print("(sin probar la administración: Ana no es la primera cuenta de esta base)")
+st, _ = beto.j("GET", "/api/admin/usuarios")
+st2, _ = beto.j("POST", "/api/invitaciones", {})
+comprobar(st == 403 and st2 == 403, "quien no es administrador no entra a la administración")
 
 # ── Estáticos ──
 st, cab, d = ana.pedir("GET", "/")
