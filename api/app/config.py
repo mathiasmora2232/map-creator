@@ -27,11 +27,17 @@ ADMINS = {e.strip().lower() for e in os.environ.get("OO_ADMINS", "").split(",") 
 
 # ── Correo (SMTP). Sin SMTP_HOST el envío queda desactivado: no se piden códigos y las cuentas nuevas quedan verificadas. ──
 # En producción las inyecta el panel desde la bóveda (grupo map-creator-app → comun). Nunca en el código ni en el repo.
-SMTP_HOST = os.environ.get("SMTP_HOST", "").strip()
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587") or 587)
-SMTP_USER = os.environ.get("SMTP_USER", "")
-SMTP_PASS = os.environ.get("SMTP_PASS", "")
-SMTP_FROM = os.environ.get("SMTP_FROM", "") or SMTP_USER
+def _sin_comillas(nombre, defecto=""):
+    """Algunos .env llegan con el valor entre comillas («"Nombre <a@b.c>"») según quién los lea: se quitan."""
+    v = os.environ.get(nombre, defecto).strip()
+    return v[1:-1] if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'" else v
+
+
+SMTP_HOST = _sin_comillas("SMTP_HOST")
+SMTP_PORT = int(_sin_comillas("SMTP_PORT", "587") or 587)
+SMTP_USER = _sin_comillas("SMTP_USER")
+SMTP_PASS = _sin_comillas("SMTP_PASS")
+SMTP_FROM = _sin_comillas("SMTP_FROM") or SMTP_USER
 # Solo para pruebas: escribe cada correo como JSON en esta carpeta en vez de enviarlo (y cuenta como correo activo).
 CORREO_ARCHIVO = os.environ.get("OO_CORREO_ARCHIVO", "").strip()
 CORREO_ACTIVO = bool(SMTP_HOST or CORREO_ARCHIVO)

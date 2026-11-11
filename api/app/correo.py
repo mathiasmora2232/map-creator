@@ -64,6 +64,8 @@ async def enviar(para: str, asunto: str, texto: str, html_: str) -> bool:
         if config.SMTP_HOST:
             msg = EmailMessage()
             nombre, direccion = parseaddr(config.SMTP_FROM)
+            if "@" not in direccion:  # remitente mal formado: se usa la cuenta SMTP
+                direccion = config.SMTP_USER
             msg["From"] = formataddr((nombre or "Map Creator", direccion))
             msg["To"] = para
             msg["Subject"] = asunto
