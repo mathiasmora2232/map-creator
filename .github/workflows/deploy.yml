@@ -1,0 +1,69 @@
+name: Deploy
+
+# Generado por el panel. production = producción: cada cambio que llega a production se despliega en el VPS.
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-latest
+    environment: Production
+    concurrency:
+      group: map-creator-production-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.1.0
+        env:
+          REPO_TOKEN: ${{ github.token }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || '22' }}
+          envs: REPO_TOKEN
+          command_timeout: 30m
+          script: |
+            set -eu
+            APP_DIR=/opt/map-creator
+            REPO=https://github.com/mathiasmora2232/map-creator.git
+            DEPLOY_SHA="${{ github.sha }}"
+            mkdir -p "$APP_DIR" && cd "$APP_DIR"
+            test -f .env || { echo "Falta $APP_DIR/.env; deploy detenido" >&2; exit 1; }
+            [ -d .git ] || { git init -q && git remote add origin "$REPO"; }
+            test "$(git remote get-url origin)" = "$REPO"
+            # Repo privado: el token del workflow solo vive en este paso
+            ASKPASS_DIR="$(mktemp -d)"
+            trap 'rm -rf "$ASKPASS_DIR"' EXIT
+            printf '%s\n' '#!/bin/sh' 'case "$1" in *Username*) echo x-access-token ;; *) echo "$GITHUB_REPO_TOKEN" ;; esac' > "$ASKPASS_DIR/askpass"
+            chmod 700 "$ASKPASS_DIR/askpass"
+            GITHUB_REPO_TOKEN="$REPO_TOKEN" GIT_ASKPASS="$ASKPASS_DIR/askpass" GIT_TERMINAL_PROMPT=0 git fetch --depth=1 origin "$DEPLOY_SHA"
+            git checkout -f -B production FETCH_HEAD
+
+            # Mismo nombre de proyecto Docker que el stack del panel: reutiliza sus volúmenes (la base no se pierde)
+            COMPOSE="docker compose -p map-creator -f docker-compose.yml -f override.yaml"
+            $COMPOSE build
+
+            # Respaldo ANTES de tocar la base. Sin respaldo válido, el deploy se detiene.
+            $COMPOSE up -d db
+            for i in $(seq 1 30); do $COMPOSE exec -T db pg_isready -U mapcreator -d mapcreator >/dev/null 2>&1 && break; sleep 2; done
+            mkdir -p backups
+            BACKUP="backups/map-creator-$(date -u +%Y%m%d-%H%M%S)-$(echo "$DEPLOY_SHA" | cut -c1-7).dump"
+            $COMPOSE exec -T db pg_dump -U mapcreator -d mapcreator -Fc > "$BACKUP"
+            test -s "$BACKUP" || { echo "Respaldo vacío; deploy detenido" >&2; exit 1; }
+            chmod 600 "$BACKUP"
+            ls -1t backups/map-creator-*.dump | tail -n +16 | xargs -r rm --
+            $COMPOSE up -d --remove-orphans
+
+            for i in $(seq 1 40); do
+              if curl --fail --silent --output /dev/null http://127.0.0.1:8000/; then echo "map-creator responde"; docker image prune -f >/dev/null; exit 0; fi
+              sleep 3
+            done
+            $COMPOSE logs --tail=100
+            exit 1
