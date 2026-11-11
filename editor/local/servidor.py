@@ -27,12 +27,14 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # con -I la carpeta del script no está en sys.path
 import migrar_refs  # noqa: E402  (2.1) migración de referencias a piezas cuando cambia mapa_<mapa>.json
 
-AQUI = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.dirname(os.path.dirname(AQUI))
+AQUI = os.path.dirname(os.path.abspath(__file__))  # editor/local: servidor, herramientas y datos_usuario
+EDITOR = os.path.dirname(AQUI)  # editor/: index.html, css/, js/, mapas/ (lo que se sirve)
+# Repo del juego (Unity/Godot) para exportar mapas, mallas reales y «Enviar al juego». Fuera de él, esas funciones no hacen nada.
+REPO = os.environ.get("OO_REPO_JUEGO") or os.path.dirname(os.path.dirname(EDITOR))
 REFERENCIAS = os.path.join(os.path.dirname(REPO), "referencias")
 DATOS = os.environ.get("OO_DATOS_EDITOR") or os.path.join(AQUI, "datos_usuario")  # otra carpeta para pruebas
 # (2.1) Carpeta de mapa_<mapa>.json (por defecto la del editor; las pruebas de migración usan otra para cambiar el mapa sin tocar este).
-MAPAS = os.environ.get("OO_MAPAS_EDITOR") or AQUI
+MAPAS = os.environ.get("OO_MAPAS_EDITOR") or os.path.join(EDITOR, "mapas")
 
 
 def ruta_mapa(mapa):
@@ -630,7 +632,7 @@ class Servidor(ThreadingHTTPServer):
 
 class Manejador(SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
-        super().__init__(*a, directory=AQUI, **k)
+        super().__init__(*a, directory=EDITOR, **k)
 
     def log_message(self, formato, *args):
         if "/api/" in self.path and self.command != "GET":
@@ -717,7 +719,7 @@ class Manejador(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(cuerpo)
             return
-        m_json = re.match(r"^/mapa_(complejo|parqueadero)\.json$", ruta)
+        m_json = re.match(r"^/mapas/mapa_(complejo|parqueadero)\.json$", ruta)
         if m_json:  # (2.1) antes de dar el mapa se migran las referencias si cambió; la versión va en una cabecera
             mapa = m_json.group(1)
             try:
@@ -887,7 +889,7 @@ class Manejador(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    if MAPAS == AQUI:
+    if MAPAS == os.path.join(EDITOR, "mapas"):
         exportar_mapas()
     # Un diario que quedó de un cierre brusco se aplica y se compacta al arrancar.
     if os.path.isdir(DATOS):

@@ -1,0 +1,5 @@
+.git
+.env
+.datos
+**/__pycache__
+editor/local

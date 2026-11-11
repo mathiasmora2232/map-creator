@@ -364,7 +364,7 @@ async function cargarMapa(nombre) {
       if (!d) { pista('No se encontró el mapa «' + nombre + '»: se abre el Complejo.'); mapa = nombre = 'complejo'; ls('oo-editor-mapa', nombre); const s = $('#selMapa'); if (s) s.value = nombre; d = cacheMapas[nombre]; }
     }
     if (!d) {
-      const r = await fetch('mapa_' + nombre + '.json', { cache: 'no-cache' }); if (!r.ok) throw new Error('HTTP ' + r.status); d = await r.json(); cacheMapas[nombre] = d;
+      const r = await fetch('mapas/mapa_' + nombre + '.json', { cache: 'no-cache' }); if (!r.ok) throw new Error('HTTP ' + r.status); d = await r.json(); cacheMapas[nombre] = d;
       /* (2.1) versión del mapa cargado: va en cada escritura (local.js) para que el servidor no acepte índices de pieza de un mapa viejo */
       const ver = r.headers.get('X-OO-Version-Mapa'); if (ver) (window.OOVersionMapa = window.OOVersionMapa || {})[nombre] = ver;
     }

@@ -136,7 +136,8 @@
     if (!modelo) modelo = construirModelo();
     nodos = new Map();
     const scroll = el.scrollTop;
-    const nombreMapa = A.mapa === 'parqueadero' ? 'Parqueadero' : 'Complejo';
+    const mapaU = /^u-/.test(A.mapa) && A.efectivos ? A.efectivos('mapas').get(A.mapa) : null; // mapa propio (mapas_nuevos.js)
+    const nombreMapa = mapaU ? (mapaU.nombre || A.mapa) : A.mapa === 'parqueadero' ? 'Parqueadero' : 'Complejo';
     if (filtro) el.innerHTML = '<ul>' + htmlBusqueda() + '</ul>';
     else el.innerHTML = '<ul>' + nodoHTML('raiz', nombreMapa, { hijos: true, ic: 'carpeta', contenido: () =>
       htmlCat('entorno', 'Entorno') +

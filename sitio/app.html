@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mis mapas · Map Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/sitio/css/sitio.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e2690b'/%3E%3Cpath d='M8 9h9v6h7v8H8z' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="lateral" aria-label="Menú principal">
+    <a class="logo" href="/app" data-logo>Map Creator</a>
+    <button class="btn prim" data-a="nuevo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nuevo mapa
+    </button>
+    <nav class="menu">
+      <a href="#mapas" data-vista="mapas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 4h10v7h8v9H3z"/><path d="M13 11v9"/></svg>Mis mapas<span class="cuenta-n" data-n="mapas"></span></a>
+      <a href="#compartidos" data-vista="compartidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5A5 5 0 0 1 21 19"/></svg>Compartidos conmigo<span class="cuenta-n" data-n="compartidos"></span></a>
+      <a href="#plantillas" data-vista="plantillas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Plantillas</a>
+      <a href="#papelera" data-vista="papelera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Papelera</a>
+    </nav>
+    <div class="titulo-menu">Ayuda</div>
+    <nav class="menu">
+      <a href="#atajos" data-vista="atajos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>Atajos del editor</a>
+      <a href="#cuenta" data-vista="cuenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Cuenta</a>
+    </nav>
+    <div class="yo">
+      <span class="avatar" id="yoAvatar">·</span>
+      <span class="datos"><b id="yoNombre">…</b><small id="yoEmail"></small></span>
+      <button class="btn icono fantasma" data-a="salir" title="Salir" aria-label="Salir">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+  </aside>
+  <div class="velo" data-a="cerrar-menu"></div>
+
+  <div>
+    <div class="topmovil">
+      <button class="btn icono" data-a="abrir-menu" aria-label="Abrir menú"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <a class="logo" href="/app" data-logo>Map Creator</a>
+    </div>
+    <main class="principal" id="principal" tabindex="-1">
+      <div class="cargando">Cargando…</div>
+    </main>
+  </div>
+</div>
+
+<!-- Nuevo mapa -->
+<dialog id="dlgNuevo" class="ancho" aria-labelledby="tNuevo">
+  <form method="dialog" id="formNuevo">
+    <div class="dlg-cab"><h2 id="tNuevo">Nuevo mapa</h2><button class="btn icono fantasma" value="cancelar" aria-label="Cerrar">✕</button></div>
+    <div class="dlg-cuerpo">
+      <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required placeholder="Oficina central" autocomplete="off"></label>
+      <div class="campo"><span>Empieza desde</span><div class="plantillas" id="nuevoPlantillas"></div></div>
+      <div class="fila2" id="nuevoTam">
+        <label class="campo"><span>Ancho (m)</span><input type="number" name="ancho" min="10" max="2000" step="5" value="120"></label>
+        <label class="campo"><span>Fondo (m)</span><input type="number" name="largo" min="10" max="2000" step="5" value="80"></label>
+        <label class="campo"><span>Terreno</span><select name="terreno"><option value="cesped">Césped</option><option value="tierra">Tierra</option><option value="concreto">Concreto</option><option value="asfalto">Asfalto</option></select></label>
+      </div>
+      <p class="error-form" id="errNuevo" role="alert"></p>
+    </div>
+    <div class="dlg-pie"><button class="btn" value="cancelar">Cancelar</button><button class="btn prim" value="crear" id="bCrear">Crear y abrir</button></div>
+  </form>
+</dialog>
+
+<!-- Compartir -->
+<dialog id="dlgCompartir" aria-labelledby="tCompartir">
+  <div class="dlg-cab"><h2 id="tCompartir">Compartir</h2><button class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
+  <div class="dlg-cuerpo">
+    <form class="invitar" id="formInvitar">
+      <input type="email" name="email" placeholder="correo@ejemplo.com" required aria-label="Correo de la persona">
+      <select name="rol" aria-label="Permiso"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select>
+      <button class="btn prim" type="submit">Invitar</button>
+    </form>
+    <p class="error-form" id="errInvitar" role="alert"></p>
+    <div class="miembros" id="listaMiembros"></div>
+  </div>
+</dialog>
+
+<!-- Renombrar -->
+<dialog id="dlgRenombrar" aria-labelledby="tRenombrar">
+  <form method="dialog" id="formRenombrar">
+    <div class="dlg-cab"><h2 id="tRenombrar">Renombrar mapa</h2><button class="btn icono fantasma" value="cancelar" aria-label="Cerrar">✕</button></div>
+    <div class="dlg-cuerpo">
+      <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required></label>
+      <label class="campo"><span>Descripción</span><textarea name="descripcion" maxlength="500" placeholder="Opcional"></textarea></label>
+    </div>
+    <div class="dlg-pie"><button class="btn" value="cancelar">Cancelar</button><button class="btn prim" value="ok">Guardar</button></div>
+  </form>
+</dialog>
+
+<script src="/sitio/js/comun.js"></script>
+<script src="/sitio/js/panel.js"></script>
+</body>
+</html>

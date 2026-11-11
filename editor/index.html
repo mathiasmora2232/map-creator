@@ -7,11 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="estilo.css">
-<link rel="stylesheet" href="estilo_pro_f4.css">
-<link rel="stylesheet" href="estilo_pro_f5.css">
-<link rel="stylesheet" href="estilo_notas_caminar.css">
-<script src="local.js"></script>
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="stylesheet" href="css/estilo_pro_f4.css">
+<link rel="stylesheet" href="css/estilo_pro_f5.css">
+<link rel="stylesheet" href="css/estilo_notas_caminar.css">
+<script src="js/nucleo/local.js"></script>
 </head>
 <body>
 <!-- (2.1, editor v2) Disposición del concepto aprobado: barra superior, barra de herramientas con menús a la izquierda, columnas de
@@ -242,65 +242,66 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/TransformControls.js"></script>
-<script src="catalogo.js"></script>
-<script src="catalogo_extra.js"></script>
-<script src="presets_muro.js"></script>
-<script src="modelos_juego.js"></script>
-<script src="carteles.js"></script>
-<script src="mallas_reales.js"></script>
-<script src="ui_paneles.js"></script>
-<script src="importar.js"></script>
-<script src="prefabs_proc.js"></script>
-<script src="kits_edificios.js"></script>
-<script src="vegetacion.js"></script>
-<script src="entidades.js"></script>
-<script src="editor.js"></script>
-<script src="huecos.js"></script>
-<script src="jerarquia.js"></script>
-<script src="catalogo_ui.js"></script>
-<script src="mapa_satelital.js"></script>
-<script src="ambiente.js"></script>
-<script src="prefabs.js"></script>
-<script src="zonas.js"></script>
-<script src="exportar.js"></script>
+<script src="js/catalogo/catalogo.js"></script>
+<script src="js/catalogo/catalogo_extra.js"></script>
+<script src="js/catalogo/presets_muro.js"></script>
+<script src="js/juego/modelos_juego.js"></script>
+<script src="js/juego/carteles.js"></script>
+<script src="js/juego/mallas_reales.js"></script>
+<script src="js/nucleo/ui_paneles.js"></script>
+<script src="js/archivos/importar.js"></script>
+<script src="js/catalogo/prefabs_proc.js"></script>
+<script src="js/catalogo/kits_edificios.js"></script>
+<script src="js/catalogo/vegetacion.js"></script>
+<script src="js/nucleo/entidades.js"></script>
+<script src="js/nucleo/editor.js"></script>
+<script src="js/construccion/huecos.js"></script>
+<script src="js/escena/jerarquia.js"></script>
+<script src="js/catalogo/catalogo_ui.js"></script>
+<script src="js/mapa/mapa_satelital.js"></script>
+<script src="js/apariencia/ambiente.js"></script>
+<script src="js/catalogo/prefabs.js"></script>
+<script src="js/mapa/zonas.js"></script>
+<script src="js/archivos/exportar.js"></script>
 <script src="planner2d.js"></script>
-<script src="materiales.js"></script>
-<script src="texturas_proc.js"></script>
-<script src="materiales_pro.js"></script>
-<script src="iluminacion.js"></script>
-<script src="comportamientos.js"></script>
-<script src="destruccion.js"></script>
-<script src="terreno.js"></script>
-<script src="asas.js"></script>
-<script src="anclajes.js"></script>
-<script src="fundaciones.js"></script>
-<script src="paredes.js"></script>
-<script src="habitaciones.js"></script>
-<script src="niveles.js"></script>
-<script src="techos.js"></script>
-<script src="escaleras.js"></script>
-<script src="plataformas.js"></script>
-<script src="revestimientos.js"></script>
-<script src="iman.js"></script>
-<script src="catalogo_pro.js"></script>
-<script src="importar_pro.js"></script>
+<script src="js/apariencia/materiales.js"></script>
+<script src="js/apariencia/texturas_proc.js"></script>
+<script src="js/apariencia/materiales_pro.js"></script>
+<script src="js/apariencia/iluminacion.js"></script>
+<script src="js/juego/comportamientos.js"></script>
+<script src="js/juego/destruccion.js"></script>
+<script src="js/mapa/terreno.js"></script>
+<script src="js/construccion/asas.js"></script>
+<script src="js/construccion/anclajes.js"></script>
+<script src="js/construccion/fundaciones.js"></script>
+<script src="js/construccion/paredes.js"></script>
+<script src="js/construccion/habitaciones.js"></script>
+<script src="js/construccion/niveles.js"></script>
+<script src="js/construccion/techos.js"></script>
+<script src="js/construccion/escaleras.js"></script>
+<script src="js/construccion/plataformas.js"></script>
+<script src="js/construccion/revestimientos.js"></script>
+<script src="js/construccion/iman.js"></script>
+<script src="js/catalogo/catalogo_pro.js"></script>
+<script src="js/archivos/importar_pro.js"></script>
 <!-- (2.1 pro f5) productividad y modelado -->
-<script src="cubiertas_l.js"></script>
-<script src="transformar.js"></script>
-<script src="geometria.js"></script>
-<script src="escaleras_pro.js"></script>
-<script src="jerarquia_pro.js"></script>
-<script src="terreno_pro.js"></script>
-<script src="productividad.js"></script>
-<script src="notas_pro.js"></script>
-<script src="notas_editor.js"></script>
-<script src="caminar_pro.js"></script>
+<script src="js/construccion/cubiertas_l.js"></script>
+<script src="js/nucleo/transformar.js"></script>
+<script src="js/nucleo/geometria.js"></script>
+<script src="js/construccion/escaleras_pro.js"></script>
+<script src="js/escena/jerarquia_pro.js"></script>
+<script src="js/mapa/terreno_pro.js"></script>
+<script src="js/nucleo/productividad.js"></script>
+<script src="js/notas/notas_pro.js"></script>
+<script src="js/notas/notas_editor.js"></script>
+<script src="js/escena/caminar_pro.js"></script>
 <!-- (2.1 pro f6) calidad y exportación al juego -->
-<script src="validacion.js"></script>
-<script src="juego_unity.js"></script>
-<script src="vistas_render.js"></script>
-<script src="capas_vista.js"></script>
-<script src="cuartos_pro.js"></script>
-<script src="mapas_nuevos.js"></script>
+<script src="js/nucleo/validacion.js"></script>
+<script src="js/juego/juego_unity.js"></script>
+<script src="js/escena/vistas_render.js"></script>
+<script src="js/escena/capas_vista.js"></script>
+<script src="js/construccion/cuartos_pro.js"></script>
+<script src="js/mapa/mapas_nuevos.js"></script>
+<script src="js/nucleo/nube.js"></script>
 </body>
 </html>

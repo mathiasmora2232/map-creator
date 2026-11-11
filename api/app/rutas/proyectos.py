@@ -1,0 +1,244 @@
+"""Proyectos (mapas de cada usuario): crear desde plantilla, listar, renombrar, duplicar, papelera y miembros."""
+import json
+import re
+import shutil
+import unicodedata
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+
+from .. import config, db
+from ..seguridad import ROLES_ESCRITURA, exigir_rol, parsear_uuid, usuario_actual
+
+router = APIRouter(prefix="/api", tags=["proyectos"])
+
+TERRENOS = ("cesped", "tierra", "concreto", "asfalto")
+# Las plantillas con `mapa` usan un mapa base del editor (editor/mapa_<mapa>.json); «vacio» crea un mapa propio en la colección
+# `mapas` (lo dibuja mapas_nuevos.js: una pieza de suelo del tamaño elegido).
+PLANTILLAS = {
+    "vacio": {"nombre": "En blanco", "descripcion": "Un terreno vacío del tamaño que elijas. Ideal para empezar desde cero.",
+              "mapa": None, "etiqueta": "Desde cero"},
+    "complejo": {"nombre": "Complejo industrial", "descripcion": "Galpones, oficinas, comedor y parqueadero: unas 27 000 piezas para "
+                 "explorar todas las herramientas.", "mapa": "complejo", "etiqueta": "Ejemplo grande"},
+    "parqueadero": {"nombre": "Parqueadero", "descripcion": "Un parqueadero con accesos, casetas y señalización.",
+                    "mapa": "parqueadero", "etiqueta": "Ejemplo"},
+}
+NO_ENCONTRADO = {"error": "Ese proyecto no existe o no tienes acceso.", "code": "not_found"}
+
+
+class NuevoProyecto(BaseModel):
+    nombre: str = Field(min_length=1, max_length=80)
+    descripcion: str = Field(default="", max_length=500)
+    plantilla: str = "vacio"
+    ancho: float = Field(default=120, ge=10, le=2000)
+    largo: float = Field(default=80, ge=10, le=2000)
+    terreno: str = "cesped"
+
+
+class CambioProyecto(BaseModel):
+    nombre: str | None = Field(default=None, min_length=1, max_length=80)
+    descripcion: str | None = Field(default=None, max_length=500)
+
+
+class NuevoMiembro(BaseModel):
+    email: str = Field(max_length=254)
+    rol: str = Field(pattern="^(editor|lector)$")
+
+
+class CambioMiembro(BaseModel):
+    rol: str = Field(pattern="^(editor|lector)$")
+
+
+def _slug(texto):
+    t = unicodedata.normalize("NFD", texto).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", t).strip("-")[:40] or "mapa"
+
+
+def _ahora_iso():
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+def _fila(r):
+    d = dict(r)
+    for k, v in d.items():
+        if hasattr(v, "isoformat"):
+            d[k] = v.isoformat()
+        elif k.endswith("id") and v is not None and not isinstance(v, (str, int)):
+            d[k] = str(v)
+    return d
+
+
+SQL_LISTA = """
+SELECT p.id, p.nombre, p.descripcion, p.plantilla, p.mapa_inicial, p.creado, p.actualizado, p.archivado, m.rol,
+       u.nombre AS dueno_nombre, p.dueno_id,
+       (SELECT count(*) FROM miembros x WHERE x.proyecto_id = p.id) AS n_miembros,
+       (SELECT count(*) FROM documentos d WHERE d.proyecto_id = p.id AND d.coleccion = 'cambios') AS n_cambios
+FROM proyectos p
+JOIN miembros m ON m.proyecto_id = p.id AND m.usuario_id = $1
+JOIN usuarios u ON u.id = p.dueno_id
+"""
+
+
+@router.get("/plantillas")
+async def plantillas():
+    return [{"id": k} | v for k, v in PLANTILLAS.items()]
+
+
+@router.get("/proyectos")
+async def listar(papelera: bool = Query(False), usuario=Depends(usuario_actual)):
+    filtro = "WHERE p.archivado IS NOT NULL AND m.rol = 'dueno'" if papelera else "WHERE p.archivado IS NULL"
+    async with db.pool.acquire() as con:
+        filas = await con.fetch(SQL_LISTA + filtro + " ORDER BY p.actualizado DESC", usuario["id"])
+    return [_fila(r) for r in filas]
+
+
+@router.post("/proyectos", status_code=201)
+async def crear(datos: NuevoProyecto, usuario=Depends(usuario_actual)):
+    plantilla = PLANTILLAS.get(datos.plantilla)
+    if plantilla is None:
+        raise HTTPException(400, {"error": "Esa plantilla no existe.", "code": "invalid_argument"})
+    async with db.pool.acquire() as con, con.transaction():
+        n = await con.fetchval("SELECT count(*) FROM proyectos WHERE dueno_id = $1 AND archivado IS NULL", usuario["id"])
+        if n >= config.MAX_PROYECTOS:
+            raise HTTPException(400, {"error": "Llegaste al máximo de %d proyectos. Borra alguno para crear otro." % config.MAX_PROYECTOS,
+                                      "code": "resource_exhausted"})
+        mapa = plantilla["mapa"] or ("u-" + _slug(datos.nombre))
+        p = await con.fetchrow(
+            "INSERT INTO proyectos (nombre, descripcion, dueno_id, plantilla, mapa_inicial) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+            datos.nombre.strip(), datos.descripcion.strip(), usuario["id"], datos.plantilla, mapa)
+        await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, 'dueno')", p["id"], usuario["id"])
+        if plantilla["mapa"] is None:
+            doc = {"nombre": datos.nombre.strip()[:60], "ancho": datos.ancho, "largo": datos.largo,
+                   "terreno": datos.terreno if datos.terreno in TERRENOS else "cesped", "creado": _ahora_iso()}
+            await con.execute("INSERT INTO documentos (proyecto_id, coleccion, doc_id, datos, actualizado_por) VALUES ($1, 'mapas', $2, $3, $4)",
+                              p["id"], mapa, json.dumps(doc, ensure_ascii=False), usuario["id"])
+            await con.execute("INSERT INTO colecciones (proyecto_id, coleccion, version) VALUES ($1, 'mapas', 1)", p["id"])
+        fila = await con.fetchrow(SQL_LISTA + "WHERE p.id = $2", usuario["id"], p["id"])
+    return _fila(fila)
+
+
+@router.get("/proyectos/{pid}")
+async def ver(pid: str, usuario=Depends(usuario_actual)):
+    await exigir_rol(pid, usuario)
+    async with db.pool.acquire() as con:
+        fila = await con.fetchrow(SQL_LISTA + "WHERE p.id = $2", usuario["id"], parsear_uuid(pid))
+    return _fila(fila)
+
+
+@router.patch("/proyectos/{pid}")
+async def cambiar(pid: str, datos: CambioProyecto, usuario=Depends(usuario_actual)):
+    await exigir_rol(pid, usuario, escritura=True)
+    async with db.pool.acquire() as con:
+        await con.execute("UPDATE proyectos SET nombre = coalesce($2, nombre), descripcion = coalesce($3, descripcion) WHERE id = $1",
+                          parsear_uuid(pid), datos.nombre and datos.nombre.strip(), datos.descripcion)
+        fila = await con.fetchrow(SQL_LISTA + "WHERE p.id = $2", usuario["id"], parsear_uuid(pid))
+    return _fila(fila)
+
+
+async def _exigir_dueno(pid, usuario, archivado=None):
+    """El dueño puede actuar también sobre proyectos en la papelera (restaurar o borrar del todo)."""
+    p = parsear_uuid(pid)
+    async with db.pool.acquire() as con:
+        fila = await con.fetchrow("SELECT archivado FROM proyectos WHERE id = $1 AND dueno_id = $2", p, usuario["id"]) if p else None
+    if fila is None or (archivado is not None and (fila["archivado"] is not None) != archivado):
+        raise HTTPException(404, NO_ENCONTRADO)
+    return p
+
+
+@router.delete("/proyectos/{pid}")
+async def borrar(pid: str, definitivo: bool = Query(False), usuario=Depends(usuario_actual)):
+    """Sin `definitivo` va a la papelera; con `definitivo` (solo desde la papelera) se borra con sus archivos."""
+    p = await _exigir_dueno(pid, usuario, archivado=True if definitivo else False)
+    async with db.pool.acquire() as con:
+        if definitivo:
+            await con.execute("DELETE FROM proyectos WHERE id = $1", p)
+            shutil.rmtree(config.DIR_ARCHIVOS / str(p), ignore_errors=True)
+        else:
+            await con.execute("UPDATE proyectos SET archivado = now() WHERE id = $1", p)
+    return {"ok": True}
+
+
+@router.post("/proyectos/{pid}/restaurar")
+async def restaurar(pid: str, usuario=Depends(usuario_actual)):
+    p = await _exigir_dueno(pid, usuario, archivado=True)
+    async with db.pool.acquire() as con:
+        await con.execute("UPDATE proyectos SET archivado = NULL WHERE id = $1", p)
+    return {"ok": True}
+
+
+@router.post("/proyectos/{pid}/duplicar", status_code=201)
+async def duplicar(pid: str, usuario=Depends(usuario_actual)):
+    """Copia completa (documentos y archivos) a un proyecto nuevo del usuario. Sirve también a los lectores: «hacer una copia»."""
+    await exigir_rol(pid, usuario)
+    viejo = parsear_uuid(pid)
+    async with db.pool.acquire() as con, con.transaction():
+        o = await con.fetchrow("SELECT nombre, descripcion, plantilla, mapa_inicial FROM proyectos WHERE id = $1", viejo)
+        nuevo = await con.fetchval(
+            "INSERT INTO proyectos (nombre, descripcion, dueno_id, plantilla, mapa_inicial) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+            ("Copia de " + o["nombre"])[:80], o["descripcion"], usuario["id"], o["plantilla"], o["mapa_inicial"])
+        await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, 'dueno')", nuevo, usuario["id"])
+        await con.execute(
+            "INSERT INTO documentos (proyecto_id, coleccion, doc_id, datos, actualizado_por) "
+            "SELECT $2, coleccion, doc_id, replace(datos::text, $3, $4)::jsonb, $5 FROM documentos WHERE proyecto_id = $1",
+            viejo, nuevo, str(viejo) + "/", str(nuevo) + "/", usuario["id"])
+        await con.execute("INSERT INTO colecciones (proyecto_id, coleccion, version) "
+                          "SELECT $2, coleccion, 1 FROM colecciones WHERE proyecto_id = $1", viejo, nuevo)
+        await con.execute(
+            "INSERT INTO archivos (id, proyecto_id, tipo, nombre, content_type, tamano, ruta, subido_por) "
+            "SELECT id, $2, tipo, nombre, content_type, tamano, replace(ruta, $3, $4), subido_por FROM archivos WHERE proyecto_id = $1",
+            viejo, nuevo, str(viejo) + "/", str(nuevo) + "/")
+        origen = config.DIR_ARCHIVOS / str(viejo)
+        if origen.is_dir():
+            shutil.copytree(origen, config.DIR_ARCHIVOS / str(nuevo))
+        fila = await con.fetchrow(SQL_LISTA + "WHERE p.id = $2", usuario["id"], nuevo)
+    return _fila(fila)
+
+
+# ───────────────────────── Miembros ─────────────────────────
+@router.get("/proyectos/{pid}/miembros")
+async def miembros(pid: str, usuario=Depends(usuario_actual)):
+    await exigir_rol(pid, usuario)
+    async with db.pool.acquire() as con:
+        filas = await con.fetch("SELECT u.id, u.nombre, u.email, m.rol, m.creado FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
+                                "WHERE m.proyecto_id = $1 ORDER BY (m.rol = 'dueno') DESC, u.nombre", parsear_uuid(pid))
+    return [_fila(r) for r in filas]
+
+
+@router.post("/proyectos/{pid}/miembros", status_code=201)
+async def invitar(pid: str, datos: NuevoMiembro, usuario=Depends(usuario_actual)):
+    if await exigir_rol(pid, usuario) != "dueno":
+        raise HTTPException(403, {"error": "Solo el dueño puede compartir el proyecto.", "code": "permission_denied"})
+    async with db.pool.acquire() as con:
+        uid = await con.fetchval("SELECT id FROM usuarios WHERE lower(email) = lower($1)", datos.email.strip())
+        if uid is None:
+            raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Pídele que se registre primero.", "code": "not_found"})
+        await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, $3) "
+                          "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol WHERE miembros.rol <> 'dueno'",
+                          parsear_uuid(pid), uid, datos.rol)
+    return {"ok": True}
+
+
+@router.patch("/proyectos/{pid}/miembros/{uid}")
+async def cambiar_miembro(pid: str, uid: str, datos: CambioMiembro, usuario=Depends(usuario_actual)):
+    if await exigir_rol(pid, usuario) != "dueno":
+        raise HTTPException(403, {"error": "Solo el dueño puede cambiar los permisos.", "code": "permission_denied"})
+    async with db.pool.acquire() as con:
+        await con.execute("UPDATE miembros SET rol = $3 WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'",
+                          parsear_uuid(pid), parsear_uuid(uid), datos.rol)
+    return {"ok": True}
+
+
+@router.delete("/proyectos/{pid}/miembros/{uid}")
+async def quitar_miembro(pid: str, uid: str, usuario=Depends(usuario_actual)):
+    """El dueño quita a cualquiera menos a sí mismo; los demás solo pueden salirse."""
+    rol = await exigir_rol(pid, usuario)
+    objetivo = parsear_uuid(uid)
+    if rol != "dueno" and objetivo != usuario["id"]:
+        raise HTTPException(403, {"error": "Solo el dueño puede quitar miembros.", "code": "permission_denied"})
+    async with db.pool.acquire() as con:
+        await con.execute("DELETE FROM miembros WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", parsear_uuid(pid), objetivo)
+    return {"ok": True}
+
+
+__all__ = ["router", "PLANTILLAS", "ROLES_ESCRITURA"]

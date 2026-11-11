@@ -23,6 +23,7 @@ import urllib.request
 
 AQUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, AQUI)
+MAPAS_EDITOR = os.path.join(os.path.dirname(AQUI), "mapas")
 import migrar_refs as mr  # noqa: E402
 
 fallos = 0
@@ -53,7 +54,7 @@ def antes_de(a):
 
 
 def fabricar():
-    with open(os.path.join(AQUI, "mapa_complejo.json"), encoding="utf-8") as f:
+    with open(os.path.join(MAPAS_EDITOR, "mapa_complejo.json"), encoding="utf-8") as f:
         viejo = json.load(f)
     V = viejo["piezas"]
     n = len(V)
@@ -200,7 +201,7 @@ def prueba_servidor(viejo, nuevo, cols, info, puerto, raiz):
             json.dump(cols[col], f, ensure_ascii=False)
     with open(os.path.join(mapas, "mapa_complejo.json"), "w", encoding="utf-8") as f:
         json.dump(viejo, f)
-    shutil.copyfile(os.path.join(AQUI, "mapa_parqueadero.json"), os.path.join(mapas, "mapa_parqueadero.json"))
+    shutil.copyfile(os.path.join(MAPAS_EDITOR, "mapa_parqueadero.json"), os.path.join(mapas, "mapa_parqueadero.json"))
     env = dict(os.environ, OO_PUERTO_EDITOR=str(puerto), OO_DATOS_EDITOR=datos, OO_MAPAS_EDITOR=mapas,
                OO_CARTELES_UNITY=os.path.join(raiz, "carteles"), OO_REGLAS_UNITY=os.path.join(raiz, "reglas"),
                OO_EDITORMAPA_UNITY=os.path.join(raiz, "juego"))
@@ -217,7 +218,7 @@ def prueba_servidor(viejo, nuevo, cols, info, puerto, raiz):
                 break
             except OSError:
                 time.sleep(0.25)
-        st, cab, _ = pedir(url + "/mapa_complejo.json")
+        st, cab, _ = pedir(url + "/mapas/mapa_complejo.json")
         v_viejo = cab.get("X-OO-Version-Mapa")
         comprobar(st == 200 and v_viejo == mr.version_archivo(os.path.join(mapas, "mapa_complejo.json")),
                   "el servidor da la versión del mapa en X-OO-Version-Mapa (%s)" % v_viejo)
@@ -245,7 +246,7 @@ def prueba_servidor(viejo, nuevo, cols, info, puerto, raiz):
         comprobar(len(en_disco[mr.APARTADOS]) == len(p["est"]["apartados"]) > 0,
                   "lo que nombraba piezas que ya no existen está en %s.json (%d)" % (mr.APARTADOS, len(en_disco[mr.APARTADOS])))
         comprobar(mr.version_archivo(os.path.join(datos, "_base_mapa_complejo.json")) == v_nuevo, "la copia `_base_mapa` es ahora el mapa nuevo")
-        st, cab, _ = pedir(url + "/mapa_complejo.json")
+        st, cab, _ = pedir(url + "/mapas/mapa_complejo.json")
         comprobar(cab.get("X-OO-Version-Mapa") == v_nuevo, "el mapa se sirve con la versión nueva")
         st, _, _ = pedir(url + "/api/db/cambios/m-complejo-p1", "PUT", {"mapa": "complejo", "accion": "nota", "ref": 1, "texto": "x"},
                          {"X-OO-Mapas": "complejo=" + v_nuevo})

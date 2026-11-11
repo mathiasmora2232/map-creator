@@ -18,7 +18,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
-const REPO = path.resolve(AQUI, '..', '..');
+const REPO = process.env.OO_REPO_JUEGO || path.resolve(AQUI, '..', '..', '..');
 const arg = (n, d) => { const i = process.argv.indexOf('--' + n); return i > 0 ? process.argv[i + 1] : d; };
 const MAPA = arg('mapa', 'complejo');
 if (!/^(complejo|parqueadero)$/.test(MAPA)) { console.error('Mapa desconocido: ' + MAPA); process.exit(2); }

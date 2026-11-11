@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
-datos_usuario/respaldos_refs/
+.env
+.datos/
+.venv/
+editor/local/datos_usuario/respaldos_refs/

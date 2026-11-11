@@ -104,7 +104,7 @@ def main(argv):
     if not os.path.isdir(carpeta):
         print("No existe la carpeta de datos:", carpeta)
         return 2
-    mapas_dir = arg("mapas", AQUI)
+    mapas_dir = arg("mapas", os.path.join(os.path.dirname(AQUI), "mapas"))
     mapas = [arg("mapa")] if arg("mapa") else ["complejo", "parqueadero"]
     t0 = time.time()
     res, mal = [], False

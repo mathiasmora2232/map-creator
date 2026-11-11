@@ -255,6 +255,7 @@
       caras, postes, placa, texto: c.texto, senal: c.senal, png: canvasCartel(c, m, 2048).toDataURL('image/png') };
   }
   async function enviar(forzar) {
+    if (window.OONube && !forzar) return; // modo nube (Map Creator): no hay juego al que mandarlos, solo el modo local los envía
     const mapa = window.OOEditor && OOEditor.mapa ? OOEditor.mapa() : null;
     if (!mapa) return;
     const lista = cartelesDelMapa();

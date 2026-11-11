@@ -1,0 +1,60 @@
+# Map Creator
+#   Desarrollo:  cp .env.example .env && docker compose up --build        → http://localhost:8000
+#   Producción:  DOMINIO=mapas.ejemplo.com docker compose --profile produccion up -d --build   (Caddy con HTTPS automático)
+name: map-creator
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mapcreator}
+      POSTGRES_USER: ${POSTGRES_USER:-mapcreator}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Pon POSTGRES_PASSWORD en .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-mapcreator}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-mapcreator}
+      OO_COOKIE_SEGURA: ${OO_COOKIE_SEGURA:-false}
+      OO_REGISTRO_ABIERTO: ${OO_REGISTRO_ABIERTO:-true}
+      OO_MAX_SUBIDA_MB: ${OO_MAX_SUBIDA_MB:-50}
+      OO_MAX_PROYECTOS: ${OO_MAX_PROYECTOS:-50}
+    volumes:
+      - archivos:/data/archivos
+    ports:
+      - "${PUERTO_APP:-8000}:8000"
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["produccion"]
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      DOMINIO: ${DOMINIO:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  archivos:
+  caddy_data:
+  caddy_config:
