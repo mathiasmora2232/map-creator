@@ -27,6 +27,7 @@ p{margin:0}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .contenedor{width:min(1160px,100% - 32px);margin-inline:auto}
 .mono{font-family:var(--mono)}
+[hidden]{display:none!important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ───── Botones y campos ───── */

@@ -134,16 +134,26 @@
     formNuevo.reset(); $('#errNuevo').textContent = '';
     $('#nuevoPlantillas').innerHTML = htmlPlantillas(plantillaSel);
     $('#nuevoTam').hidden = plantillaSel !== 'vacio';
-    dlgNuevo.showModal(); formNuevo.nombre.focus();
+    nombreAuto = ''; sugerirNombre();
+    dlgNuevo.showModal(); formNuevo.nombre.focus(); formNuevo.nombre.select();
+  }
+  // Con una plantilla de ejemplo, propone su nombre mientras el usuario no haya escrito otro.
+  let nombreAuto = '';
+  function sugerirNombre() {
+    const campo = formNuevo.nombre;
+    if (campo.value.trim() && campo.value !== nombreAuto) return;
+    const t = plantillas.find(x => x.id === plantillaSel);
+    nombreAuto = t && plantillaSel !== 'vacio' ? t.nombre : '';
+    campo.value = nombreAuto;
   }
   $('#nuevoPlantillas').addEventListener('click', e => {
     const b = e.target.closest('[data-plantilla]'); if (!b) return;
     plantillaSel = b.dataset.plantilla;
     $$('#nuevoPlantillas .plantilla').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
     $('#nuevoTam').hidden = plantillaSel !== 'vacio';
+    sugerirNombre();
   });
   formNuevo.addEventListener('submit', async e => {
-    if (e.submitter && e.submitter.value === 'cancelar') return;
     e.preventDefault();
     const d = Object.fromEntries(new FormData(formNuevo));
     if (!d.nombre.trim()) { $('#errNuevo').textContent = 'Ponle un nombre al mapa.'; formNuevo.nombre.focus(); return; }
@@ -186,8 +196,8 @@
       const f = $('#formRenombrar'); f.nombre.value = p.nombre; f.descripcion.value = p.descripcion || '';
       $('#dlgRenombrar').showModal(); f.nombre.select();
       f.onsubmit = async e => {
-        if (e.submitter && e.submitter.value === 'cancelar') return;
         e.preventDefault();
+        if (!f.nombre.value.trim()) { aviso('El nombre no puede quedar vacío.', 'err'); f.nombre.focus(); return; }
         try { await api('/api/proyectos/' + id, { method: 'PATCH', json: { nombre: f.nombre.value, descripcion: f.descripcion.value } }); $('#dlgRenombrar').close(); await refrescar(); aviso('Mapa renombrado.'); }
         catch (ex) { aviso(ex.message, 'err'); }
       };
