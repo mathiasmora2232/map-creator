@@ -51,8 +51,8 @@
 
 <!-- Nuevo mapa -->
 <dialog id="dlgNuevo" class="ancho" aria-labelledby="tNuevo">
-  <form method="dialog" id="formNuevo">
-    <div class="dlg-cab"><h2 id="tNuevo">Nuevo mapa</h2><button class="btn icono fantasma" value="cancelar" aria-label="Cerrar">✕</button></div>
+  <form method="dialog" id="formNuevo" novalidate>
+    <div class="dlg-cab"><h2 id="tNuevo">Nuevo mapa</h2><button type="button" class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
     <div class="dlg-cuerpo">
       <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required placeholder="Oficina central" autocomplete="off"></label>
       <div class="campo"><span>Empieza desde</span><div class="plantillas" id="nuevoPlantillas"></div></div>
@@ -63,7 +63,7 @@
       </div>
       <p class="error-form" id="errNuevo" role="alert"></p>
     </div>
-    <div class="dlg-pie"><button class="btn" value="cancelar">Cancelar</button><button class="btn prim" value="crear" id="bCrear">Crear y abrir</button></div>
+    <div class="dlg-pie"><button type="button" class="btn" data-a="cerrar-dlg">Cancelar</button><button class="btn prim" value="crear" id="bCrear">Crear y abrir</button></div>
   </form>
 </dialog>
 
@@ -83,13 +83,13 @@
 
 <!-- Renombrar -->
 <dialog id="dlgRenombrar" aria-labelledby="tRenombrar">
-  <form method="dialog" id="formRenombrar">
-    <div class="dlg-cab"><h2 id="tRenombrar">Renombrar mapa</h2><button class="btn icono fantasma" value="cancelar" aria-label="Cerrar">✕</button></div>
+  <form method="dialog" id="formRenombrar" novalidate>
+    <div class="dlg-cab"><h2 id="tRenombrar">Renombrar mapa</h2><button type="button" class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
     <div class="dlg-cuerpo">
       <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required></label>
       <label class="campo"><span>Descripción</span><textarea name="descripcion" maxlength="500" placeholder="Opcional"></textarea></label>
     </div>
-    <div class="dlg-pie"><button class="btn" value="cancelar">Cancelar</button><button class="btn prim" value="ok">Guardar</button></div>
+    <div class="dlg-pie"><button type="button" class="btn" data-a="cerrar-dlg">Cancelar</button><button class="btn prim" value="ok">Guardar</button></div>
   </form>
 </dialog>
 
