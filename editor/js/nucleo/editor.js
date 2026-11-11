@@ -96,7 +96,7 @@ const PISTAS = {
 };
 const CAMPOS = {
   muro: [['sx', 'Largo (m)'], ['sy', 'Alto (m)'], ['sz', 'Grosor (m)'], ['material', 'Material', 'matmuro'], ['color', 'Color', 'color']],
-  puerta: [['estilo', 'Tipo de puerta', 'opc'], ['sx', 'Ancho (m)'], ['sy', 'Alto (m)'], ['color', 'Color del marco', 'color'], ['hoja', 'Color de la hoja', 'color']],
+  puerta: [['estilo', 'Tipo de puerta', 'opc'], ['sx', 'Ancho (m)'], ['sy', 'Alto (m)'], ['apertura', 'Apertura (°, 0 = cerrada)'], ['color', 'Color del marco', 'color'], ['hoja', 'Color de la hoja', 'color']],
   cartel: (window.OOCartel ? OOCartel.CAMPOS : [['texto', 'Texto', 'text']]),
   ventana: [['sx', 'Ancho (m)'], ['sy', 'Alto (m)'], ['alfeizar', 'Alféizar (m)'], ['color', 'Color del marco', 'color']],
   hueco: [['sx', 'Ancho (m)'], ['sy', 'Alto (m)'], ['alfeizar', 'Altura desde el suelo (m)']],

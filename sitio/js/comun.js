@@ -117,5 +117,18 @@
     paso();
   }
 
+  /* Botón «ver contraseña» en todos los campos de contraseña (también en los que se pintan después: recuperar, invitación, cuenta). */
+  function ojos(raiz) {
+    (raiz || document).querySelectorAll('input[type=password]:not([data-ojo])').forEach(inp => {
+      inp.dataset.ojo = '1'; const caja = document.createElement('span'); caja.className = 'clave-caja';
+      inp.parentNode.insertBefore(caja, inp); caja.appendChild(inp);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'ver-clave'; b.setAttribute('aria-label', 'Mostrar la contraseña'); b.title = 'Mostrar la contraseña';
+      b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+      b.addEventListener('click', () => { const ver = inp.type === 'password'; inp.type = ver ? 'text' : 'password'; b.classList.toggle('on', ver); b.setAttribute('aria-label', ver ? 'Ocultar la contraseña' : 'Mostrar la contraseña'); inp.focus(); });
+      caja.appendChild(b);
+    });
+  }
+  ojos(); new MutationObserver(() => ojos()).observe(document.body, { childList: true, subtree: true });
+
   window.MC = { api, esc, aviso, fechaRel, miniatura, LOGO, siguiente, campoCodigo, cuentaAtras };
 })();

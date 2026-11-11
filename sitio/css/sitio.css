@@ -393,3 +393,10 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .insignia.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
 .sub-form{display:grid;gap:14px;padding-top:14px;border-top:1px solid var(--line)}
 .sub-form[hidden]{display:none}
+
+/* ver contraseña */
+.clave-caja{position:relative;display:block}
+.clave-caja input{padding-right:44px}
+.ver-clave{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:34px;border:0;background:transparent;color:var(--fg3);border-radius:6px;cursor:pointer;display:grid;place-items:center}
+.ver-clave:hover{color:var(--fg);background:var(--bg2)}
+.ver-clave.on{color:var(--acc)}

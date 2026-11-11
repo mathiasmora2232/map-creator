@@ -22,7 +22,14 @@
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
   }
   const limpio = s => String(s || 'objeto').normalize('NFD').replace(/\p{M}/gu, '').replace(/[^A-Za-z0-9_\-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 60) || 'objeto';
-  const nombreArchivo = base => A.mapa + (base ? '_' + limpio(base).toLowerCase() : '') + '_' + new Date().toISOString().slice(0, 10);
+  /* nombre del mapa para la raíz de la escena (antes salía siempre «Complejo»): el del mapa propio, el del proyecto o el de la plantilla */
+  function nombreMapa() {
+    const m = /^u-/.test(A.mapa) && A.efectivos ? A.efectivos('mapas').get(A.mapa) : null;
+    if (m && m.nombre) return String(m.nombre);
+    if (window.OONube && OONube.nombre) return String(OONube.nombre);
+    return A.mapa === 'parqueadero' ? 'Parqueadero' : A.mapa === 'complejo' ? 'Complejo' : String(A.mapa || 'Mapa');
+  }
+  const nombreArchivo = base => limpio(nombreMapa()).toLowerCase() + (base ? '_' + limpio(base).toLowerCase() : '') + '_' + new Date().toISOString().slice(0, 10);
   /* ---------- qué se exporta ---------- */
   function todasLasClaves() { const ks = []; for (let i = 0; i < A.N; i++) if (!A.P[i].del) ks.push('p' + i); for (const o of E.nuevos().values()) if (A.tipoBase(o.tipo) !== 'nota') ks.push('n' + o.id); return ks; }
   /* agrupa: objetos automáticos o grupos del usuario como un objeto; el resto pieza a pieza */
@@ -48,7 +55,7 @@
     const mat = (hex, transp, emis) => { const k = hex + (transp ? 't' : '') + (emis || ''); let m = mats.get(k); if (!m) { m = new T.MeshStandardMaterial({ color: hex, roughness: 0.85, metalness: 0, transparent: !!transp, opacity: transp ? 0.4 : 1 }); if (emis) m.emissive = new T.Color(emis); m.name = 'oo_' + hex.replace('#', '') + (transp ? '_vidrio' : ''); mats.set(k, m); } return m; };
     const matPropio = window.OOMateriales ? (k, color) => OOMateriales.materialExport(k, color) : () => null;
     const geoReal = g => { let r = geosReales.get(g); if (!r) { r = g.clone(); r.scale(1, 1, -1); const ix = r.index; if (ix) { const a = ix.array; for (let i = 0; i < a.length; i += 3) { const t = a[i + 1]; a[i + 1] = a[i + 2]; a[i + 2] = t; } } r.computeVertexNormals(); geosReales.set(g, r); } return r; };
-    const raiz = new T.Group(); raiz.name = A.mapa === 'parqueadero' ? 'Parqueadero' : 'Complejo'; raiz.userData = { oo_mapa: A.mapa, oo_formato: 'oo-glb-1', oo_coordenadas: 'X este, Y arriba, Z sur (como el juego en Godot)' };
+    const raiz = new T.Group(); raiz.name = limpio(nombreMapa()); raiz.userData = { oo_mapa: A.mapa, oo_formato: 'oo-glb-1', oo_coordenadas: 'X este, Y arriba, Z sur (como el juego en Godot)' };
     const secciones = new Map(), capas = new Map();
     const nodoSec = n => { let g = secciones.get(n); if (!g) { g = new T.Group(); g.name = limpio(n); raiz.add(g); secciones.set(n, g); } return g; };
     let nuevosG = null; const nodoCapa = n => { if (!nuevosG) { nuevosG = new T.Group(); nuevosG.name = 'Objetos_nuevos'; raiz.add(nuevosG); } let g = capas.get(n); if (!g) { g = new T.Group(); g.name = limpio(n); nuevosG.add(g); capas.set(n, g); } return g; };
@@ -176,26 +183,62 @@
   async function exportarGodot(keys, nombre, zona) {
     const todo = !(keys && keys.length); keys = todo ? todasLasClaves() : keys; const base = nombreArchivo(nombre);
     const r = await glbDe(keys, { zona, todo }); if (!r) return null;
-    const t = tscnDe(keys, base + '.glb', nombre || (A.mapa === 'parqueadero' ? 'Parqueadero' : 'Complejo'));
+    const t = tscnDe(keys, base + '.glb', nombre || limpio(nombreMapa()));
     descargar(new Blob([r.buf], { type: 'model/gltf-binary' }), base + '.glb');
     setTimeout(() => descargar(t.texto, base + '.tscn', 'text/plain'), 400);
-    A.pista('Godot: ' + base + '.glb y ' + base + '.tscn (' + t.nCol + ' colisiones' + (t.recortado ? ', recortadas' : '') + ', ' + t.nMarcas + ' comportamientos). Ponlos en la misma carpeta del proyecto y abre el .tscn.');
+    A.pista('Godot: ' + base + '.glb y ' + base + '.tscn (' + t.nCol + ' colisiones' + (t.recortado ? ', recortadas' : '') + ', ' + t.nMarcas + ' comportamientos).');
+    setTimeout(() => guia('godot', base + '.glb y ' + base + '.tscn descargados'), 600);
     return { glb: r, tscn: t };
   }
+  /* ---------- guía «¿Cómo lo abro?» (menú y después de exportar) ---------- */
+  const GUIAS = {
+    unity: { n: 'Unity', html: `<ol>
+      <li>Abre tu proyecto en <b>Unity 2022.3 o Unity 6</b> (sirve 3D, URP o HDRP).</li>
+      <li>Instala el importador de glTF una sola vez: <b>Window → Package Manager → + → Add package by name…</b> y escribe <code>com.unity.cloud.gltfast</code>. Pulsa <b>Add</b>.</li>
+      <li>Arrastra el archivo <code>.glb</code> a la ventana <b>Project</b> (por ejemplo a <code>Assets/Mapas/</code>). Unity lo importa como un modelo.</li>
+      <li>Arrastra ese modelo a la <b>Hierarchy</b> y ponle posición 0, 0, 0. Las medidas están en metros, con Y hacia arriba.</li>
+      <li>Para que se pueda caminar encima: selecciona las piezas (o el objeto raíz y sus hijos) y añade <b>Add Component → Mesh Collider</b>. Las piezas que acaban en <code>-colonly</code> son solo colisión: quítales el <i>Mesh Renderer</i>.</li>
+      <li>Luces: <b>Window → Rendering → Lighting → Generate Lighting</b>.</li></ol>
+      <p class="nota-exp">El <code>_escena.json</code> trae cada objeto con sus propiedades y comportamientos (puertas, coches, zonas…), por si quieres un script que los convierta en componentes. Si los materiales salen rosados, revisa que glTFast esté instalado y que importaste el <code>.glb</code> (no otro formato).</p>` },
+    godot: { n: 'Godot', html: `<ol>
+      <li>Abre tu proyecto en <b>Godot 4.2 o más nuevo</b>.</li>
+      <li>Copia los dos archivos, el <code>.glb</code> y el <code>.tscn</code>, a <b>la misma carpeta</b> del proyecto (por ejemplo <code>res://mapas/</code>). Godot importa el <code>.glb</code> solo.</li>
+      <li>En el panel <b>Sistema de archivos</b>, haz doble clic en el <code>.tscn</code>: es la escena del mapa, con el modelo y las colisiones (StaticBody3D) ya puestas.</li>
+      <li>Para jugarla, instánciala en tu escena principal (arrástrala) o pon una <b>Camera3D</b> y una luz y pulsa <b>F6</b>.</li></ol>
+      <p class="nota-exp">Las piezas que acaban en <code>-colonly</code> Godot las convierte en colisión al importar. Los comportamientos van como metadatos en el nodo «Comportamientos».</p>` },
+    blender: { n: 'Blender', html: `<ol>
+      <li>En Blender: <b>Archivo → Importar → glTF 2.0 (.glb/.gltf)</b> y elige el archivo.</li>
+      <li>El mapa entra como un objeto raíz con el nombre del mapa y, dentro, sus secciones: <code>Objetos_nuevos</code> (lo que hiciste en el editor, por capas), <code>Suelo</code>, <code>Luces</code>…</li></ol>
+      <h4>Lo que puede extrañarte</h4>
+      <p class="nota-exp"><b>Las líneas punteadas</b> que salen del centro hacia los objetos son las <i>líneas de relación</i> de Blender: unen cada objeto con su padre (el grupo que lo contiene, que está en el origen). Son normales; se ocultan en <b>Superposiciones → Líneas de relación</b>.<br>
+      <b>Camera y Light</b> no vienen del mapa: son la cámara y la luz de la escena nueva de Blender.<br>
+      <b>Los nombres con números</b> (<code>pieza_123</code>, <code>.001</code>) son piezas sin nombre propio o repetidas: Blender añade <code>.001</code> cuando dos se llaman igual.</p>` }
+  };
+  function guia(motor, exportado) {
+    let actual = GUIAS[motor] ? motor : 'unity';
+    const pintar = () => `<div class="cab">${exportado ? 'Listo: ' + esc(exportado) : '¿Cómo abro el mapa?'}</div><div class="cont guia-exp">
+      <div class="pestanas-exp">${Object.entries(GUIAS).map(([k, g]) => `<button data-guia="${k}" class="${k === actual ? 'on' : ''}">${g.n}</button>`).join('')}</div>
+      ${GUIAS[actual].html}</div><div class="pie"><button class="prim" data-a="m-si">Entendido</button></div>`;
+    A.abrirModal(pintar(), 'guia');
+    const caja = $('#modalCaja'); caja.onclick = e => { const b = e.target.closest('[data-guia]'); if (!b) return; actual = b.dataset.guia; caja.innerHTML = pintar(); };
+  }
+
   /* ---------- Unity: GLB + JSON de escena + LEEME ---------- */
-  const LEEME_UNITY = `Importar en Unity (Operación Oficina, editor del mapa)
-====================================================
-1. Instala un importador de glTF: «glTFast» (Package Manager → Add package by name → com.unity.cloud.gltfast) o «UnityGLTF».
-2. Copia el .glb a Assets/ (por ejemplo Assets/OperacionOficina/Importado/). Unity lo convierte en un prefab: arrástralo a la escena.
-   - Coordenadas: el .glb está en metros, Y arriba. glTF es diestro; el importador ya lo convierte a Unity (z se invierte).
-   - Los nodos llevan el nombre del objeto: <Mapa>/<Sección>/<Objeto>, Objetos_nuevos/<capa>/<objeto> y Luces.
-   - Las piezas que acaban en «-colonly» son solo colisión: quítales el MeshRenderer y deja un BoxCollider/MeshCollider.
-3. El *_escena.json trae, por objeto: nombre, posición, rotación, tamaño, propiedades (colisión, sombras, etiqueta) y comportamientos
-   (puerta, coche conducible, rompible, interactuable, luz con interruptor, zona de aparición, sonido) con sus parámetros.
-   Un script de editor puede leerlo, buscar el GameObject por nombre (o por «id») y añadir los componentes. En coordenadas de Unity:
-   x = X, y = Y, z = -Z; cuaternión (−qx, −qy, qz, qw).
-4. glTFast no importa los «extras» de glTF; UnityGLTF sí puede (con un plugin de importación). Por eso los comportamientos van también
-   en el JSON, que es la fuente fiable.
+  const LEEME_UNITY = `Abrir el mapa en Unity (Map Creator)
+====================================
+1. Unity 2022.3 o Unity 6 (proyecto 3D, URP o HDRP).
+2. Instala el importador de glTF una sola vez: Window → Package Manager → + → Add package by name… → com.unity.cloud.gltfast → Add.
+3. Arrastra el .glb a la ventana Project (por ejemplo Assets/Mapas/). Unity lo importa como un modelo.
+4. Arrastra el modelo a la Hierarchy, posición 0, 0, 0. Medidas en metros, Y hacia arriba (el importador ya convierte los ejes).
+5. Colisiones: selecciona las piezas y Add Component → Mesh Collider. Las que acaban en «-colonly» son solo colisión: quítales el
+   Mesh Renderer.
+6. Luces: Window → Rendering → Lighting → Generate Lighting.
+
+Nombres: <Mapa>/<Sección>/<Objeto>, Objetos_nuevos/<capa>/<objeto> y Luces.
+El *_escena.json trae cada objeto (nombre, posición, rotación, tamaño, propiedades y comportamientos: puerta, coche, rompible,
+interactuable, luz con interruptor, zona de aparición, sonido). En coordenadas de Unity: x = X, y = Y, z = -Z; cuaternión
+(−qx, −qy, qz, qw). glTFast no lee los «extras» de glTF, por eso los comportamientos van también en el JSON.
+Si los materiales salen rosados: revisa que glTFast esté instalado y que importaste el .glb.
 `;
   async function exportarUnity(keys, nombre, zona) {
     const todo = !(keys && keys.length); keys = todo ? todasLasClaves() : keys; const base = nombreArchivo(nombre);
@@ -203,7 +246,7 @@
     descargar(new Blob([r.buf], { type: 'model/gltf-binary' }), base + '.glb');
     setTimeout(() => descargar(JSON.stringify(j, null, 1), base + '_escena.json', 'application/json'), 400);
     setTimeout(() => descargar(LEEME_UNITY, 'LEEME_unity.txt', 'text/plain'), 800);
-    A.pista('Unity: ' + base + '.glb, ' + base + '_escena.json y LEEME_unity.txt descargados.'); return { glb: r, json: j };
+    A.pista('Unity: ' + base + '.glb, ' + base + '_escena.json y LEEME_unity.txt descargados.'); setTimeout(() => guia('unity', base + '.glb descargado'), 1000); return { glb: r, json: j };
   }
   /* ---------- JSON «para el juego» («oo-cambios-juego», versión 1) ---------- */
   function cambiosJuego() {
@@ -302,9 +345,10 @@
     'exp-glb-zona': async () => { const r = await elegirZona('Exportar una zona (.glb)'); if (r) exportarGLB(r.keys, r.z.nombre, r.z); },
     'exp-json-todo': () => exportarJSON(null, ''), 'exp-json-zona': async () => { const r = await elegirZona('Exportar una zona como escena (.json)'); if (r) exportarJSON(r.keys, r.z.nombre, r.z); },
     'exp-godot-todo': () => exportarGodot(null, ''), 'exp-godot-zona': async () => { const r = await elegirZona('Exportar una zona para Godot'); if (r) exportarGodot(r.keys, r.z.nombre, r.z); },
-    'exp-unity-todo': () => exportarUnity(null, ''), 'exp-juego': () => exportarJuego(), 'exp-prefabs': () => { if (window.OOPrefabs) OOPrefabs.exportar(); },
+    'exp-unity-todo': () => exportarUnity(null, ''), 'exp-unity-zona': async () => { const r = await elegirZona('Exportar una zona para Unity'); if (r) exportarUnity(r.keys, r.z.nombre, r.z); }, 'exp-juego': () => exportarJuego(), 'exp-prefabs': () => { if (window.OOPrefabs) OOPrefabs.exportar(); },
     'imp-zona': () => importarArchivo(), 'imp-escena': () => importarArchivo(), 'importar-catalogo': () => importarCatalogo()
   };
-  document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b || !ACC[b.dataset.a]) return; e.preventDefault(); ACC[b.dataset.a](); });
-  window.OOExportar = { exportarEscena, glbDe, exportarGLB, escenaJSON, exportarJSON, tscnDe, exportarGodot, exportarUnity, cambiosJuego, exportarJuego, importarEscena, importarGLBEscena, todasLasClaves, entidades };
+  ACC['exp-ayuda'] = b => guia(b && b.dataset.motor);
+  document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b || !ACC[b.dataset.a]) return; e.preventDefault(); ACC[b.dataset.a](b); });
+  window.OOExportar = { guia, nombreMapa, exportarEscena, glbDe, exportarGLB, escenaJSON, exportarJSON, tscnDe, exportarGodot, exportarUnity, cambiosJuego, exportarJuego, importarEscena, importarGLBEscena, todasLasClaves, entidades };
 })();

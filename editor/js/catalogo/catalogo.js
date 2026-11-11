@@ -62,7 +62,14 @@
     escritorio: { n: 'Escritorio', d: [1.4, 0.76, 0.7], color: '#a07c56', partes: c => [B(0, 0.74, 0, 1.4, 0.04, 0.7, c), B(-0.67, 0.36, 0, 0.04, 0.72, 0.66, oscuro(c, 0.85)), B(0.67, 0.36, 0, 0.04, 0.72, 0.66, oscuro(c, 0.85)), B(0.42, 0.45, 0, 0.46, 0.5, 0.62, oscuro(c, 0.75)), B(0, 0.5, -0.32, 1.3, 0.4, 0.02, oscuro(c, 0.85))] },
     archivador: { n: 'Archivador', d: [0.5, 1.3, 0.6], color: '#8f969c', partes: c => { const a = [B(0, 0.65, 0, 0.5, 1.3, 0.6, c)]; for (let k = 0; k < 4; k++) { a.push(B(0, 0.16 + k * 0.32, 0.302, 0.46, 0.01, 0.01, oscuro(c, 0.6))); a.push(B(0, 0.3 + k * 0.32, 0.31, 0.12, 0.03, 0.02, '#333333')); } return a; } },
     estanteria: { n: 'Estantería', d: [1.0, 2.0, 0.4], color: '#9a7650', partes: c => { const a = [B(-0.48, 1, 0, 0.04, 2, 0.4, c), B(0.48, 1, 0, 0.04, 2, 0.4, c), B(0, 1, -0.19, 1, 2, 0.02, oscuro(c, 0.8))]; for (let k = 0; k < 5; k++) a.push(B(0, 0.05 + k * 0.48, 0, 0.92, 0.03, 0.38, c)); a.push(B(-0.2, 0.62, 0, 0.3, 0.3, 0.25, '#2f5f8f'), B(0.15, 1.1, 0, 0.4, 0.32, 0.25, '#8f2f2f')); return a; } },
-    sofa: { n: 'Sofá', d: [2.0, 0.85, 0.9], color: '#4a5a6e', partes: c => [B(0, 0.25, 0, 2, 0.4, 0.9, c), B(0, 0.62, -0.35, 2, 0.5, 0.2, c), B(-0.92, 0.5, 0, 0.16, 0.4, 0.9, oscuro(c, 0.9)), B(0.92, 0.5, 0, 0.16, 0.4, 0.9, oscuro(c, 0.9)), B(0, 0.47, 0.05, 1.68, 0.08, 0.7, oscuro(c, 1.1))] },
+    sofa: { n: 'Sofá', d: [2.0, 0.86, 0.9], color: '#5b6b80', partes: c => { /* piezas que no se solapan en caras paralelas (evita el parpadeo) */
+      const k = oscuro(c, 0.78), pata = '#2b2b2b', cw = 1.62 / 3, a = [];
+      for (const x of [-0.9, 0.9]) for (const z of [-0.36, 0.36]) a.push(Cy(x, 0.03, z, 0.05, 0.06, pata));
+      a.push(B(0, 0.2, 0.02, 1.64, 0.28, 0.82, k));                                         /* base entre los brazos */
+      for (let i = 0; i < 3; i++) { const x = -0.81 + cw * (i + 0.5); a.push(B(x, 0.42, 0.08, cw - 0.02, 0.16, 0.66, c)); a.push(B(x, 0.67, -0.23, cw - 0.03, 0.38, 0.13, c)); }
+      a.push(B(0, 0.6, -0.36, 1.64, 0.52, 0.14, k));                                        /* respaldo */
+      for (const x of [-0.9, 0.9]) a.push(B(x, 0.37, -0.01, 0.16, 0.62, 0.88, oscuro(c, 0.9))); /* brazos */
+      return a; } },
     planta_maceta: { n: 'Planta en maceta', d: [0.5, 1.2, 0.5], color: '#4f8a3a', partes: c => [Cy(0, 0.2, 0, 0.4, 0.4, '#8a5a3c'), Sp(0, 0.82, 0, 0.6, 0.8, 0.6, c)] },
     dispensador: { n: 'Dispensador de agua', d: [0.35, 1.25, 0.35], color: '#e6e6e6', partes: c => [B(0, 0.45, 0, 0.32, 0.9, 0.32, c), Cy(0, 1.07, 0, 0.26, 0.35, '#7fb4d8', { t: true }), B(0, 0.75, 0.165, 0.08, 0.05, 0.03, '#2f6fbf')] },
     computador: { n: 'Computador', d: [0.6, 0.5, 0.4], color: '#1b1b1b', partes: c => [B(0, 0.33, -0.08, 0.55, 0.32, 0.03, c), B(0, 0.12, -0.08, 0.06, 0.22, 0.05, '#333333'), B(0, 0.01, -0.08, 0.22, 0.02, 0.16, '#333333'), B(0, 0.01, 0.12, 0.45, 0.02, 0.15, '#2a2a2a'), B(0, 0.33, -0.064, 0.5, 0.28, 0.005, '#3a6ea8')] },
@@ -178,8 +185,9 @@
     return a;
   }
   const bisagras = (h, t) => [0.22, h / 2, h - 0.22].map(y => Cy(0, y, 0, 0.022, 0.11, ACERO));
-  function hojasPuerta(estilo, w, h, g, hoja) {
-    const zb = g / 2 + 0.005, x0 = -w / 2;
+  /* (puertas) `abre`: ángulo de apertura en radianes (0 = cerrada, lo que se ve al colocarla) */
+  function hojasPuerta(estilo, w, h, g, hoja, abre) {
+    const zb = g / 2 + 0.005, x0 = -w / 2, ang = -(+abre || 0);
     switch (estilo) {
       case 'bano_gris': {
         const col = hoja && hoja !== '#4a555a' ? hoja : '#6b726f', t = 0.045;
@@ -188,20 +196,20 @@
         const ancho = Math.min(0.5, w - 0.2);
         a.push(B(w / 2, 1.62, t / 2 + 0.004, ancho, ancho * 0.92, 0.004, '#1d3f91'));
         a.push({ f: 't', texto: 'BAÑO', p: [w / 2, 1.62, t / 2 + 0.0075], w: ancho, h: ancho * 0.92, bg: '#1d3f91', fg: '#ffffff', cartel: { texto: 'BAÑO\nHOMBRES', senal: 'bano_h', alto: 0.045, placa: 'si', colorFondo: '#1d3f91', borde: 0, montaje: 'pared' } });
-        return hojaGirada(a, x0, zb, -0.22);
+        return hojaGirada(a, x0, zb, ang);
       }
       case 'madera': {
         const col = hoja && hoja !== '#4a555a' ? hoja : '#9a6a42', t = 0.044, k = oscuro(col, 0.8);
         const a = [B(w / 2, h / 2, 0, w, h, t, col)];
         for (const sz of [-1, 1]) for (const cx of [w * 0.28, w * 0.72]) for (const [y0, y1] of [[0.2, 0.88], [1.12, h - 0.14]]) a.push(B(cx, (y0 + y1) / 2, sz * (t / 2 + 0.002), w * 0.34, y1 - y0, 0.004, k));
-        return hojaGirada(a.concat(manija(w, t, true), bisagras(h, t)), x0, zb, -0.22);
+        return hojaGirada(a.concat(manija(w, t, true), bisagras(h, t)), x0, zb, ang);
       }
       case 'vidrio_aluminio': {
         const t = 0.05, m = 0.07, a = [B(m / 2, h / 2, 0, m, h, t, ALU), B(w - m / 2, h / 2, 0, m, h, t, ALU), B(w / 2, h - m / 2, 0, w, m, t, ALU), B(w / 2, 0.07, 0, w, 0.14, t, ALU), B(w / 2, 1.02, 0, w, 0.06, t, ALU)];
         a.push(B(w / 2, (0.14 + 0.99) / 2, 0, w - 2 * m, 0.85, 0.012, VIDRIO, { t: true }), B(w / 2, (1.05 + h - m) / 2, 0, w - 2 * m, h - m - 1.05, 0.012, VIDRIO, { t: true }));
         for (const sz of [-1, 1]) a.push(B(w - 0.14, 1.0, sz * 0.06, 0.03, 0.5, 0.03, ACERO));
         a.push(B(0.3, h - 0.08, -t / 2 - 0.03, 0.45, 0.05, 0.05, '#3a3d42')); // cierrapuertas
-        return hojaGirada(a, x0, zb, -0.18);
+        return hojaGirada(a, x0, zb, ang);
       }
       case 'corrediza': {
         const t = 0.045, wm = w / 2 + 0.05, a = [B(0, h + 0.05, 0, w + 0.1, 0.1, 0.14, ALU)];
@@ -234,7 +242,7 @@
         const col = hoja && hoja !== '#8b6a4a' ? hoja : '#4a555a', t = 0.045;
         const a = hojaMetal(w, h, col, true).concat(manija(w, t, true), bisagras(h, t));
         a.push(B(w / 2, 0.1, t / 2 + 0.002, w - 0.06, 0.16, 0.003, ACERO));
-        return hojaGirada(a, x0, zb, -0.22);
+        return hojaGirada(a, x0, zb, ang);
       }
     }
   }
@@ -274,8 +282,8 @@
         const w = +e.sx, h = +e.sy, g = (+e.sz || 0.2) + 0.03, fw = MARCO, al = base === 'ventana' ? (+e.alfeizar || 0) : 0;
         const a = [B(-w / 2 - fw / 2, al + h / 2, 0, fw, h, g, col), B(w / 2 + fw / 2, al + h / 2, 0, fw, h, g, col), B(0, al + h + fw / 2, 0, w + 2 * fw, fw, g, col)];
         if (base === 'ventana') { a.push(B(0, al - fw / 2, 0, w + 2 * fw, fw, g + 0.06, col)); a.push(B(0, al + h / 2, 0, w, h, 0.03, '#8fc3e6', { t: true })); a.push(B(0, al + h / 2, 0, 0.04, h, 0.05, col)); }
-        else if (e.estilo === 'simple') { const ang = -1.2; const dx = Math.cos(-ang), dz = Math.sin(-ang); a.push(B(-w / 2 + dx * w / 2, h / 2, dz * w / 2 + g / 2, w, h - 0.02, 0.04, e.hoja || '#8b6a4a', { r: [0, ang, 0] })); }
-        else { if (['vidrio_aluminio', 'corrediza'].includes(e.estilo)) for (const p of a) p.c = '#c9ced3'; a.push(...hojasPuerta(e.estilo || 'metal_oficina', w, h, g, e.hoja)); }
+        else if (e.estilo === 'simple') { const ang = -(+e.apertura || 0) * Math.PI / 180; const dx = Math.cos(-ang), dz = Math.sin(-ang); a.push(B(-w / 2 + dx * w / 2, h / 2, dz * w / 2 + (ang ? g / 2 : 0), w, h - 0.02, 0.04, e.hoja || '#8b6a4a', { r: [0, ang, 0] })); }
+        else { if (['vidrio_aluminio', 'corrediza'].includes(e.estilo)) for (const p of a) p.c = '#c9ced3'; a.push(...hojasPuerta(e.estilo || 'metal_oficina', w, h, g, e.hoja, (+e.apertura || 0) * Math.PI / 180)); } /* cerradas por defecto; «Apertura» las muestra abiertas */
         return a;
       }
       case 'poste': { const H = +e.sy || 7; return [Cy(0, 0.3, 0, 0.32, 0.6, '#5b6168'), Cy(0, H / 2, 0, 0.16, H, '#6b7178'), B(0.65, H - 0.1, 0, 1.3, 0.08, 0.08, '#6b7178'), Lz(1.25, H - 0.22, 0, 0.38, '#fff2c0')]; }
@@ -297,7 +305,8 @@
       case 'nota': { if (window.OONotas) return OONotas.partes(e, o); /* (2.1 pro f5) pin grande con caja para el clic y estado (notas_pro.js) */ const foto = o.fotos && o.fotos.length; return [Cy(0, 1.1, 0, 0.06, 2.2, '#7a1f1f'), Sp(0, 2.3, 0, 0.5, 0.5, 0.5, foto ? '#1f6feb' : '#e53935')]; }
       case 'habitacion': { const el = +e.elevacion || 0, g = e.grosor != null && isFinite(+e.grosor) ? Math.max(0.005, +e.grosor) : 0.03; return [{ f: 'poly', pts: e.puntos || [], y: 0.012 + el, grosor: g, c: col, agujeros: (Array.isArray(e.agujeros) ? e.agujeros : []).concat(e.agujeros_auto ? Object.values(e.agujeros_auto) : []) }]; } /* (2.1 pro f3) agujeros_auto: los abren las escaleras (escaleras.js) */ /* (2.1 pro) elevación, grosor y agujeros del piso */
       case 'fundacion': return window.OOFundaciones ? OOFundaciones.partes(e) : [B(0, (+e.elevacion || 0.5) / 2, 0, +e.sx || 4, +e.elevacion || 0.5, +e.sz || 4, col)]; /* (2.1 pro) fundaciones.js */
-      case 'techo': if (e.forma && window.OOTechos) return OOTechos.partes(e, col); /* (2.1 pro f3) cubiertas paramétricas (techos.js) */ return [{ f: 'poly', pts: e.puntos || [], y: 0, grosor: +e.grosor || 0.15, c: col }];
+      case 'techo': if (e.forma && window.OOTechos) return OOTechos.partes(e, col); /* (2.1 pro f3) cubiertas paramétricas (techos.js) */ { const g = +e.grosor || 0.15; return [{ f: 'poly', pts: e.puntos || [], y: 0, grosor: g, c: col, agujeros: (Array.isArray(e.agujeros) ? e.agujeros : []).concat(e.agujeros_auto ? Object.values(e.agujeros_auto) : []) }]
+        .concat((Array.isArray(e.claraboyas) ? e.claraboyas : []).filter(v => Array.isArray(v) && v.length >= 3).map(v => ({ f: 'poly', pts: v, y: g - 0.03, grosor: 0.02, c: '#bfe3f0', t: true }))); } /* huecos propios (huecos_losas.js), de escalera (escaleras.js) y claraboyas */
       case 'escalera': case 'rampa': if (window.OOEscaleras) return OOEscaleras.partes(e, col, base); break; /* (2.1 pro f3) escaleras.js */
       case 'baranda': if (window.OORevestimientos) return OORevestimientos.baranda(e, col); break;
       case 'objeto': { const c = OBJ[sub]; if (!c) return [B(0, 0.5, 0, 1, 1, 1, col)]; return escalar(c.partes(e.color || c.color, e), c.d, e); }

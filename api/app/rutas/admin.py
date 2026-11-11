@@ -18,7 +18,7 @@ async def resumen(_usuario=Depends(usuario_admin)):
                    (SELECT count(*) FROM documentos) AS documentos,
                    (SELECT coalesce(sum(tamano), 0) FROM archivos) AS bytes_archivos,
                    pg_database_size(current_database()) AS bytes_base""")
-    return dict(fila) | {"registro_abierto": config.REGISTRO_ABIERTO}
+    return dict(fila) | {"registro_abierto": config.REGISTRO_ABIERTO, "correo": config.CORREO_ACTIVO}
 
 
 @router.get("/usuarios")
