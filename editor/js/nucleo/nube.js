@@ -11,6 +11,7 @@
   const ROLES = { dueno: 'Dueño', editor: 'Editor', lector: 'Solo lectura' };
   N.info.then(p => {
     if (!p) return;
+    N.nombre = p.nombre; /* lo usa la exportación para nombrar la raíz de la escena */
     document.title = p.nombre + ' · Map Creator';
     const marca = document.querySelector('#barra .marca');
     if (marca) {

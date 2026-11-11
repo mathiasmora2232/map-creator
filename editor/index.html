@@ -208,25 +208,37 @@
 </div>
 <div id="menuHerr" class="menu-flot" role="menu" hidden></div>
 <div id="menuPaneles" class="menu-flot" role="menu" hidden></div>
-<div id="menuExportar" class="menu-flot" role="menu" hidden>
-  <div class="menu-tit">Exportar a otros motores</div>
-  <button role="menuitem" data-a="exp-glb-todo">Todo el mapa (.glb)<small>glTF: Unity, Godot, Unreal</small></button>
-  <button role="menuitem" data-a="exp-glb-sel">La selección (.glb)</button>
-  <button role="menuitem" data-a="exp-glb-zona">Una zona (.glb)…</button>
-  <button role="menuitem" data-a="exp-godot-todo">Godot 4.4: escena .tscn + .glb<small>colisiones y metadatos</small></button>
-  <button role="menuitem" data-a="exp-godot-zona">Godot 4.4: una zona…</button>
-  <button role="menuitem" data-a="exp-unity-todo">Unity: .glb + escena .json + LEEME</button>
+<div id="menuExportar" class="menu-flot menu-exportar" role="menu" hidden>
+  <div class="menu-tit"><span class="motor motor-unity">Unity</span>Para Unity</div>
+  <button role="menuitem" data-a="exp-unity-todo">Todo el mapa para Unity<small>.glb + escena .json + guía de pasos</small></button>
+  <button role="menuitem" data-a="exp-unity-zona">Una zona para Unity…</button>
+  <button role="menuitem" data-a="exp-ayuda" data-motor="unity" class="ayuda-exp">¿Cómo lo abro en Unity?</button>
   <hr>
-  <div class="menu-tit">Exportar para el juego</div>
+  <div class="menu-tit"><span class="motor motor-godot">Godot</span>Para Godot 4</div>
+  <button role="menuitem" data-a="exp-godot-todo">Todo el mapa para Godot<small>escena .tscn + .glb, con colisiones</small></button>
+  <button role="menuitem" data-a="exp-godot-zona">Una zona para Godot…</button>
+  <button role="menuitem" data-a="exp-ayuda" data-motor="godot" class="ayuda-exp">¿Cómo lo abro en Godot?</button>
+  <hr>
+  <div class="menu-tit"><span class="motor motor-gltf">glTF</span>Blender, Unreal y otros (.glb)</div>
+  <button role="menuitem" data-a="exp-glb-todo">Todo el mapa (.glb)</button>
+  <button role="menuitem" data-a="exp-glb-sel">Solo la selección (.glb)</button>
+  <button role="menuitem" data-a="exp-glb-zona">Una zona (.glb)…</button>
+  <button role="menuitem" data-a="exp-ayuda" data-motor="blender" class="ayuda-exp">¿Cómo lo abro en Blender?</button>
+  <hr>
+  <div class="menu-tit">Datos y respaldo</div>
   <button role="menuitem" data-a="validar-mapa">Revisar el mapa (avisos)<small>escaleras, pendientes, flotando, anclajes, materiales</small></button>
-  <button role="menuitem" data-a="exp-enviar-juego" class="destacado">Enviar al juego (Unity)<small>lo aplica al compilar: colisiones, puertas y bots</small></button>
-  <button role="menuitem" data-a="exp-juego">Cambios para el juego (.json)<small>generadores Godot / Unity</small></button>
-  <button role="menuitem" data-a="exp-json-todo">Escena del juego (.json)</button>
-  <button role="menuitem" data-a="exp-json-zona">Zona como escena (.json)…</button>
+  <button role="menuitem" data-a="exp-json-todo">Escena completa (.json)<small>para volver a importarla aquí o en otro proyecto</small></button>
+  <button role="menuitem" data-a="exp-json-zona">Una zona como escena (.json)…</button>
   <button role="menuitem" data-a="exp-prefabs">Mis prefabs (.json)</button>
-  <button role="menuitem" data-a="exp-alturas">Terreno: alturas (.png + .r16 + .json)<small>Godot / Unity</small></button>
-  <button role="menuitem" data-a="copiar">Copiar cambios (JSON)</button>
-  <button role="menuitem" data-a="descargar">Descargar cambios (JSON)</button>
+  <button role="menuitem" data-a="exp-alturas">Terreno: alturas (.png + .r16 + .json)<small>heightmap para Godot / Unity</small></button>
+  <div data-solo-local>
+    <hr>
+    <div class="menu-tit">Juego Operación Oficina (solo en local)</div>
+    <button role="menuitem" data-a="exp-enviar-juego" class="destacado">Enviar al juego (Unity)<small>lo aplica al compilar: colisiones, puertas y bots</small></button>
+    <button role="menuitem" data-a="exp-juego">Cambios para el juego (.json)<small>generadores Godot / Unity</small></button>
+    <button role="menuitem" data-a="copiar">Copiar cambios (JSON)</button>
+    <button role="menuitem" data-a="descargar">Descargar cambios (JSON)</button>
+  </div>
   <hr>
   <div class="menu-tit">Importar</div>
   <button role="menuitem" data-a="imp-escena">Escena o zona (.json, .glb, .gltf)<small>objetos editables</small></button>
@@ -290,6 +302,8 @@
 <script src="js/nucleo/geometria.js"></script>
 <script src="js/construccion/escaleras_pro.js"></script>
 <script src="js/construccion/escaleras_libres.js"></script>
+<script src="js/construccion/huecos_losas.js"></script>
+<script src="js/construccion/guias_alineacion.js"></script>
 <script src="js/escena/jerarquia_pro.js"></script>
 <script src="js/mapa/terreno_pro.js"></script>
 <script src="js/nucleo/productividad.js"></script>

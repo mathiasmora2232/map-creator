@@ -705,3 +705,15 @@ migración con respaldo, apartados, copia nueva).
 - **Barandas** (`estiloBaranda`): tubo, barrotes, cables, vidrio (paneles transparentes) y muro (antepecho). `colorBaranda`.
 - **Diseños** listos en la herramienta y en el inspector: Hormigón, Madera clásica, Flotante moderna, Zanca central, Metálica
   industrial, Con antepecho y Zancas de acero. Aplican estilo, barandas y colores de una vez.
+
+# Huecos, guías de alineación, puertas y exportación
+
+- **Construir → Hueco en suelo o techo** (`huecos_losas.js`): arrastra un rectángulo sobre un piso, una losa o un techo plano, o
+  haz clic para uno del tamaño del panel (rectangular o redondo). En techos puede llevar vidrio (claraboya: `datos.claraboyas`).
+  Los huecos van en `datos.agujeros` y se quitan desde el inspector («Huecos»). Para paredes sigue «Hueco en pared» (tecla O).
+- **Guías de alineación** (`guias_alineacion.js`): al mover con el gizmo, una línea rosa (X) o azul (Z) marca cuándo un borde o el
+  centro coincide con otro objeto cercano, y se imanta a menos de 8 cm. Al girar, la pista dice el ángulo y «Recto ✓»; a menos de 2°
+  se imanta a 0/90/180/270°. Ctrl: sin imán. Se apaga con «Guías» en «Imán y selección».
+- **Puertas**: se colocan cerradas. Campo «Apertura (°)» para mostrarlas abiertas.
+- **Exportar**: menú por destino (Unity, Godot, Blender/glTF) con «¿Cómo lo abro?» y la guía de pasos al terminar cada exportación.
+  La raíz de la escena lleva el nombre del mapa (antes salía siempre «Complejo»). Lo del juego Operación Oficina solo sale en local.

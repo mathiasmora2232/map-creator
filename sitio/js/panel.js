@@ -277,6 +277,9 @@
       <div class="nota-reg ${r.registro_abierto ? 'abierto' : ''}">${r.registro_abierto
         ? '<b>El registro está abierto:</b> cualquiera puede crearse una cuenta. Para que sea solo por invitación, pon <code>OO_REGISTRO_ABIERTO=false</code> en el <code>.env</code> del servidor y reinicia.'
         : '<b>El registro es solo por invitación.</b> Crea un enlace de registro, o pide a los dueños de los mapas que compartan con un enlace de invitación.'}</div>
+      <div class="nota-reg ${r.correo ? '' : 'abierto'}">${r.correo
+        ? '<b>Correo activo:</b> las cuentas nuevas verifican su correo con un código, se puede recuperar la contraseña y activar los dos pasos.'
+        : '<b>Correo desactivado:</b> falta configurar <code>SMTP_HOST</code> (y el resto de <code>SMTP_*</code>) en el servidor. Sin correo no se verifican las cuentas ni se puede recuperar la contraseña.'}</div>
       <section class="bloque"><div class="bloque-cab"><h2>Enlaces de registro</h2></div>
         ${enlaces.length ? `<div class="tabla"><table><thead><tr><th>Nota</th><th>Estado</th><th>Usos</th><th>Caducidad</th><th>Creado</th><th></th></tr></thead><tbody>
           ${enlaces.map(i => `<tr><td>${esc(i.nota) || '<span class="tenue">Sin nota</span>'}</td><td><span class="estado-inv ${i.estado}">${ESTADO[i.estado]}</span></td><td>${usos(i)}</td>

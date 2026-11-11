@@ -97,7 +97,8 @@
     const postes = (alto, filas) => { const h = Math.max(0.5, +alto || 2.5), n = Math.max(1, Math.ceil(W / 3)); for (const z of filas) for (let k = 0; k <= n; k++) { const x = -W / 2 + 0.1 + k * (W - 0.2) / n; out.push(caja(F, [x, -h / 2, z], [0.12, h, 0.12], cMad === c ? '#6b4f35' : (cub === 'chapa' ? cMet : cMad))); } };
 
     if (forma === 'plano') {
-      const P2 = desfasar(pts, v); out.push({ f: 'poly', pts: P2.map(([x, z]) => [r3(x), r3(z)]), y: 0, grosor: g, c, t: transp, agujeros: e.agujeros_auto ? Object.values(e.agujeros_auto) : [] }); /* huecos de escalera */
+      const P2 = desfasar(pts, v); out.push({ f: 'poly', pts: P2.map(([x, z]) => [r3(x), r3(z)]), y: 0, grosor: g, c, t: transp, agujeros: (Array.isArray(e.agujeros) ? e.agujeros : []).concat(e.agujeros_auto ? Object.values(e.agujeros_auto) : []) }); /* huecos propios y de escalera */
+      for (const cv of Array.isArray(e.claraboyas) ? e.claraboyas : []) if (Array.isArray(cv) && cv.length >= 3) out.push({ f: 'poly', pts: cv, y: g - 0.03, grosor: 0.02, c: '#bfe3f0', t: true }); /* claraboyas (huecos_losas.js) */
       const pr = Math.max(0, +val(e, 'pretil') || 0);
       if (pr > 0.05) for (let i = 0; i < P2.length; i++) { const p = P2[i], q = P2[(i + 1) % P2.length], L = Math.hypot(q[0] - p[0], q[1] - p[1]); if (L < 0.05) continue; const ang = Math.atan2(-(q[1] - p[1]), q[0] - p[0]); const m = norm([(q[1] - p[1]), -(q[0] - p[0])]), s = areaF(P2) > 0 ? 1 : -1; out.push(caja(rotY(ang), [0, 0, 0], [L + 0.15, pr, 0.15], e.colorPretil || '#d9d4c8', {})); const b = out[out.length - 1]; b.p = [(p[0] + q[0]) / 2 - m[0] * s * 0.075, g + pr / 2, (p[1] + q[1]) / 2 - m[1] * s * 0.075]; }
       return out;
