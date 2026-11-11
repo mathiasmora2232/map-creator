@@ -46,6 +46,11 @@ jobs:
             GITHUB_REPO_TOKEN="$REPO_TOKEN" GIT_ASKPASS="$ASKPASS_DIR/askpass" GIT_TERMINAL_PROMPT=0 git fetch --depth=1 origin "$DEPLOY_SHA"
             git checkout -f -B production FETCH_HEAD
 
+            # Secretos de la bóveda del panel (SMTP_*): el panel los sincroniza en este archivo (600). Las variables exportadas en
+            # la shell ganan al .env al interpolar el compose, así el correo funciona aunque el .env del stack no las tenga.
+            VAULT=/root/.config/panel-vault/map-creator-app.env
+            if [ -f "$VAULT" ]; then set -a; . "$VAULT"; set +a; echo "Variables de la bóveda cargadas"; else echo "Sin $VAULT: el correo queda desactivado"; fi
+
             # Mismo nombre de proyecto Docker que el stack del panel: reutiliza sus volúmenes (la base no se pierde)
             COMPOSE="docker compose -p map-creator -f docker-compose.yml -f override.yaml"
             $COMPOSE build

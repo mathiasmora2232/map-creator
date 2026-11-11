@@ -499,3 +499,10 @@ details.zona input[type=color]{width:30px;height:26px}
 .nube-guia:hover{background:var(--hover);color:var(--fg)}
 .nube-aviso{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9000;background:var(--panel);color:var(--fg);border:1px solid var(--line);box-shadow:var(--sombra);border-radius:8px;padding:9px 14px;font-size:13px;max-width:min(640px,92vw)}
 .nube-aviso a{color:var(--acc)}
+
+/* Escalera libre: tabla de tramos del inspector (escaleras_libres.js) */
+.tabla-tramos{width:100%;border-collapse:collapse;font-size:12px;margin:2px 0 8px}
+.tabla-tramos th{text-align:left;font-weight:500;color:var(--fg3);padding:3px 4px;border-bottom:1px solid var(--line)}
+.tabla-tramos td{padding:3px 4px;border-bottom:1px solid var(--line)}
+.tabla-tramos input{width:100%;min-width:0;box-sizing:border-box}
+.tabla-tramos .aviso-huella{color:var(--acc);font-weight:600}

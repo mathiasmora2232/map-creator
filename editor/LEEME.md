@@ -685,3 +685,23 @@ casan con la copia vieja (falta migrar) y cuáles son, con la pieza que hay ahor
 cuenta; con `--escribir` hace respaldo, aparta lo que no tiene pieza y actualiza la copia. La prueba fabrica un mapa con 300 piezas
 quitadas, 250 metidas y una pieza movida, y datos de todos los tipos; con `--servidor` cambia el mapa con el servidor en marcha (409,
 migración con respaldo, apartados, copia nueva).
+
+# Escaleras: huecos automáticos, escalera libre y diseños
+
+- **Huecos automáticos (como en los Sims)**: una escalera abre sola el hueco de cada losa que alcanza o atraviesa: pisos de
+  habitación, losas de planta y **techos planos** (`techo` sin forma o con forma `plano`). Una losa se abre si su altura está entre el
+  pie + 0,5 m y lo alto de la escalera + 0,16 m y su contorno toca la huella. Funciona en los dos sentidos: al poner o mover la
+  escalera, y al **construir o mover la losa después**. Se desactiva por escalera con «Abrir huecos en pisos y techos» (`sinHueco`).
+  Los huecos van en `agujeros_auto` (pisos y techos) y se exportan como los demás agujeros.
+- **Construir → Escalera libre** (`escaleras_libres.js`): clic en el pie y un clic en cada esquina. En cada esquina va un descanso:
+  si giras es una **virada** (el giro se imanta cada 15°, hasta 135°; con Mayús, libre); si sigues recto es una **pausa** de
+  `largoDescanso`. Termina con Enter, doble clic o un clic sobre el piso de arriba (toma su altura y abre el hueco). Retroceso quita el
+  último punto. Datos: `forma: 'libre'`, `tramos: [{largo, giro}]` (giro al final del tramo: + izquierda, − derecha, 0 pausa).
+  Los peldaños (contrahuella ≤ 18 cm) se reparten entre los tramos según su largo; un tramo sin sitio queda como pasillo plano.
+  Inspector «Tramos y descansos»: largo y giro de cada tramo, añadir tramo a la izquierda, a la derecha o una pausa, quitar el último,
+  **Ajustar a peldaños cómodos** (huellas de 28 cm) y **Girar al otro lado**. Una recta, L o U se pasa a libre eligiendo esa forma.
+- **Peldaños** (`estilo`): maciza (hormigón), zanca (dos vigas), zanca_central, flotante (peldaños volados con pletina en la pared),
+  madera (huella, tabica y zancas) y metalica (vigas de acero y peldaños de rejilla).
+- **Barandas** (`estiloBaranda`): tubo, barrotes, cables, vidrio (paneles transparentes) y muro (antepecho). `colorBaranda`.
+- **Diseños** listos en la herramienta y en el inspector: Hormigón, Madera clásica, Flotante moderna, Zanca central, Metálica
+  industrial, Con antepecho y Zancas de acero. Aplican estilo, barandas y colores de una vez.
