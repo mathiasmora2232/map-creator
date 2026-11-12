@@ -1,0 +1,19 @@
+{
+  "name": "map-creator",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Map Creator: sitio y editor en TypeScript (compilado con esbuild, tipos comprobados con tsc)",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "tipos": "tsc -p tsconfig.json --noEmit && tsc -p editor/tsconfig.json --noEmit",
+    "tipos:sitio": "tsc -p tsconfig.json --noEmit",
+    "tipos:editor": "tsc -p editor/tsconfig.json --noEmit",
+    "check": "npm run tipos && npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "typescript": "5.9.3"
+  }
+}

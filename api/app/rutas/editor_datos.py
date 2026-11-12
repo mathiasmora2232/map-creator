@@ -4,7 +4,7 @@
 - /api/fotos, /api/assets        subidas (cuerpo crudo + cabecera X-Nombre)
 - /_blob/<proyecto>/<archivo>    descarga de lo subido
 
-El proyecto llega en la cabecera X-OO-Proyecto (la pone editor/js/nucleo/local.js en modo nube).
+El proyecto llega en la cabecera X-OO-Proyecto (la pone editor/src/nucleo/local.ts en modo nube).
 """
 import json
 import re

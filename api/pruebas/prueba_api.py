@@ -242,8 +242,8 @@ st, r = borrable.j("DELETE", "/api/cuenta", {"clave": "clave-segura-7"})
 st2, _ = Cliente().j("POST", "/api/cuenta/entrar", {"email": "gina-%s@prueba.test" % sufijo, "clave": "clave-segura-7"})
 comprobar(st == 200 and r["mapas_borrados"] == 1 and st2 == 401, "cuenta borrada con sus mapas")
 st, cab, d = Cliente().pedir("GET", "/entrar")
-comprobar(b"/sitio/js/comun.js?v=" in d and cab.get("cache-control", cab.get("Cache-Control")) == "no-cache", "páginas con ?v= en los scripts")
-st, cab, d = Cliente().pedir("GET", "/sitio/js/comun.js")
+comprobar(b"/sitio/js/cuenta.js?v=" in d and cab.get("cache-control", cab.get("Cache-Control")) == "no-cache", "páginas con ?v= en los scripts")
+st, cab, d = Cliente().pedir("GET", "/sitio/js/cuenta.js")
 comprobar((cab.get("cache-control") or cab.get("Cache-Control")) == "no-cache", "los .js del sitio no se quedan en caché")
 
 # ── Perfil: sobre ti, foto y mis datos ──

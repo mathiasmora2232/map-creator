@@ -39,3 +39,13 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
   invitaciones por correo y avisos. Detalles en `docs/ARQUITECTURA.md` → «Correo y códigos de verificación».
 - Pruebas: `api/pruebas/prueba_correo.py` contra un servidor con `OO_CORREO_ARCHIVO=<carpeta>` (escribe los correos como JSON en
   vez de enviarlos). Nunca pruebes contra el SMTP real enviando correos sin que el dueño lo pida.
+
+## TypeScript
+
+- El código del navegador está en `sitio/src` (estricto) y `editor/src` (permisivo). **No edites `sitio/js` ni `editor/js`**: los
+  genera `npm run build` (o `npm run dev`, que vigila) y no están en git.
+- Antes de dar algo por terminado: `npm run tipos` sin errores y `npm run build`. La imagen de Docker hace las dos cosas y falla si
+  los tipos fallan.
+- Modelos de la API en `sitio/src/tipos.ts`. Globales del editor (`window.OO*`, `THREE`) en `editor/src/globales.d.ts`: si un módulo
+  nuevo publica `window.OOAlgo`, decláralo ahí.
+- Probar con el contenedor montando el repo: compila primero (`npm run build`), porque el servidor sirve `editor/js` y `sitio/js`.

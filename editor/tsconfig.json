@@ -1,0 +1,17 @@
+{
+  // Editor: TypeScript permisivo (venía de 68 scripts JS). Se compila 1:1 con esbuild (scripts/build.mjs) y tsc solo comprueba.
+  // Las globales compartidas (window.OO*, THREE) están en src/globales.d.ts.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "useUnknownInCatchVariables": false,
+    "skipLibCheck": true,
+    "isolatedModules": false,
+    "moduleDetection": "legacy"
+  },
+  "include": ["src/**/*.ts"]
+}

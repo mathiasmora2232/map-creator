@@ -889,6 +889,10 @@ class Manejador(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    # El editor está en TypeScript (editor/src); el navegador carga lo compilado en editor/js.
+    if not os.path.isfile(os.path.join(EDITOR, "js", "nucleo", "editor.js")):
+        print("Falta compilar el editor: en la raíz del repo ejecuta `npm ci` y `npm run build` (o `npm run dev` mientras editas).")
+        sys.exit(1)
     if MAPAS == os.path.join(EDITOR, "mapas"):
         exportar_mapas()
     # Un diario que quedó de un cierre brusco se aplica y se compacta al arrancar.

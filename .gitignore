@@ -4,3 +4,7 @@ __pycache__/
 .datos/
 .venv/
 editor/local/datos_usuario/respaldos_refs/
+node_modules/
+# Salida de `npm run build` (el código está en sitio/src y editor/src)
+sitio/js/
+editor/js/
