@@ -26,6 +26,7 @@
     const h = d.huellaFija && +d.huella > 0.1 ? +d.huella : Math.max(0.25, Math.min(0.32, 0.63 - 2 * c));
     d.alto = r3(H); d.n = n; d.contrahuella = r3(c); d.huella = r3(h); d.ancho = r3(Math.max(0.5, +d.ancho || 1.2));
     const W = d.ancho, Ld = Math.max(W, +d.largoDescanso || 0) || W;
+    if (window.OOEscalerasPasos && OOEscalerasPasos.maneja(d)) { OOEscalerasPasos.caja(d); d.sy = d.alto; d.origen = 'base'; return d; } /* escalón por escalón (escaleras_pasos.js) */
     if (window.OOEscalerasLibres && OOEscalerasLibres.maneja(d)) { OOEscalerasLibres.caja(d); d.sy = d.alto; d.origen = 'base'; return d; } /* escalera libre (escaleras_libres.js) */
     if (window.OOEscalerasPro && OOEscalerasPro.maneja(d)) { OOEscalerasPro.caja(d); d.sy = d.alto; d.origen = 'base'; return d; } /* (2.1 pro f5) caracol y en U (escaleras_pro.js) */
     if (d.forma === 'L') { const n1 = Math.max(1, Math.ceil(n / 2)), L1 = (n1 - 1) * h + W, L2 = (n - n1) * h; d.sx = r3(L1); d.sz = r3(W + L2); }
@@ -35,6 +36,7 @@
   }
   /* centro de la caja en planta respecto al pie del primer peldaño (marco del pie: sube hacia +X) */
   function desfase(d) {
+    if (window.OOEscalerasPasos && OOEscalerasPasos.maneja(d)) return OOEscalerasPasos.desfase(d);
     if (window.OOEscalerasLibres && OOEscalerasLibres.maneja(d)) return OOEscalerasLibres.desfase(d);
     if (window.OOEscalerasPro && OOEscalerasPro.maneja(d)) return OOEscalerasPro.desfase(d); /* (2.1 pro f5) */
     if (d.forma === 'L' && d.n) { const n1 = Math.max(1, Math.ceil(d.n / 2)), L1 = (n1 - 1) * d.huella + d.ancho, L2 = (d.n - n1) * d.huella, sg = d.giro === 'der' ? 1 : -1; return [L1 / 2, sg * L2 / 2]; }
@@ -117,6 +119,7 @@
   }
   function partesEscalera(e, col) {
     const d = normalizar(Object.assign({}, e)), out = [], c = d.contrahuella, h = d.huella, n = d.n, W = d.ancho, [ox, oz] = desfase(d), M0 = tras(-ox, 0, -oz);
+    if (window.OOEscalerasPasos && OOEscalerasPasos.maneja(d)) return OOEscalerasPasos.partes(d, col, M0);
     if (window.OOEscalerasLibres && OOEscalerasLibres.maneja(d)) return OOEscalerasLibres.partes(d, col, M0);
     if (window.OOEscalerasPro && OOEscalerasPro.maneja(d)) return OOEscalerasPro.partes(d, col, M0); /* (2.1 pro f5) */
     if (d.forma === 'L') {
@@ -155,6 +158,7 @@
     const rect = (x0, x1, z0, z1) => [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(w);
     if (tb(tipo) === 'rampa') { const r = normalizarRampa(Object.assign({}, d)); o = [r.sx / 2, 0]; return [rect(0, r.sx, -r.ancho / 2, r.ancho / 2)]; }
     const s = normalizar(Object.assign({}, d)), W = s.ancho; o = desfase(s);
+    if (window.OOEscalerasPasos && OOEscalerasPasos.maneja(s)) return OOEscalerasPasos.huellas(s, w);
     if (window.OOEscalerasLibres && OOEscalerasLibres.maneja(s)) return OOEscalerasLibres.huellas(s, w);
     if (window.OOEscalerasPro && OOEscalerasPro.maneja(s)) return OOEscalerasPro.huellas(s, rect, w); /* (2.1 pro f5) */
     if (s.forma === 'L') { const n1 = Math.max(1, Math.ceil(s.n / 2)), L1 = (n1 - 1) * s.huella + W, L2 = (s.n - n1) * s.huella, sgn = s.giro === 'der' ? 1 : -1; const out = [rect(0, L1, -W / 2, W / 2)]; if (L2 > 0.01) out.push(rect(L1 - W, L1, sgn > 0 ? W / 2 : -W / 2 - L2, sgn > 0 ? W / 2 + L2 : -W / 2)); return out; }
@@ -201,7 +205,7 @@
       const pie = fijo ? (b === 'rampa' ? (() => { const r = normalizarRampa(clon(prev.datos)), g = (+r.giroY || 0) * DEG; return [(+r.x || 0) - Math.cos(g) * r.sx / 2, (+r.z || 0) + Math.sin(g) * r.sx / 2]; })() : pieDe(normalizar(clon(prev.datos)))) : null;
       if (b === 'escalera') { normalizar(d.datos); if (pie) conPie(d.datos, pie); }
       else { normalizarRampa(d.datos); if (pie) { const g = (+d.datos.giroY || 0) * DEG; d.datos.x = r3(pie[0] + Math.cos(g) * d.datos.sx / 2); d.datos.z = r3(pie[1] - Math.sin(g) * d.datos.sx / 2); } }
-      const campos = ['x', 'y', 'z', 'giroY', 'alto', 'ancho', 'forma', 'giro', 'descanso', 'largoDescanso', 'huella', 'huellaFija', 'tramos', 'radio', 'hueco', 'sinHueco'];
+      const campos = ['x', 'y', 'z', 'giroY', 'alto', 'ancho', 'forma', 'giro', 'descanso', 'largoDescanso', 'huella', 'huellaFija', 'tramos', 'radio', 'hueco', 'sinHueco', 'pasos', 'paso'];
       if (prev && prev.datos && campos.every(k => JSON.stringify(prev.datos[k]) === JSON.stringify(d.datos[k]))) return;
       if (b === 'escalera') ajustarAgujeros(id, d, ctx, false);
     });
@@ -253,10 +257,10 @@
       fin: () => { pie = null; A.limpiarPrevia(); A.etqVivas = []; },
       panel: () => tipo === 'rampa'
         ? `<div class="campos">${num('rp', 'altoLibre', 'Altura si no hay nada arriba (m)', PR.altoLibre || 0.5)}${num('rp', 'pendiente', 'Pendiente (%)', PR.pendiente, 0.5)}${num('rp', 'ancho', 'Ancho (m)', PR.ancho)}${opc('rp', 'barandas', 'Barandas', PR.barandas, BAR)}</div>`
-        : `<div class="campos">${num('ep', 'altoLibre', 'Altura si no hay nada arriba (m)', PE.altoLibre || 2.8)}${opc('ep', 'diseno', 'Diseño', '', OPC_DISENOS)}${opc('ep', 'forma', 'Forma', PE.forma, FORMAS_ESC.filter(f => f[0] !== 'libre'))}${num('ep', 'ancho', 'Ancho (m)', PE.ancho)}${opc('ep', 'estilo', 'Peldaños', PE.estilo, ESTILOS)}${opc('ep', 'barandas', 'Barandas', PE.barandas, BAR)}${opc('ep', 'estiloBaranda', 'Tipo de baranda', PE.estiloBaranda || 'tubo', ESTILOS_BARANDA)}</div><p class="ayuda">Para tramos y descansos a tu gusto usa «Escalera libre».</p>`
+        : `<div class="campos">${num('ep', 'altoLibre', 'Altura si no hay nada arriba (m)', PE.altoLibre || 2.8)}${opc('ep', 'diseno', 'Diseño', '', OPC_DISENOS)}${opc('ep', 'forma', 'Forma', PE.forma, FORMAS_ESC.filter(f => f[0] !== 'libre' && f[0] !== 'peldanos'))}${num('ep', 'ancho', 'Ancho (m)', PE.ancho)}${opc('ep', 'estilo', 'Peldaños', PE.estilo, ESTILOS)}${opc('ep', 'barandas', 'Barandas', PE.barandas, BAR)}${opc('ep', 'estiloBaranda', 'Tipo de baranda', PE.estiloBaranda || 'tubo', ESTILOS_BARANDA)}</div><p class="ayuda">Para tramos y descansos a tu gusto usa «Escalera libre».</p>`
     };
   }
-  const FORMAS_ESC = [['recta', 'Recta'], ['L', 'En L'], ['U', 'En U (ida y vuelta)'], ['caracol', 'De caracol'], ['libre', 'Libre (tramos y descansos a medida)']]; /* (2.1 pro f5) */
+  const FORMAS_ESC = [['recta', 'Recta'], ['L', 'En L'], ['U', 'En U (ida y vuelta)'], ['caracol', 'De caracol'], ['libre', 'Libre (tramos y descansos a medida)'], ['peldanos', 'Escalón por escalón']]; /* (2.1 pro f5) */
   /* diseños listos: aplican estilo, barandas y colores de una vez (herramienta e inspector) */
   const DISENOS = {
     hormigon: { n: 'Hormigón', estilo: 'maciza', estiloBaranda: 'tubo', color: '#b9b4aa', colorBaranda: '#4a4f55', barandas: 'ambas' },
@@ -287,9 +291,9 @@
     const div = document.createElement('div');
     div.innerHTML = `<details class="sec" open data-sec="escalera"><summary>${esR ? 'Rampa' : 'Escalera'}</summary><div class="campos">
       <p class="ayuda" style="margin:0 0 6px">${esR ? `Largo ${A.fmt(d.largo)} m · pendiente ${A.fmt(d.pendiente, 1)} % · sube ${A.fmt(d.alto)} m` : `${d.n} peldaños · contrahuella ${A.fmt(d.contrahuella * 100, 1)} cm · huella ${A.fmt(d.huella * 100, 1)} cm · sube ${A.fmt(d.alto)} m`}${agujeros.length ? ' · abre el hueco de ' + agujeros.length + (agujeros.length > 1 ? ' losas' : ' losa') : ''}</p>
-      ${num('ei', 'alto', 'Desnivel (m)', d.alto)}${num('ei', 'ancho', 'Ancho (m)', d.ancho)}
+      ${d.forma === 'peldanos' ? '' : num('ei', 'alto', 'Desnivel (m)', d.alto)}${num('ei', 'ancho', 'Ancho (m)', d.ancho)}
       ${esR ? num('ei', 'pendiente', 'Pendiente (%)', d.pendiente, 0.5) + num('ei', 'descanso', 'Tramo plano arriba (m)', d.descanso || 0) + chk('ei', 'bordillos', 'Bordillos', d.bordillos !== false)
-        : opc('ei', 'forma', 'Forma', d.forma || 'recta', FORMAS_ESC) + (d.forma === 'libre' ? '' : d.forma && d.forma !== 'recta' ? opc('ei', 'giro', 'Gira hacia', d.giro || 'izq', [['izq', 'La izquierda'], ['der', 'La derecha']]) : chk('ei', 'descanso', 'Descanso a media altura', d.descanso)) + opc('ei', 'estilo', 'Peldaños', d.estilo || 'maciza', ESTILOS) + opc('ei', 'estiloBaranda', 'Tipo de baranda', d.estiloBaranda || 'tubo', ESTILOS_BARANDA) + opc('ei', 'diseno', 'Aplicar un diseño', '', OPC_DISENOS) + chk('ei', 'huellaFija', 'Huella fija', d.huellaFija) + (d.huellaFija ? num('ei', 'huella', 'Huella (m)', d.huella, 0.01) : '')}
+        : opc('ei', 'forma', 'Forma', d.forma || 'recta', FORMAS_ESC) + (d.forma === 'libre' || d.forma === 'peldanos' ? '' : d.forma && d.forma !== 'recta' ? opc('ei', 'giro', 'Gira hacia', d.giro || 'izq', [['izq', 'La izquierda'], ['der', 'La derecha']]) : chk('ei', 'descanso', 'Descanso a media altura', d.descanso)) + opc('ei', 'estilo', 'Peldaños', d.estilo || 'maciza', ESTILOS) + opc('ei', 'estiloBaranda', 'Tipo de baranda', d.estiloBaranda || 'tubo', ESTILOS_BARANDA) + opc('ei', 'diseno', 'Aplicar un diseño', '', OPC_DISENOS) + chk('ei', 'huellaFija', 'Huella fija', d.huellaFija) + (d.huellaFija ? num('ei', 'huella', 'Huella (m)', d.huella, 0.01) : '')}
       ${opc('ei', 'barandas', 'Barandas', d.barandas || 'ambas', BAR)}<label class="campo"><span>Color</span><input type="color" data-ei="color" value="${A.esc(d.color || '#b9b4aa')}"></label>${esR ? '' : `<label class="campo"><span>Color de la baranda</span><input type="color" data-ei="colorBaranda" value="${A.esc(d.colorBaranda || '#4a4f55')}"></label>` + chk('ei', 'huecoAuto', 'Abrir huecos en pisos y techos', !d.sinHueco)}
       <div class="fila"><button data-ei-a="ajustar">Ajustar el desnivel al piso de arriba</button></div></div></details>`;
     const ref = c.querySelector('[data-sec="transform"]'); const sec = div.firstElementChild; if (ref && ref.nextSibling) c.insertBefore(sec, ref.nextSibling); else c.appendChild(sec);
