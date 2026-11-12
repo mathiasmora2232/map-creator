@@ -717,3 +717,16 @@ migración con respaldo, apartados, copia nueva).
 - **Puertas**: se colocan cerradas. Campo «Apertura (°)» para mostrarlas abiertas.
 - **Exportar**: menú por destino (Unity, Godot, Blender/glTF) con «¿Cómo lo abro?» y la guía de pasos al terminar cada exportación.
   La raíz de la escena lleva el nombre del mapa (antes salía siempre «Complejo»). Lo del juego Operación Oficina solo sale en local.
+
+# Escalón por escalón (escalera totalmente libre)
+
+- **Construir → Escalón por escalón** (`escaleras_pasos.js`): clic en el punto de partida y cada clic añade escalones hacia el
+  ratón: cerca, uno; lejos, todos los que caben hasta ese punto en línea recta. Cada escalón sube la «altura de cada escalón»
+  (18 cm por defecto) y gira hacia donde apuntas (imán cada 15°, Mayús libre). Ctrl+clic: descanso plano. Retroceso quita el último
+  escalón; Enter o doble clic termina; Esc descarta. No necesita paredes, pisos ni una altura final: sube lo que vayas poniendo.
+- Datos: `forma: 'peldanos'`, `pasos: [{x, z, r, sube, fondo?}]` en el marco del pie y `paso: {c, h}`. La altura de cada escalón
+  sale de contar los que suben, así que cambiar `paso.c` sube o baja todos a la vez.
+- Inspector «Escalones»: altura y fondo de cada escalón, **Seguir añadiendo escalones** (retoma la herramienta desde el último),
+  quitar el último y reflejar. Usa los mismos estilos de peldaño, barandas y diseños que las demás escaleras y abre los huecos de
+  las losas que alcanza.
+- La escalera normal tampoco exige terminar sobre algo más alto: si no hay nada, sube la «altura si no hay nada arriba» del panel.
