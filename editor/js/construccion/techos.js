@@ -77,9 +77,51 @@
   }
   const val = (e, k) => e[k] != null && e[k] !== '' ? e[k] : (DEF[e.forma] || DEF.dos_aguas)[k];
 
+  /* ---------- huecos y claraboyas en techos inclinados ----------
+     Los huecos se guardan en planta (marco del techo): se proyectan en vertical sobre cada faldón (polígono con matriz `lm`), y las
+     tejas, nervios o cumbreras que los cruzan se parten para dejar el hueco libre. */
+  function dentro(x, z, pts) { let d = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const [xi, zi] = pts[i], [xj, zj] = pts[j]; if ((zi > z) !== (zj > z) && x < (xj - xi) * (z - zi) / (zj - zi) + xi) d = !d; } return d; }
+  function huecosInclinados(out, e) {
+    const huecos = (Array.isArray(e.agujeros) ? e.agujeros : []).concat(e.agujeros_auto ? Object.values(e.agujeros_auto) : []).filter(h => Array.isArray(h) && h.length >= 3);
+    const vidrios = (Array.isArray(e.claraboyas) ? e.claraboyas : []).filter(h => Array.isArray(h) && h.length >= 3);
+    if (!huecos.length) return out;
+    const res = [], M = new M4(), V = new V3();
+    for (const pt of out) {
+      if (pt.f === 'poly' && Array.isArray(pt.lm)) {
+        M.fromArray(pt.lm); const m = M.elements, ny = m[5]; /* eje Y local (normal del faldón) en el mundo */
+        if (Math.abs(ny) > 0.25 && Math.abs(ny) < 0.9999) {
+          const a = m[0], b = m[8], c = m[2], d = m[10], det = a * d - b * c, tx = m[12], tz = m[14];
+          const proy = h => h.map(([X, Z]) => { const x = X - tx, z = Z - tz; return [r3((d * x - b * z) / det), r3((-c * x + a * z) / det)]; });
+          const q = Object.assign({}, pt), ag = [];
+          for (const h of huecos) { const ph = proy(h), cx = ph.reduce((s, p) => s + p[0], 0) / ph.length, cz = ph.reduce((s, p) => s + p[1], 0) / ph.length; if (dentro(cx, cz, pt.pts)) ag.push(ph); }
+          if (ag.length) q.agujeros = (pt.agujeros || []).concat(ag);
+          res.push(q);
+          for (const h of vidrios) { const ph = proy(h), cx = ph.reduce((s, p) => s + p[0], 0) / ph.length, cz = ph.reduce((s, p) => s + p[1], 0) / ph.length; if (dentro(cx, cz, pt.pts)) res.push({ f: 'poly', pts: ph, y: Math.max(0, pt.grosor - 0.03), grosor: 0.02, c: '#bfe3f0', t: true, lm: pt.lm }); }
+          continue;
+        }
+      }
+      if (pt.f === 'b' && Array.isArray(pt.q)) { /* tiras (tejas, nervios, cumbrera): se parten donde cruzan un hueco */
+        const qq = new Q4(pt.q[0], pt.q[1], pt.q[2], pt.q[3]), ejes = [new V3(1, 0, 0), new V3(0, 1, 0), new V3(0, 0, 1)].map(v => v.applyQuaternion(qq));
+        const k = pt.s[0] >= pt.s[1] && pt.s[0] >= pt.s[2] ? 0 : pt.s[1] >= pt.s[2] ? 1 : 2, L = pt.s[k], ax = ejes[k];
+        const enHueco = t => { V.set(pt.p[0] + ax.x * t, 0, pt.p[2] + ax.z * t); return huecos.some(h => dentro(V.x, V.z, h)); };
+        const N = Math.min(80, Math.max(8, Math.ceil(L / 0.1))), tramos = []; let ini = null;
+        for (let i = 0; i <= N; i++) { const t = -L / 2 + L * i / N, h = enHueco(t); if (!h && ini === null) ini = t; if ((h || i === N) && ini !== null) { const fin = h ? t - L / N : t; if (fin - ini > 0.02) tramos.push([ini, fin]); ini = null; } }
+        if (tramos.length === 1 && tramos[0][1] - tramos[0][0] > L - 2 * L / N - 1e-6) { res.push(pt); continue; }
+        for (const [t0, t1] of tramos) { const tc = (t0 + t1) / 2, s2 = pt.s.slice(); s2[k] = t1 - t0; res.push(Object.assign({}, pt, { p: [pt.p[0] + ax.x * tc, pt.p[1] + ax.y * tc, pt.p[2] + ax.z * tc], s: s2 })); }
+        continue;
+      }
+      res.push(pt);
+    }
+    return res;
+  }
+
   /* ---------- piezas ---------- */
   function partes(e, col) {
-    if (window.OOCubiertasL && !e._ala) { const rL = OOCubiertasL.partes(e, col, partes); if (rL) return rL; } /* (2.1 pro f5) dos y cuatro aguas sobre contornos en L (cubiertas_l.js) */
+    const out = partesBase(e, col);
+    return DEF[e.forma] && e.forma !== 'plano' ? huecosInclinados(out, e) : out;
+  }
+  function partesBase(e, col) {
+    if (window.OOCubiertasL && !e._ala) { const rL = OOCubiertasL.partes(e, col, partesBase); if (rL) return rL; } /* (2.1 pro f5) dos y cuatro aguas sobre contornos en L (cubiertas_l.js) */
     const forma = DEF[e.forma] ? e.forma : 'plano', out = [], ab = +e.abierto || 0; /* ab: extremo sin hastial ni faldón (−1: x = −W/2, 1: x = +W/2), lo usa cubiertas_l.js */
     const a = Math.max(0, Math.min(70, +val(e, 'inclinacion') || 0)) * DEG, g = Math.max(0.01, +val(e, 'espesor') || 0.1), v = Math.max(0, +val(e, 'voladizo') || 0);
     const cub = val(e, 'cubierta') || 'chapa', c = e.color || colorDe(cub), transp = cub === 'transparente', oscuro = (window.OO && OO.oscuro) ? OO.oscuro : (x => x);

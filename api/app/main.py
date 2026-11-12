@@ -3,6 +3,7 @@
     uvicorn app.main:app --reload            (desde api/, con DATABASE_URL apuntando a Postgres)
 """
 import logging
+import re
 from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import quote, urlparse
@@ -10,7 +11,7 @@ from urllib.parse import quote, urlparse
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db
@@ -30,6 +31,15 @@ async def vida(_app):
 
 app = FastAPI(title="Map Creator", version="1.0.0", lifespan=vida, docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
 app.add_middleware(GZipMiddleware, minimum_size=2048)  # mapa_complejo.json: 2,3 MB → ~300 KB
+
+
+@app.middleware("http")
+async def sin_cache_sitio(request: Request, siguiente):
+    """Los .js y .css del sitio se revalidan siempre (ETag): con ?v= cambian de URL en cada despliegue y sin él no se quedan viejos."""
+    respuesta = await siguiente(request)
+    if request.url.path.startswith("/sitio/"):
+        respuesta.headers["Cache-Control"] = "no-cache"
+    return respuesta
 
 
 @app.middleware("http")
@@ -76,8 +86,33 @@ PAGINAS = {"/": "index.html", "/entrar": "entrar.html", "/registro": "registro.h
 PRIVADAS = {"/app", "/verificar"}
 
 
+# Versión de los archivos del sitio: cambia con cada despliegue (fecha de modificación de sitio/ y editor/). Se añade como ?v= a los
+# <script> y <link> de las páginas: así un proxy o CDN (Cloudflare guarda los .js y .css horas) nunca sirve una copia vieja.
+def _version_estaticos() -> str:
+    import hashlib
+    h = hashlib.sha1()
+    for raiz in (config.DIR_SITIO, config.DIR_EDITOR):
+        for f in sorted(raiz.rglob("*")):
+            if f.is_file() and f.suffix in (".js", ".css", ".html") and "local" not in f.parts:
+                h.update(f.name.encode()); h.update(str(f.stat().st_mtime_ns).encode())
+    return h.hexdigest()[:10]
+
+
+VERSION_ESTATICOS = _version_estaticos()
+_RE_RECURSO = re.compile(r'((?:src|href)=")(/sitio/[^"?#]+\.(?:js|css))(")')
+_RE_EDITOR = re.compile(r'((?:src|href)=")((?:js|css)/[^"?#]+\.(?:js|css))(")')
+
+
+def _html_versionado(ruta: Path, editor: bool = False) -> Response:
+    html = ruta.read_text(encoding="utf-8")
+    html = _RE_RECURSO.sub(lambda m: m.group(1) + m.group(2) + "?v=" + VERSION_ESTATICOS + m.group(3), html)
+    if editor:
+        html = _RE_EDITOR.sub(lambda m: m.group(1) + m.group(2) + "?v=" + VERSION_ESTATICOS + m.group(3), html)
+    return Response(html, media_type="text/html; charset=utf-8", headers={"Cache-Control": "no-cache"})
+
+
 def _pagina(nombre):
-    return FileResponse(config.DIR_SITIO / nombre, headers={"Cache-Control": "no-cache"})
+    return _html_versionado(config.DIR_SITIO / nombre)
 
 
 def _siguiente_seguro(request: Request) -> str:
@@ -108,7 +143,9 @@ for _ruta, _archivo in PAGINAS.items():
 @app.get("/invitacion/{token}", include_in_schema=False)
 async def pagina_invitacion(token: str):
     # Pública: la página pide los datos a /api/invitacion/<token> y ofrece entrar, crear la cuenta o unirse.
-    return FileResponse(config.DIR_SITIO / "invitacion.html", headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
+    r = _html_versionado(config.DIR_SITIO / "invitacion.html")
+    r.headers["Cache-Control"] = "no-store"; r.headers["Referrer-Policy"] = "no-referrer"
+    return r
 
 app.mount("/sitio", StaticFiles(directory=config.DIR_SITIO), name="sitio")
 
@@ -132,7 +169,7 @@ async def editor_index(request: Request):
         return RedirectResponse("/entrar?siguiente=" + quote(siguiente, safe=""), 302)
     if not verificado(u):
         return _a_verificar(siguiente)
-    return FileResponse(config.DIR_EDITOR / "index.html", headers={"Cache-Control": "no-cache"})
+    return _html_versionado(config.DIR_EDITOR / "index.html", editor=True)
 
 
 @app.get("/editor/{ruta:path}", include_in_schema=False)

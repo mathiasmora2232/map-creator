@@ -37,6 +37,7 @@
     yo = await api('/api/cuenta/yo');
     yo.preferencias = yo.preferencias || {};
     $('#yoNombre').textContent = yo.nombre; $('#yoEmail').textContent = yo.email; $('#yoAvatar').textContent = iniciales(yo.nombre);
+    $('#yoAvatar').style.background = (yo.preferencias && yo.preferencias.color_avatar) || '';
     $$('[data-solo-admin]').forEach(el => { el.hidden = !yo.es_admin; });
   }
   async function cargarProyectos() {
@@ -181,7 +182,14 @@
 
   function vistaCuenta() {
     const correo = yo.correo_activo;
+    const colorAv = (yo.preferencias && yo.preferencias.color_avatar) || '';
     principal.innerHTML = cabecera('Cuenta') + `<div class="ajustes">
+      <div class="caja perfil-cab">
+        <span class="avatar grande" style="${colorAv ? 'background:' + esc(colorAv) : ''}">${esc(iniciales(yo.nombre))}</span>
+        <div class="perfil-datos"><h2>${esc(yo.nombre)}</h2><p class="tenue">${esc(yo.email)}${yo.es_admin ? ' · <span class="rol">Admin</span>' : ''}</p><p class="tenue" id="perfilDesde"></p></div>
+        <div class="perfil-cifras" id="perfilCifras"></div>
+        <div class="colores-avatar" role="group" aria-label="Color del avatar">${COLORES_AV.map(c => `<button type="button" data-a="color-avatar" data-color="${c}" style="background:${c}" aria-label="Color ${c}" class="${c === colorAv || (!colorAv && c === COLORES_AV[0]) ? 'on' : ''}"></button>`).join('')}</div>
+      </div>
       <form class="caja" id="formNombre"><h2>Perfil</h2>
         <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required value="${esc(yo.nombre)}"></label>
         <div><button class="btn prim" type="submit">Guardar</button></div></form>
@@ -221,9 +229,26 @@
         </form>
       </div>
 
+      <div class="caja"><h2>Sesiones abiertas</h2><p class="ayuda">Los dispositivos y navegadores donde tu cuenta está abierta. Cierra los que no reconozcas.</p>
+        <div class="sesiones" id="listaSesiones"><div class="cargando">Cargando…</div></div>
+        <div><button class="btn" type="button" data-a="cerrar-otras">Cerrar todas las demás sesiones</button></div></div>
+
       <div class="caja"><h2>Ayuda</h2><p class="ayuda">Vuelve a ver los recorridos guiados y la lista de primeros pasos.</p>
         <div class="fila-btn"><button class="btn" data-a="recorrido">Recorrido del panel</button><button class="btn" data-a="reiniciar-ayuda">Volver a mostrar toda la ayuda</button></div></div>
+
+      <form class="caja peligro-caja" id="formBorrar"><h2>Eliminar la cuenta</h2>
+        <p class="ayuda">Se borran tu cuenta, <b>todos tus mapas</b> con sus archivos y tu acceso a los mapas de otros. No se puede deshacer. Si quieres conservar algo, expórtalo antes desde el editor.</p>
+        <label class="campo"><span>Escribe tu contraseña para confirmar</span><input type="password" name="clave" autocomplete="current-password" required></label>
+        <p class="error-form" id="errBorrar" role="alert"></p>
+        <div><button class="btn peligro-btn" type="submit">Eliminar mi cuenta para siempre</button></div></form>
     </div>`;
+    cargarPerfil();
+    $('#formBorrar').addEventListener('submit', async e => {
+      e.preventDefault(); $('#errBorrar').textContent = '';
+      if (!confirm('¿Seguro? Se borran tu cuenta y todos tus mapas. No se puede deshacer.')) return;
+      try { await api('/api/cuenta', { method: 'DELETE', json: { clave: e.target.clave.value } }); location.href = '/'; }
+      catch (ex) { $('#errBorrar').textContent = ex.message; }
+    });
     $('#formNombre').addEventListener('submit', async e => {
       e.preventDefault();
       try { await api('/api/cuenta/yo', { method: 'PATCH', json: { nombre: e.target.nombre.value } }); await cargarYo(); aviso('Nombre guardado.'); }
@@ -262,6 +287,22 @@
         await cargarYo(); vistaCuenta(); aviso(yo.dos_pasos ? 'Verificación en dos pasos activada.' : 'Verificación en dos pasos desactivada.');
       } catch (ex) { $('#errDosPasos').textContent = ex.message; }
     });
+  }
+
+  const COLORES_AV = ['#e2690b', '#1f6feb', '#2e7d32', '#8e44ad', '#c62828', '#00838f', '#6d4c41', '#37474f'];
+  async function cargarPerfil() {
+    try {
+      const [p, ses] = await Promise.all([api('/api/cuenta/perfil'), api('/api/cuenta/sesiones')]);
+      const d = $('#perfilDesde'); if (d) d.textContent = 'Miembro desde ' + new Date(p.creado).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+      const c = $('#perfilCifras'); if (c) c.innerHTML = [[p.mapas, 'mapas'], [p.compartidos, 'compartidos contigo'], [p.cambios, 'cambios'], [p.invitaciones, 'invitaciones']].map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join('');
+      pintarSesiones(ses);
+    } catch (ex) { const l = $('#listaSesiones'); if (l) l.innerHTML = `<p class="error-form">${esc(ex.message)}</p>`; }
+  }
+  function pintarSesiones(ses) {
+    const l = $('#listaSesiones'); if (!l) return;
+    l.innerHTML = ses.map(x => `<div class="sesion"><span class="sesion-ic" aria-hidden="true">${/iPhone|Android/.test(x.dispositivo) ? '📱' : '💻'}</span>
+      <span class="datos"><b>${esc(x.dispositivo)}${x.actual ? ' <span class="insignia ok">Esta sesión</span>' : ''}</b><small>${x.ip ? esc(x.ip) + ' · ' : ''}abierta ${fechaRel(x.creado)}</small></span>
+      ${x.actual ? '' : `<button class="btn fantasma peq" data-a="cerrar-sesion" data-id="${esc(x.id)}">Cerrar</button>`}</div>`).join('') || '<p class="tenue">Solo esta sesión.</p>';
   }
 
   const ESTADO = { activa: 'Activo', caducada: 'Caducado', agotada: 'Agotado', revocada: 'Revocado' };
@@ -531,6 +572,9 @@
     else if (a === 'paso-recorrido') { const p = proyectos.find(x => x.rol !== 'lector') || proyectos[0]; if (p) location.href = urlEditor(p, '&recorrido=1'); else abrirNuevo(); }
     else if (a === 'paso-compartir') { const p = proyectos.find(x => x.rol === 'dueno'); if (p) abrirCompartir(p); else abrirNuevo(); }
     else if (a === 'paso-favorito') location.hash = '#mapas';
+    else if (a === 'color-avatar') { const c = b.dataset.color; guardarPref({ color_avatar: c }).then(() => { $('#yoAvatar').style.background = c; vistaCuenta(); }); }
+    else if (a === 'cerrar-sesion') api('/api/cuenta/sesiones/' + id, { method: 'DELETE' }).then(() => { aviso('Sesión cerrada.'); return api('/api/cuenta/sesiones'); }).then(pintarSesiones).catch(ex => aviso(ex.message, 'err'));
+    else if (a === 'cerrar-otras') api('/api/cuenta/sesiones/otras', { method: 'DELETE' }).then(r => { aviso(r.cerradas ? 'Cerradas ' + r.cerradas + ' sesiones.' : 'No había otras sesiones.'); return api('/api/cuenta/sesiones'); }).then(pintarSesiones).catch(ex => aviso(ex.message, 'err'));
     else if (a === 'cambiar-correo') { $('#formCorreo').hidden = false; $('#formCorreo2').hidden = true; $('#formCorreo').email_nuevo.focus(); }
     else if (a === 'cancelar-correo') { $('#formCorreo').hidden = true; $('#formCorreo2').hidden = true; }
     else if (a === 'dos-pasos') { $('#formDosPasos').hidden = false; $('#formDosPasos').clave_actual.focus(); }

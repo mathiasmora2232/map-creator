@@ -6,6 +6,7 @@ olvida la contraseña la cambia con un código. Sin correo, las cuentas nuevas q
 """
 import json
 import re
+import shutil
 from urllib.parse import quote
 
 import asyncpg
@@ -60,6 +61,10 @@ class Recuperar(BaseModel):
 class CambioCorreo(BaseModel):
     email_nuevo: str = Field(max_length=254)
     clave_actual: str = Field(max_length=200)
+
+
+class Borrado(BaseModel):
+    clave: str = Field(max_length=200)
 
 
 class CambioCuenta(BaseModel):
@@ -311,6 +316,69 @@ async def cambiar(datos: CambioCuenta, request: Request, usuario=Depends(usuario
     if aviso_clave:
         await correo.enviar(u["email"], *correo.aviso_clave_cambiada(u["nombre"], correo.url_base(request) + "/recuperar"))
     return _completo(u)
+
+
+# ───────────────────────── Perfil: resumen, sesiones y borrar la cuenta ─────────────────────────
+def _dispositivo(ua: str) -> str:
+    ua = ua or ""
+    nav = next((n for k, n in (("Edg/", "Edge"), ("OPR/", "Opera"), ("Firefox/", "Firefox"), ("Chrome/", "Chrome"), ("Safari/", "Safari")) if k in ua), "Navegador")
+    so = next((n for k, n in (("Android", "Android"), ("iPhone", "iPhone"), ("iPad", "iPad"), ("Windows", "Windows"), ("Mac OS", "macOS"), ("Linux", "Linux")) if k in ua), "")
+    return nav + (" en " + so if so else "")
+
+
+@router.get("/perfil")
+async def perfil(usuario=Depends(usuario_actual)):
+    async with db.pool.acquire() as con:
+        f = await con.fetchrow("""
+            SELECT u.creado,
+                   (SELECT count(*) FROM proyectos p WHERE p.dueno_id = u.id AND p.archivado IS NULL) AS mapas,
+                   (SELECT count(*) FROM miembros m JOIN proyectos p ON p.id = m.proyecto_id WHERE m.usuario_id = u.id AND m.rol <> 'dueno' AND p.archivado IS NULL) AS compartidos,
+                   (SELECT count(*) FROM documentos d JOIN proyectos p ON p.id = d.proyecto_id WHERE p.dueno_id = u.id AND d.coleccion = 'cambios') AS cambios,
+                   (SELECT count(*) FROM invitaciones i WHERE i.creado_por = u.id) AS invitaciones
+            FROM usuarios u WHERE u.id = $1""", usuario["id"])
+    return {"creado": f["creado"].isoformat(), "mapas": f["mapas"], "compartidos": f["compartidos"], "cambios": f["cambios"], "invitaciones": f["invitaciones"]}
+
+
+@router.get("/sesiones")
+async def sesiones(request: Request, usuario=Depends(usuario_actual)):
+    actual = _hash_token(request.cookies.get(config.COOKIE_SESION, ""))
+    async with db.pool.acquire() as con:
+        filas = await con.fetch("SELECT token_hash, creado, expira, user_agent, host(ip) AS ip FROM sesiones WHERE usuario_id = $1 AND expira > now() "
+                                "ORDER BY creado DESC", usuario["id"])
+    return [{"id": f["token_hash"].hex()[:32], "dispositivo": _dispositivo(f["user_agent"]), "ip": f["ip"], "creado": f["creado"].isoformat(),
+             "expira": f["expira"].isoformat(), "actual": f["token_hash"] == actual} for f in filas]
+
+
+@router.delete("/sesiones/{sid}")
+async def cerrar_otra(sid: str, request: Request, usuario=Depends(usuario_actual)):
+    """sid = primeros 32 caracteres hex del hash de la sesión, o «otras» para cerrar todas menos esta."""
+    actual = _hash_token(request.cookies.get(config.COOKIE_SESION, ""))
+    async with db.pool.acquire() as con:
+        if sid == "otras":
+            n = await con.execute("DELETE FROM sesiones WHERE usuario_id = $1 AND token_hash <> $2", usuario["id"], actual)
+        elif re.fullmatch(r"[0-9a-f]{32}", sid):
+            n = await con.execute("DELETE FROM sesiones WHERE usuario_id = $1 AND token_hash <> $2 AND left(encode(token_hash, 'hex'), 32) = $3",
+                                  usuario["id"], actual, sid)
+        else:
+            raise HTTPException(400, {"error": "Sesión no válida.", "code": "invalid_argument"})
+    return {"ok": True, "cerradas": int(n.split()[-1])}
+
+
+@router.delete("")
+async def borrar_cuenta(datos: Borrado, respuesta: Response, request: Request, usuario=Depends(usuario_actual)):
+    """Borra la cuenta, sus mapas (con sus archivos) y su acceso a los mapas de otros. No se puede deshacer."""
+    async with db.pool.acquire() as con, con.transaction():
+        actual = await con.fetchval("SELECT clave_hash FROM usuarios WHERE id = $1", usuario["id"])
+        if not verificar_clave(actual, datos.clave):
+            raise HTTPException(400, {"error": "La contraseña no coincide.", "code": "invalid_argument"})
+        if usuario["es_admin"] and await con.fetchval("SELECT count(*) FROM usuarios WHERE es_admin") <= 1 and await con.fetchval("SELECT count(*) FROM usuarios") > 1:
+            raise HTTPException(400, {"error": "Eres el único administrador: nombra a otro antes de borrar tu cuenta.", "code": "failed_precondition"})
+        pids = [r["id"] for r in await con.fetch("SELECT id FROM proyectos WHERE dueno_id = $1", usuario["id"])]
+        await con.execute("DELETE FROM usuarios WHERE id = $1", usuario["id"])
+    for pid in pids:
+        shutil.rmtree(config.DIR_ARCHIVOS / str(pid), ignore_errors=True)
+    respuesta.delete_cookie(config.COOKIE_SESION, path="/")
+    return {"ok": True, "mapas_borrados": len(pids)}
 
 
 publico = APIRouter(prefix="/api", tags=["cuenta"])

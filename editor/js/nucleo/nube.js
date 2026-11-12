@@ -52,7 +52,8 @@
   function cargarRecorrido() {
     if (window.MCRecorrido) return Promise.resolve();
     return new Promise((ok, mal) => {
-      const s = document.createElement('script'); s.src = '/sitio/js/recorrido.js'; s.onload = ok; s.onerror = mal; document.head.appendChild(s);
+      const yo = document.querySelector('script[src*="nucleo/nube.js"]'), v = yo && /[?&]v=([\w]+)/.exec(yo.src);
+      const s = document.createElement('script'); s.src = '/sitio/js/recorrido.js' + (v ? '?v=' + v[1] : ''); s.onload = ok; s.onerror = mal; document.head.appendChild(s);
     });
   }
 
