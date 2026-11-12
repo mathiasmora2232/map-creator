@@ -400,3 +400,29 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .ver-clave{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:34px;border:0;background:transparent;color:var(--fg3);border-radius:6px;cursor:pointer;display:grid;place-items:center}
 .ver-clave:hover{color:var(--fg);background:var(--bg2)}
 .ver-clave.on{color:var(--acc)}
+
+/* perfil */
+.perfil-cab{grid-template-columns:auto 1fr;align-items:center;column-gap:18px}
+.avatar.grande{width:64px;height:64px;font-size:24px}
+.perfil-datos h2{font-size:20px}
+.perfil-datos p{font-size:14px;margin-top:2px}
+.perfil-cifras{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.perfil-cifras div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.perfil-cifras b{display:block;font:600 20px/1.1 var(--mono)}
+.perfil-cifras span{color:var(--fg3);font-size:12.5px}
+@media (max-width:560px){.perfil-cifras{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.colores-avatar{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.colores-avatar button{all:unset;cursor:pointer;width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.colores-avatar button.on{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--fg)}
+.colores-avatar button:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.sesiones{display:grid}
+.sesion{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.sesion:first-child{border-top:0}
+.sesion-ic{width:34px;height:34px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;flex:none}
+.sesion .datos{flex:1;min-width:0}
+.sesion .datos b{display:block;font-weight:500;font-size:14px}
+.sesion .datos small{color:var(--fg3);font-size:12.5px}
+.peligro-caja{border-color:color-mix(in srgb,var(--err) 40%,var(--line))}
+.peligro-caja h2{color:var(--err)}
+.btn.peligro-btn{background:var(--err);border-color:var(--err);color:#fff}
+.btn.peligro-btn:hover{filter:brightness(.92)}

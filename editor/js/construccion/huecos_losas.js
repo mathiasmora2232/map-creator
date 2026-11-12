@@ -3,7 +3,7 @@
    clic y se abre uno del tamaño del panel (rectangular o redondo). En los techos puede llevar vidrio (claraboya / tragaluz).
    Los huecos van en `datos.agujeros` (polígonos en el marco del objeto), los vidrios en `datos.claraboyas`. Se dibujan, se exportan
    (GLB, Godot, Unity) y se quitan desde el inspector («Huecos»: quitar el último o todos).
-   Los techos inclinados (dos aguas, etc.) todavía no admiten huecos: la herramienta lo avisa. */
+   En techos inclinados el hueco se dibuja en planta y techos.js lo proyecta sobre cada faldón (las tejas que lo cruzan se parten). */
 (function () {
   'use strict';
   const E = window.OOEditor; if (!E) return;
@@ -13,7 +13,9 @@
   A.params.hueco_losa = PH;
 
   const esTechoPlano = o => tb(o.tipo) === 'techo' && (!o.datos.forma || o.datos.forma === 'plano');
-  const admite = o => !!o && (tb(o.tipo) === 'habitacion' || esTechoPlano(o));
+  /* techos: planos e inclinados (techos.js proyecta el hueco sobre cada faldón); pérgolas y toldos ya son abiertos */
+  const esTecho = o => tb(o.tipo) === 'techo' && !['pergola', 'toldo'].includes(o.datos.forma);
+  const admite = o => !!o && (tb(o.tipo) === 'habitacion' || esTecho(o));
   function objetoDe(h) { if (!h || !h.key || h.key[0] !== 'n') return null; return E.nuevos().get(h.key.slice(1)) || null; }
   const aLocal = (d, [x, z]) => { const g = (+d.giroY || 0) * DEG, c = Math.cos(g), s = Math.sin(g), dx = x - (+d.x || 0), dz = z - (+d.z || 0); return [r3(dx * c - dz * s), r3(dx * s + dz * c)]; };
   function contorno(cx, cz, a, b, forma) {
@@ -25,9 +27,9 @@
     if (!ptsMundo.every(([x, z]) => A.dentroPoligono(x, z, pts))) { A.pista('El hueco tiene que quedar dentro de la superficie.'); return false; }
     const loc = ptsMundo.map(p => aLocal(o.datos, p)), v = o.datos;
     const nuevo = Object.assign({}, v, { agujeros: (Array.isArray(v.agujeros) ? v.agujeros : []).concat([loc]) });
-    if (vidrio && esTechoPlano(o)) nuevo.claraboyas = (Array.isArray(v.claraboyas) ? v.claraboyas : []).concat([loc]);
+    if (vidrio && esTecho(o)) nuevo.claraboyas = (Array.isArray(v.claraboyas) ? v.claraboyas : []).concat([loc]);
     o.datos = nuevo; const doc = A.docActualizado(o); o.datos = v; if (!doc) return false;
-    A.guardar([doc], { etiqueta: esTechoPlano(o) ? (vidrio ? 'Claraboya en techo' : 'Hueco en techo') : 'Hueco en suelo' });
+    A.guardar([doc], { etiqueta: esTecho(o) ? (vidrio ? 'Claraboya en techo' : 'Hueco en techo') : 'Hueco en suelo' });
     return true;
   }
 
@@ -38,13 +40,13 @@
   const ocultar = () => { previa.visible = false; A.etqVivas = []; };
 
   let est = null;
-  const sobre = e => { const h = A.pickEvento(e); const o = objetoDe(h); if (!h || !o) return null; if (h.normal.y < 0.6 && h.normal.y > -0.6) return { o, h, pared: true }; return { o, h }; };
+  const sobre = e => { const h = A.pickEvento(e); const o = objetoDe(h); if (!h || !o) return null; if (tb(o.tipo) !== 'techo' && h.normal.y < 0.6 && h.normal.y > -0.6) return { o, h, pared: true }; return { o, h }; };
   E.agregarHerramientaPropia('hueco_losa', {
     n: 'Hueco en suelo o techo', ic: 'hueco_losa',
-    pista: 'Arrastra un rectángulo sobre un piso, una losa o un techo plano para abrir un hueco. Un clic abre uno del tamaño del panel (rectangular o redondo). Para paredes usa «Hueco en pared» (tecla O).',
+    pista: 'Arrastra un rectángulo sobre un piso, una losa o un techo (plano o inclinado) para abrir un hueco. Un clic abre uno del tamaño del panel (rectangular o redondo). Para paredes usa «Hueco en pared» (tecla O).',
     down: e => {
       const s = sobre(e); if (!s) return;
-      if (s.pared || !admite(s.o)) { A.pista(tb(s.o.tipo) === 'techo' ? 'Los techos inclinados aún no admiten huecos: usa un techo plano.' : 'Eso no es un piso, una losa ni un techo plano.'); return; }
+      if (s.pared || !admite(s.o)) { A.pista(tb(s.o.tipo) === 'techo' ? 'Las pérgolas y los toldos ya son abiertos.' : 'Eso no es un piso, una losa ni un techo.'); return; }
       est = { o: s.o, a: s.h.point.clone(), y: s.h.point.y };
     },
     move: e => {
@@ -59,7 +61,7 @@
       const p = A.puntoPlano(e, y); let pts;
       if (mov <= 6 || !p || (Math.abs(p.x - a.x) < 0.1 && Math.abs(p.z - a.z) < 0.1)) pts = contorno(a.x, a.z, PH.ancho, PH.forma === 'circulo' ? PH.ancho : PH.largo, PH.forma);
       else pts = contorno((a.x + p.x) / 2, (a.z + p.z) / 2, Math.abs(p.x - a.x), Math.abs(p.z - a.z), 'rect');
-      if (abrir(o, pts, PH.vidrio)) A.pista('Hueco abierto. Se quita desde el inspector del ' + (esTechoPlano(o) ? 'techo' : 'piso') + ' (Huecos).');
+      if (abrir(o, pts, PH.vidrio)) A.pista('Hueco abierto. Se quita desde el inspector del ' + (esTecho(o) ? 'techo' : 'piso') + ' (Huecos).');
     },
     fin: () => { est = null; ocultar(); },
     panel: () => `<div class="campos">
@@ -77,7 +79,7 @@
 
   /* inspector: huecos del piso o del techo seleccionado */
   E.on('panel', () => {
-    if (A.sel.length !== 1 || A.sel[0][0] !== 'n') return; const o = E.nuevos().get(A.sel[0].slice(1)); if (!o || !esTechoPlano(o)) return;
+    if (A.sel.length !== 1 || A.sel[0][0] !== 'n') return; const o = E.nuevos().get(A.sel[0].slice(1)); if (!o || !esTecho(o)) return;
     const c = document.querySelector('#objCuerpo [data-scope="sel"]'); if (!c) return;
     const n = Array.isArray(o.datos.agujeros) ? o.datos.agujeros.length : 0, na = o.datos.agujeros_auto ? Object.keys(o.datos.agujeros_auto).length : 0;
     const sec = document.createElement('details'); sec.className = 'sec'; sec.open = true; sec.dataset.sec = 'huecos-techo';
