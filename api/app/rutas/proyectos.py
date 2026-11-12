@@ -216,7 +216,7 @@ async def duplicar(pid: str, usuario=Depends(usuario_actual)):
 async def miembros(pid: str, usuario=Depends(usuario_actual)):
     await exigir_rol(pid, usuario)
     async with db.pool.acquire() as con:
-        filas = await con.fetch("SELECT u.id, u.nombre, u.email, m.rol, m.creado FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
+        filas = await con.fetch("SELECT u.id, u.nombre, u.email, u.avatar_v, m.rol, m.creado FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
                                 "WHERE m.proyecto_id = $1 ORDER BY (m.rol = 'dueno') DESC, u.nombre", parsear_uuid(pid))
     return [_fila(r) for r in filas]
 

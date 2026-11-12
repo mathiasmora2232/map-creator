@@ -1,6 +1,8 @@
 /* Map Creator: utilidades del sitio (API, avisos, escape, miniaturas de plano). Sin dependencias ni build. */
 (function () {
   'use strict';
+  /* tema elegido en Cuenta → Preferencias (se aplica antes de pintar: sin destello del otro tema) */
+  try { const t = localStorage.getItem('mc-tema'); if (t === 'claro') document.documentElement.dataset.theme = 'light'; else if (t === 'oscuro') document.documentElement.dataset.theme = 'dark'; } catch (e) { }
 
   /* Llamada a la API: JSON de ida y vuelta; los errores llegan como {error, code} y se lanzan como Error con .code y .status. */
   async function api(ruta, opciones) {
