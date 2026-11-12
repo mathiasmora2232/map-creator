@@ -149,8 +149,8 @@ app.mount("/sitio", StaticFiles(directory=config.DIR_SITIO), name="sitio")
 
 # ───────────────────────── Editor ─────────────────────────
 # Solo lo que necesita el navegador. editor/local/ (servidor local, datos_usuario, herramientas del juego) no se sirve nunca.
-CARPETAS_EDITOR = {"css", "js", "mapas", "img"}
-EXT_EDITOR = {".js", ".css", ".json", ".png", ".svg", ".webp", ".jpg", ".woff2"}
+CARPETAS_EDITOR = {"css", "js", "mapas", "img", "wasm"}
+EXT_EDITOR = {".js", ".css", ".json", ".png", ".svg", ".webp", ".jpg", ".woff2", ".wasm"}
 
 
 @app.get("/editor", include_in_schema=False)

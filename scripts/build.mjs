@@ -3,14 +3,17 @@
      sitio/js/recorrido.js va suelto porque el editor lo carga a demanda (window.MCRecorrido).
    - Editor: cada editor/src/**.ts se transforma 1:1 a editor/js/**.js (son scripts clásicos que comparten globales window.OO*;
      index.html los carga en orden). Las declaraciones .d.ts no se emiten.
-   Uso: node scripts/build.mjs [--watch] [--min]  */
+   - Motor (Rust → WebAssembly): scripts/motor.mjs deja editor/wasm/motor.wasm (se salta con --sin-motor).
+   Uso: node scripts/build.mjs [--watch] [--min] [--sin-motor]  */
 import * as esbuild from 'esbuild';
 import { readdirSync, rmSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const raiz = new URL('..', import.meta.url).pathname;
 const watch = process.argv.includes('--watch');
 const minify = process.argv.includes('--min');
+const conMotor = !process.argv.includes('--sin-motor');
 
 const PAGINAS = {
   landing: 'sitio/src/paginas/landing.ts',
@@ -55,6 +58,8 @@ if (!watch) {
   // Que no queden .js de archivos .ts borrados o renombrados.
   for (const d of ['sitio/js', 'editor/js']) rmSync(join(raiz, d), { recursive: true, force: true });
 }
+
+if (conMotor) spawnSync(process.execPath, [join(raiz, 'scripts/motor.mjs')], { stdio: 'inherit' });
 
 if (watch) {
   const ctxs = await Promise.all([esbuild.context(sitio), esbuild.context(editor)]);

@@ -58,7 +58,8 @@ map-creator/
 │   └── pruebas/prueba_api.py       prueba de punta a punta (83 comprobaciones)
 ├── package.json              esbuild + TypeScript: npm run build | dev | tipos
 ├── tsconfig.json             tipos del sitio (estricto)
-├── scripts/build.mjs         compila sitio/src → sitio/js y editor/src → editor/js
+├── scripts/build.mjs         compila sitio/src → sitio/js y editor/src → editor/js (y llama a scripts/motor.mjs)
+├── motor/                    Rust → WebAssembly (editor/wasm/motor.wasm): cálculo pesado del editor; hoy, el CRC-32 de los ZIP
 ├── sitio/                    landing, entrar, registro, invitación y panel (HTML + CSS + TypeScript)
 │   ├── index.html  entrar.html  registro.html  invitacion.html  verificar.html  recuperar.html  app.html
 │   ├── css/sitio.css
@@ -97,6 +98,7 @@ npm ci                 # una vez: esbuild y typescript
 npm run dev            # compila y vigila sitio/src y editor/src (deja este terminal abierto)
 npm run tipos          # comprueba los tipos con tsc (sitio estricto, editor permisivo)
 npm run build          # compilación única (la imagen de Docker la hace sola, minificada)
+                       # también compila motor/ (Rust) con cargo, o con podman/docker si no hay cargo; sin ninguno, sigue sin él
 
 # Postgres local (o: docker compose up db)
 cd api && python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
@@ -111,6 +113,9 @@ al recargar. El modo local del editor (`editor/local/servidor.py`) también nece
 - **Editor** (`editor/src`): los 68 scripts de antes, ahora `.ts`, cargados en orden por `index.html`. Siguen siendo scripts clásicos
   que se hablan por `window.OO*` (declaradas en `globales.d.ts`), con tipos permisivos (`strict: false`). Para tipar un módulo a fondo,
   ve sustituyendo `any` por interfaces a partir de `nucleo/`.
+- **Motor** (`motor/`, Rust): funciones de cálculo puro compiladas a WebAssembly sin dependencias. El editor las usa a través de
+  `nucleo/motor.ts` (`window.OOMotor`); si el `.wasm` no carga, usa su versión en TypeScript. Pruebas: `cargo test` en `motor/`
+  (la imagen de Docker las pasa antes de compilar).
 
 ## Pruebas
 

@@ -49,3 +49,10 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
 - Modelos de la API en `sitio/src/tipos.ts`. Globales del editor (`window.OO*`, `THREE`) en `editor/src/globales.d.ts`: si un módulo
   nuevo publica `window.OOAlgo`, decláralo ahí.
 - Probar con el contenedor montando el repo: compila primero (`npm run build`), porque el servidor sirve `editor/js` y `sitio/js`.
+
+## Rust (motor/)
+
+- `motor/` se compila a `editor/wasm/motor.wasm` (generado, fuera de git) con `npm run build`. Sin Rust instalado en el equipo se usa
+  un contenedor `rust:1-alpine` con podman; no instales rustup en la PC del dueño sin preguntar.
+- Toda función del motor necesita su versión en TypeScript de respaldo y pruebas en Rust (`cargo test`). Si cambias la interfaz, sube
+  `VERSION` en `motor/src/lib.rs` y `VERSION_INTERFAZ` en `editor/src/nucleo/motor.ts`.

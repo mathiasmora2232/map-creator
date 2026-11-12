@@ -1,0 +1,19 @@
+[package]
+name = "motor"
+version = "0.1.0"
+edition = "2021"
+description = "Map Creator: cálculo pesado del editor en Rust, compilado a WebAssembly (editor/wasm/motor.wasm)"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+# Sin dependencias: compila sin internet y el .wasm queda pequeño.
+[dependencies]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

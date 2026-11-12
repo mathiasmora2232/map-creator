@@ -1,5 +1,13 @@
 # Imagen de Map Creator: API FastAPI + sitio + editor (estáticos). Se construye desde la raíz del repo:
 #   docker build -f api/Dockerfile .
+# Etapa 0: el motor de Rust (motor/) → WebAssembly. Primero sus pruebas; si fallan, la imagen no se construye.
+FROM docker.io/library/rust:1-alpine AS motor
+WORKDIR /motor
+RUN rustup target add wasm32-unknown-unknown
+COPY motor/Cargo.toml motor/Cargo.lock* ./
+COPY motor/src ./src
+RUN cargo test --release && cargo build --release --target wasm32-unknown-unknown
+
 # Etapa 1: compila el TypeScript (sitio/src → sitio/js, editor/src → editor/js) con esbuild y comprueba los tipos con tsc.
 FROM node:22-alpine AS web
 WORKDIR /web
@@ -10,7 +18,7 @@ COPY scripts/build.mjs ./scripts/build.mjs
 COPY sitio/src ./sitio/src
 COPY editor/tsconfig.json ./editor/tsconfig.json
 COPY editor/src ./editor/src
-RUN npm run tipos && npm run build -- --min
+RUN npm run tipos && npm run build -- --min --sin-motor
 
 # Etapa 2: la API con los estáticos ya compilados.
 FROM python:3.13-slim
@@ -33,6 +41,7 @@ COPY editor/index.html /srv/editor/index.html
 COPY editor/css /srv/editor/css
 COPY --from=web /web/editor/js /srv/editor/js
 COPY editor/mapas /srv/editor/mapas
+COPY --from=motor /motor/target/wasm32-unknown-unknown/release/motor.wasm /srv/editor/wasm/motor.wasm
 
 RUN rm -rf /srv/sitio/src && useradd --system --uid 10001 mapcreator && mkdir -p /data/archivos && chown -R mapcreator /data
 USER mapcreator
