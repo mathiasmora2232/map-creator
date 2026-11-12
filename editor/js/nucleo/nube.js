@@ -35,7 +35,10 @@
     // Primera vez (o ?recorrido=1): cuando termina de cargar el mapa.
     const forzar = new URLSearchParams(location.search).get('recorrido') === '1';
     N.yo.then(u => {
-      if (!forzar && u && u.preferencias && u.preferencias.recorrido_editor) return;
+      const pr = (u && u.preferencias) || {};
+      /* vista con la que abre el editor (Cuenta → Preferencias) */
+      if (pr.vista_inicial && window.OOEditor) cuandoCargue(() => { try { OOEditor.api.vistaRapida(pr.vista_inicial === 'planta' ? 1 : 4); } catch (e) { } });
+      if (!forzar && (pr.recorrido_editor || pr.sin_recorridos)) return;
       cuandoCargue(() => recorrido(p));
     });
   });

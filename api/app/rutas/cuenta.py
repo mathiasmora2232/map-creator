@@ -72,11 +72,13 @@ class CambioCuenta(BaseModel):
     clave_actual: str | None = Field(default=None, max_length=200)
     clave_nueva: str | None = Field(default=None, min_length=8, max_length=200)
     dos_pasos: bool | None = None                # cambiarlo pide la contraseña actual
+    bio: str | None = Field(default=None, max_length=280)
+    empresa: str | None = Field(default=None, max_length=80)
     preferencias: dict | None = None             # se fusiona con las guardadas; una clave con null se borra
 
 
 MAX_PREFERENCIAS = 8000
-SQL_YO = "SELECT id, email, nombre, es_admin, preferencias, email_verificado, dos_pasos FROM usuarios WHERE id = $1"
+SQL_YO = "SELECT id, email, nombre, es_admin, preferencias, email_verificado, dos_pasos, bio, empresa, avatar_v FROM usuarios WHERE id = $1"
 
 
 def _publico(u):
@@ -86,6 +88,7 @@ def _publico(u):
 def _completo(u):
     return _publico(u) | {"es_admin": u["es_admin"], "preferencias": json.loads(u["preferencias"] or "{}"),
                           "email_verificado": verificado(u), "dos_pasos": u["dos_pasos"],
+                          "bio": u["bio"], "empresa": u["empresa"], "avatar_v": u["avatar_v"],
                           "correo_activo": config.CORREO_ACTIVO, "registro_abierto": config.REGISTRO_ABIERTO}
 
 
@@ -305,6 +308,10 @@ async def cambiar(datos: CambioCuenta, request: Request, usuario=Depends(usuario
             await con.execute("UPDATE usuarios SET dos_pasos = $2 WHERE id = $1", usuario["id"], datos.dos_pasos)
         if datos.nombre:
             await con.execute("UPDATE usuarios SET nombre = $2 WHERE id = $1", usuario["id"], datos.nombre.strip())
+        if datos.bio is not None:
+            await con.execute("UPDATE usuarios SET bio = $2 WHERE id = $1", usuario["id"], datos.bio.strip())
+        if datos.empresa is not None:
+            await con.execute("UPDATE usuarios SET empresa = $2 WHERE id = $1", usuario["id"], datos.empresa.strip())
         if datos.preferencias:
             texto = json.dumps(datos.preferencias, ensure_ascii=False)
             if len(texto) > MAX_PREFERENCIAS:
@@ -377,11 +384,84 @@ async def borrar_cuenta(datos: Borrado, respuesta: Response, request: Request, u
         await con.execute("DELETE FROM usuarios WHERE id = $1", usuario["id"])
     for pid in pids:
         shutil.rmtree(config.DIR_ARCHIVOS / str(pid), ignore_errors=True)
+    _borrar_avatar(usuario["id"])
     respuesta.delete_cookie(config.COOKIE_SESION, path="/")
     return {"ok": True, "mapas_borrados": len(pids)}
 
 
+# ───────────────────────── Foto de perfil y exportar mis datos ─────────────────────────
+MAX_AVATAR = 400 * 1024
+FIRMAS = {b"\x89PNG\r\n\x1a\n": "png", b"\xff\xd8\xff": "jpg", b"RIFF": "webp"}
+
+
+def _dir_avatares():
+    d = config.DIR_ARCHIVOS / "_avatares"; d.mkdir(parents=True, exist_ok=True); return d
+
+
+def _borrar_avatar(uid) -> None:
+    for ext in ("png", "jpg", "webp"):
+        (_dir_avatares() / ("%s.%s" % (uid, ext))).unlink(missing_ok=True)
+
+
+@router.post("/avatar")
+async def subir_avatar(request: Request, usuario=Depends(usuario_actual)):
+    """Cuerpo: la imagen tal cual (el panel la recorta a 256×256 y la manda en WebP). Máx. 400 KB; se comprueba la firma del archivo."""
+    datos = await request.body()
+    if not datos or len(datos) > MAX_AVATAR:
+        raise HTTPException(400, {"error": "La foto tiene que pesar menos de 400 KB.", "code": "invalid_argument"})
+    ext = next((e for f, e in FIRMAS.items() if datos.startswith(f) and (e != "webp" or datos[8:12] == b"WEBP")), None)
+    if not ext:
+        raise HTTPException(400, {"error": "La foto tiene que ser PNG, JPG o WebP.", "code": "invalid_argument"})
+    _borrar_avatar(usuario["id"])
+    (_dir_avatares() / ("%s.%s" % (usuario["id"], ext))).write_bytes(datos)
+    async with db.pool.acquire() as con:
+        v = await con.fetchval("UPDATE usuarios SET avatar_v = avatar_v + 1 WHERE id = $1 RETURNING avatar_v", usuario["id"])
+    return {"ok": True, "avatar_v": v}
+
+
+@router.delete("/avatar")
+async def quitar_avatar(usuario=Depends(usuario_actual)):
+    _borrar_avatar(usuario["id"])
+    async with db.pool.acquire() as con:
+        await con.execute("UPDATE usuarios SET avatar_v = 0 WHERE id = $1", usuario["id"])
+    return {"ok": True, "avatar_v": 0}
+
+
+@router.get("/exportar")
+async def exportar_datos(usuario=Depends(usuario_actual)):
+    """Todo lo tuyo en un JSON: cuenta, preferencias y tus mapas con sus documentos (los archivos subidos van como lista)."""
+    from fastapi.responses import Response as R
+    async with db.pool.acquire() as con:
+        u = await con.fetchrow(SQL_YO, usuario["id"])
+        ps = await con.fetch("SELECT id, nombre, descripcion, plantilla, mapa_inicial, creado, actualizado FROM proyectos WHERE dueno_id = $1 AND archivado IS NULL ORDER BY creado", usuario["id"])
+        mapas = []
+        for p in ps:
+            docs = await con.fetch("SELECT coleccion, doc_id, datos, actualizado FROM documentos WHERE proyecto_id = $1 ORDER BY coleccion, doc_id", p["id"])
+            arch = await con.fetch("SELECT id, tipo, nombre, content_type, tamano FROM archivos WHERE proyecto_id = $1", p["id"])
+            mapas.append({"id": str(p["id"]), "nombre": p["nombre"], "descripcion": p["descripcion"], "plantilla": p["plantilla"], "mapa_inicial": p["mapa_inicial"],
+                          "creado": p["creado"].isoformat(), "actualizado": p["actualizado"].isoformat(),
+                          "documentos": [{"coleccion": d["coleccion"], "id": d["doc_id"], "datos": json.loads(d["datos"]), "actualizado": d["actualizado"].isoformat()} for d in docs],
+                          "archivos": [{"id": str(a["id"]), "tipo": a["tipo"], "nombre": a["nombre"], "content_type": a["content_type"], "tamano": a["tamano"]} for a in arch]})
+    salida = {"formato": "map-creator-mis-datos-1", "exportado": __import__("datetime").datetime.now().isoformat(timespec="seconds"),
+              "cuenta": _completo(u), "mapas": mapas}
+    nombre = "mis_datos_map_creator_%s.json" % __import__("datetime").date.today().isoformat()
+    return R(json.dumps(salida, ensure_ascii=False, indent=1), media_type="application/json",
+             headers={"Content-Disposition": 'attachment; filename="%s"' % nombre})
+
+
 publico = APIRouter(prefix="/api", tags=["cuenta"])
+
+
+@publico.get("/avatar/{uid}")
+async def ver_avatar(uid: str, _usuario=Depends(usuario_actual)):
+    from fastapi.responses import FileResponse
+    if not re.fullmatch(r"[0-9a-f\-]{36}", uid):
+        raise HTTPException(404, {"error": "No existe", "code": "not_found"})
+    for ext, tipo in (("webp", "image/webp"), ("png", "image/png"), ("jpg", "image/jpeg")):
+        f = _dir_avatares() / ("%s.%s" % (uid, ext))
+        if f.is_file():
+            return FileResponse(f, media_type=tipo, headers={"Cache-Control": "private, max-age=31536000, immutable"})
+    raise HTTPException(404, {"error": "Sin foto", "code": "not_found"})
 
 
 @publico.get("/config")

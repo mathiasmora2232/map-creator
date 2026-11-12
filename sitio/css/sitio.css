@@ -426,3 +426,50 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .peligro-caja h2{color:var(--err)}
 .btn.peligro-btn{background:var(--err);border-color:var(--err);color:#fff}
 .btn.peligro-btn:hover{filter:brightness(.92)}
+
+/* Cuenta v2: tarjeta a la izquierda, pestañas a la derecha (usa el ancho de la pantalla) */
+.cuenta-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start;max-width:1180px}
+@media (max-width:980px){.cuenta-grid{grid-template-columns:1fr}}
+.cuenta-tarjeta{position:sticky;top:20px;justify-items:center;text-align:center;gap:10px}
+@media (max-width:980px){.cuenta-tarjeta{position:static}}
+.cuenta-tarjeta h2{font-size:20px;margin-top:4px}
+.cuenta-tarjeta p{margin:0}
+.peq-t{font-size:12.5px}
+.avatar-editable{position:relative}
+.avatar.enorme{width:112px;height:112px;font-size:40px}
+.avatar.foto{background-size:cover;background-position:center;background-color:var(--bg2);color:transparent}
+.cambiar-foto{position:absolute;right:-2px;bottom:-2px;width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--line2);display:grid;place-items:center;cursor:pointer;font-size:16px;box-shadow:var(--sombra)}
+.cambiar-foto:hover{border-color:var(--acc)}
+.insignias{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.bio{font-size:14px;color:var(--fg2);line-height:1.5;white-space:pre-wrap}
+.cifras-mini{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%}
+.cifras-mini div,.perfil-cifras div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;text-align:left}
+.cifras-mini b,.perfil-cifras b{display:block;font:600 19px/1.1 var(--mono)}
+.cifras-mini span,.perfil-cifras span{color:var(--fg3);font-size:12px}
+.cuenta-tarjeta .colores-avatar{justify-content:center}
+.cuenta-der{display:grid;gap:16px;min-width:0}
+.pestanas-cuenta{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.pestanas-cuenta button{all:unset;cursor:pointer;padding:10px 14px;font-size:14.5px;color:var(--fg2);border-bottom:2px solid transparent;white-space:nowrap}
+.pestanas-cuenta button:hover{color:var(--fg)}
+.pestanas-cuenta button.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:500}
+.pestanas-cuenta button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.cuenta-panel{display:grid;gap:16px}
+.dos-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+@media (max-width:640px){.dos-col{grid-template-columns:1fr}}
+.opciones-tema{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.opciones-tema button{all:unset;cursor:pointer;display:grid;justify-items:center;gap:6px;padding:16px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:14px}
+.opciones-tema button span{font-size:22px}
+.opciones-tema button:hover{border-color:var(--line2)}
+.opciones-tema button.on{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-suave);color:var(--acc)}
+.opciones-tema button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.actividad{display:grid}
+.act{display:flex;align-items:center;gap:14px;padding:10px 4px;border-top:1px solid var(--line);text-decoration:none;color:inherit;border-radius:8px}
+.act:first-child{border-top:0}
+.act:hover{background:var(--bg)}
+.act-mini{width:72px;flex:none;aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:var(--plano)}
+.act-mini svg{width:100%;height:100%}
+.act-txt{flex:1;min-width:0}
+.act-txt b{display:block;font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-txt small{color:var(--fg3);font-size:12.5px}
+.act-ir{color:var(--acc);font-size:13px;font-weight:500;white-space:nowrap}
+.lateral .yo .avatar.foto{color:transparent}

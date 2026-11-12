@@ -17,7 +17,7 @@
   A.ICON.escalera = '<path d="M3 20h5v-5h5v-5h5V5h3"/>';
   A.ICON.rampa = '<path d="M3 19h18L21 8z"/>';
   const PE = { forma: 'recta', giro: 'izq', ancho: 1.2, descanso: false, barandas: 'ambas', estilo: 'maciza', estiloBaranda: 'tubo', color: '#b9b4aa', colorBaranda: '#4a4f55', alturaBaranda: 0.9, altoLibre: 2.8 };
-  const PR = { pendiente: 8, ancho: 1.5, barandas: 'ambas', bordillos: true, descanso: 0, color: '#a9a49a', altoLibre: 0.5 };
+  const PR = { pendiente: 8, ancho: 1.5, barandas: 'ambas', bordillos: true, descanso: 0, color: '#a9a49a', altoLibre: 0.5, ajuste: 'punto' };
   A.params.escalera = PE; A.params.rampa = PR;
 
   /* ---------- cálculo de peldaños ---------- */
@@ -46,7 +46,7 @@
   function conPie(d, pie) { const [ox, oz] = desfase(d), g = (+d.giroY || 0) * DEG, c = Math.cos(g), s = Math.sin(g); d.x = r3(pie[0] + ox * c + oz * s); d.z = r3(pie[1] - ox * s + oz * c); return d; }
   function pieDe(d) { const [ox, oz] = desfase(d), g = (+d.giroY || 0) * DEG, c = Math.cos(g), s = Math.sin(g); return [r3((+d.x || 0) - ox * c - oz * s), r3((+d.z || 0) + ox * s - oz * c)]; }
   function normalizarRampa(d) {
-    const H = Math.max(0.02, +d.alto || 0.5), p = Math.max(1, Math.min(40, +d.pendiente || 8)); d.alto = r3(H); d.pendiente = r3(p); d.largo = r3(H / (p / 100)); d.ancho = r3(Math.max(0.6, +d.ancho || 1.5));
+    const H = Math.max(0.02, +d.alto || 0.5), p = Math.max(0.5, Math.min(100, +d.pendiente || 8)); d.alto = r3(H); d.pendiente = r3(p); d.largo = r3(H / (p / 100)); d.ancho = r3(Math.max(0.6, +d.ancho || 1.5));
     d.sx = r3(d.largo + Math.max(0, +d.descanso || 0) + (window.OOEscalerasPro ? OOEscalerasPro.extraRampa(d) : 0)); d.sy = d.alto; /* (2.1 pro f5) descansos intermedios */ d.sz = d.ancho; d.origen = 'base'; return d;
   }
 
@@ -233,7 +233,23 @@
   /* ---------- herramientas: clic en el pie, clic arriba ---------- */
   function herramienta(tipo) {
     let pie = null;
-    const datosEntre = (a, b, hit) => {
+    /* rampa que termina donde se hizo clic: en el borde de la plataforma u objeto clicado (entrada del segmento pie→clic en su caja) */
+    const bordeDe = (a, h) => {
+      if (!h || !h.key) return null; const bx = A.cajaEntidad(h.key); if (!bx || bx.isEmpty()) return null;
+      const dx = h.point.x - a.x, dz = h.point.z - a.z; let tMin = 1;
+      for (const [x, lim] of [['x', bx.min.x], ['x', bx.max.x], ['z', bx.min.z], ['z', bx.max.z]]) {
+        const d = x === 'x' ? dx : dz, o = x === 'x' ? a.x : a.z; if (Math.abs(d) < 1e-6) continue; const t = (lim - o) / d; if (t <= 0.02 || t > 1) continue;
+        const px = a.x + dx * t, pz = a.z + dz * t; if (px >= bx.min.x - 1e-3 && px <= bx.max.x + 1e-3 && pz >= bx.min.z - 1e-3 && pz <= bx.max.z + 1e-3) tMin = Math.min(tMin, t);
+      }
+      return new V3(a.x + dx * tMin, h.point.y, a.z + dz * tMin);
+    };
+    const datosEntre = (a, b, hit, hInfo) => {
+      if (tipo === 'rampa' && (PR.ajuste || 'punto') === 'punto') {
+        let fin = hit && hInfo ? (bordeDe(a, hInfo) || b) : b, H = r3((hit ? hit.y : b.y) - a.y); if (H < 0.05) H = Math.max(0.05, +PR.altoLibre || 0.5);
+        const L = Math.max(0.3, Math.hypot(fin.x - a.x, fin.z - a.z)), dir = Math.atan2(-(fin.z - a.z), fin.x - a.x) / DEG;
+        const d = Object.assign({}, PR, { y: a.y, giroY: r3(dir), alto: H, pendiente: r3(Math.min(100, H / L * 100)) }); normalizarRampa(d);
+        d.x = r3(a.x + Math.cos(dir * DEG) * d.sx / 2); d.z = r3(a.z - Math.sin(dir * DEG) * d.sx / 2); return d;
+      }
       /* sin nada más alto donde termina: sube la altura del panel (no hace falta un piso ni una pared arriba) */
       let H = r3((hit ? hit.y : b.y) - a.y); if (H < 0.1) H = Math.max(0.1, +(tipo === 'rampa' ? PR.altoLibre : PE.altoLibre) || (tipo === 'rampa' ? 0.5 : 2.8));
       const dir = Math.atan2(-(b.z - a.z), b.x - a.x) / DEG;
@@ -241,22 +257,23 @@
       if (tipo === 'rampa') { normalizarRampa(d); d.x = r3(a.x + Math.cos(dir * DEG) * d.sx / 2); d.z = r3(a.z - Math.sin(dir * DEG) * d.sx / 2); return d; }
       return conPie(normalizar(d), [a.x, a.z]);
     };
-    const arriba = e => { const h = A.pickEvento(e); return h && h.normal.y > 0.6 ? h.point : null; };
+    let ultimoPick = null;
+    const arriba = e => { const h = A.pickEvento(e); ultimoPick = h && h.normal.y > 0.6 ? h : null; return ultimoPick ? h.point : null; };
     return {
       n: tipo === 'rampa' ? 'Rampa' : 'Escalera', ic: tipo,
-      pista: 'Clic en el pie y clic donde termina. Si terminas sobre un piso, una plataforma o una losa más alta, el desnivel se mide solo; si no, sube la altura del panel (se puede poner en cualquier sitio, sin paredes). ' + (tipo === 'rampa' ? 'El largo sale de la pendiente.' : 'Los peldaños se calculan solos y se abre el agujero del piso de arriba.'),
+      pista: tipo === 'rampa' ? 'Clic en el pie y clic donde termina: la rampa llega justo ahí (si es una plataforma u objeto, a su borde) y la pendiente se calcula sola. También puede salir de una pendiente fija (panel).' : 'Clic en el pie y clic donde termina. Si terminas sobre un piso, una plataforma o una losa más alta, el desnivel se mide solo; si no, sube la altura del panel (se puede poner en cualquier sitio, sin paredes). ' + (tipo === 'rampa' ? 'El largo sale de la pendiente.' : 'Los peldaños se calculan solos y se abre el agujero del piso de arriba.'),
       opciones: () => { pie = null; },
-      move: e => { const inf = A.inferir(e, pie); if (!pie || !inf) return; const hit = arriba(e); const d = datosEntre(pie, inf.p, hit); A.mostrarPrevia(tipo, d); A.etqVivas = [{ p: new V3(pie.x, pie.y + d.alto + 0.6, pie.z), t: (tipo === 'rampa' ? 'Rampa ' + A.fmt(d.largo) + ' m al ' + A.fmt(d.pendiente, 0) + ' %' : d.n + ' peldaños de ' + A.fmt(d.contrahuella * 100, 1) + ' × ' + A.fmt(d.huella * 100, 0) + ' cm') + ' · sube ' + A.fmt(d.alto) + ' m', c: 'vivo' }]; },
+      move: e => { const inf = A.inferir(e, pie); if (!pie || !inf) return; const hit = arriba(e); const d = datosEntre(pie, inf.p, hit, ultimoPick); A.mostrarPrevia(tipo, d); A.etqVivas = [{ p: new V3(pie.x, pie.y + d.alto + 0.6, pie.z), t: (tipo === 'rampa' ? 'Rampa ' + A.fmt(d.largo) + ' m al ' + A.fmt(d.pendiente, 0) + ' %' + (d.pendiente > 12 ? ' (empinada: accesible ≤ 8–12 %)' : '') : d.n + ' peldaños de ' + A.fmt(d.contrahuella * 100, 1) + ' × ' + A.fmt(d.huella * 100, 0) + ' cm') + ' · sube ' + A.fmt(d.alto) + ' m', c: 'vivo' }]; },
       up: (e, mov) => {
         if (mov > 6) return; const inf = A.inferir(e, pie); if (!inf) return;
         if (!pie) { pie = inf.p.clone(); A.punto3D(pie); return; }
-        const hit = arriba(e); const d = datosEntre(pie, inf.p, hit); pie = null; A.limpiarPrevia(); A.etqVivas = []; A.ocultarInferencia();
+        const hit = arriba(e); const d = datosEntre(pie, inf.p, hit, ultimoPick); pie = null; A.limpiarPrevia(); A.etqVivas = []; A.ocultarInferencia();
 
         const id = tipo === 'rampa' ? crearRampa(d) : crear(d); if (id) A.seleccionar(['n' + id], { sinTab: true });
       },
       fin: () => { pie = null; A.limpiarPrevia(); A.etqVivas = []; },
       panel: () => tipo === 'rampa'
-        ? `<div class="campos">${num('rp', 'altoLibre', 'Altura si no hay nada arriba (m)', PR.altoLibre || 0.5)}${num('rp', 'pendiente', 'Pendiente (%)', PR.pendiente, 0.5)}${num('rp', 'ancho', 'Ancho (m)', PR.ancho)}${opc('rp', 'barandas', 'Barandas', PR.barandas, BAR)}</div>`
+        ? `<div class="campos">${opc('rp', 'ajuste', 'El largo sale de', PR.ajuste || 'punto', [['punto', 'Dónde hago clic (llega al borde)'], ['pendiente', 'La pendiente fija']])}${num('rp', 'altoLibre', 'Altura si no hay nada arriba (m)', PR.altoLibre || 0.5)}${(PR.ajuste || 'punto') === 'pendiente' ? num('rp', 'pendiente', 'Pendiente (%)', PR.pendiente, 0.5) : ''}${num('rp', 'ancho', 'Ancho (m)', PR.ancho)}${opc('rp', 'barandas', 'Barandas', PR.barandas, BAR)}</div>`
         : `<div class="campos">${num('ep', 'altoLibre', 'Altura si no hay nada arriba (m)', PE.altoLibre || 2.8)}${opc('ep', 'diseno', 'Diseño', '', OPC_DISENOS)}${opc('ep', 'forma', 'Forma', PE.forma, FORMAS_ESC.filter(f => f[0] !== 'libre' && f[0] !== 'peldanos'))}${num('ep', 'ancho', 'Ancho (m)', PE.ancho)}${opc('ep', 'estilo', 'Peldaños', PE.estilo, ESTILOS)}${opc('ep', 'barandas', 'Barandas', PE.barandas, BAR)}${opc('ep', 'estiloBaranda', 'Tipo de baranda', PE.estiloBaranda || 'tubo', ESTILOS_BARANDA)}</div><p class="ayuda">Para tramos y descansos a tu gusto usa «Escalera libre».</p>`
     };
   }
@@ -292,7 +309,7 @@
     div.innerHTML = `<details class="sec" open data-sec="escalera"><summary>${esR ? 'Rampa' : 'Escalera'}</summary><div class="campos">
       <p class="ayuda" style="margin:0 0 6px">${esR ? `Largo ${A.fmt(d.largo)} m · pendiente ${A.fmt(d.pendiente, 1)} % · sube ${A.fmt(d.alto)} m` : `${d.n} peldaños · contrahuella ${A.fmt(d.contrahuella * 100, 1)} cm · huella ${A.fmt(d.huella * 100, 1)} cm · sube ${A.fmt(d.alto)} m`}${agujeros.length ? ' · abre el hueco de ' + agujeros.length + (agujeros.length > 1 ? ' losas' : ' losa') : ''}</p>
       ${d.forma === 'peldanos' ? '' : num('ei', 'alto', 'Desnivel (m)', d.alto)}${num('ei', 'ancho', 'Ancho (m)', d.ancho)}
-      ${esR ? num('ei', 'pendiente', 'Pendiente (%)', d.pendiente, 0.5) + num('ei', 'descanso', 'Tramo plano arriba (m)', d.descanso || 0) + chk('ei', 'bordillos', 'Bordillos', d.bordillos !== false)
+      ${esR ? `<label class="campo"><span>Largo (m)</span><input type="number" step="0.05" data-ei-largo="1" value="${r3(d.largo)}"></label>` + num('ei', 'pendiente', 'Pendiente (%)', d.pendiente, 0.5) + num('ei', 'descanso', 'Tramo plano arriba (m)', d.descanso || 0) + chk('ei', 'bordillos', 'Bordillos', d.bordillos !== false)
         : opc('ei', 'forma', 'Forma', d.forma || 'recta', FORMAS_ESC) + (d.forma === 'libre' || d.forma === 'peldanos' ? '' : d.forma && d.forma !== 'recta' ? opc('ei', 'giro', 'Gira hacia', d.giro || 'izq', [['izq', 'La izquierda'], ['der', 'La derecha']]) : chk('ei', 'descanso', 'Descanso a media altura', d.descanso)) + opc('ei', 'estilo', 'Peldaños', d.estilo || 'maciza', ESTILOS) + opc('ei', 'estiloBaranda', 'Tipo de baranda', d.estiloBaranda || 'tubo', ESTILOS_BARANDA) + opc('ei', 'diseno', 'Aplicar un diseño', '', OPC_DISENOS) + chk('ei', 'huellaFija', 'Huella fija', d.huellaFija) + (d.huellaFija ? num('ei', 'huella', 'Huella (m)', d.huella, 0.01) : '')}
       ${opc('ei', 'barandas', 'Barandas', d.barandas || 'ambas', BAR)}<label class="campo"><span>Color</span><input type="color" data-ei="color" value="${A.esc(d.color || '#b9b4aa')}"></label>${esR ? '' : `<label class="campo"><span>Color de la baranda</span><input type="color" data-ei="colorBaranda" value="${A.esc(d.colorBaranda || '#4a4f55')}"></label>` + chk('ei', 'huecoAuto', 'Abrir huecos en pisos y techos', !d.sinHueco)}
       <div class="fila"><button data-ei-a="ajustar">Ajustar el desnivel al piso de arriba</button></div></div></details>`;
@@ -300,8 +317,10 @@
   });
   document.addEventListener('change', e => {
     const el = e.target; if (!el.dataset) return;
+    if (el.dataset.rp === 'ajuste') { PR.ajuste = el.value; if (A.renderPanel) A.renderPanel(); return; }
     if (el.dataset.ep === 'diseno') { if (aplicarDiseno(el.value, PE)) A.pista('Diseño «' + DISENOS[el.value].n + '» listo para la próxima escalera.'); if (A.renderPanel) A.renderPanel(); return; }
     if (el.dataset.ep || el.dataset.rp) { const P = el.dataset.ep ? PE : PR, k = el.dataset.ep || el.dataset.rp; let v = el.type === 'number' ? parseFloat(el.value) : el.value; if (el.type === 'number' && !isFinite(v)) return; P[k] = v; return; }
+    if (el.dataset.eiLargo) { const o = selEsc(); const L = parseFloat(el.value); if (o && isFinite(L) && L > 0.2) cambiar(o.id, { pendiente: r3(Math.min(100, (+o.datos.alto || 0.5) / L * 100)) }, 'Cambiar el largo de la rampa'); return; }
     if (el.dataset.ei === 'diseno') { const o = selEsc(); const c = o && aplicarDiseno(el.value); if (c) cambiar(o.id, c, 'Diseño de escalera: ' + DISENOS[el.value].n); return; }
     if (el.dataset.ei === 'huecoAuto') { const o = selEsc(); if (o) cambiar(o.id, { sinHueco: el.checked ? undefined : true }, el.checked ? 'Abrir huecos de la escalera' : 'Cerrar huecos de la escalera'); return; }
     if (el.dataset.ei === 'forma' && el.value === 'libre') { const o = selEsc(); if (o && window.OOEscalerasLibres) { cambiar(o.id, OOEscalerasLibres.desdeForma(o.datos), 'Escalera libre'); return; } }
