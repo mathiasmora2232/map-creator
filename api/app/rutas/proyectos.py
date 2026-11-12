@@ -48,10 +48,14 @@ class Favorito(BaseModel):
 class NuevoMiembro(BaseModel):
     email: str = Field(max_length=254)
     rol: str = Field(pattern="^(editor|lector)$")
+    dias: int | None = Field(default=None, ge=1, le=3650)   # acceso con plazo (días); sin él, sin plazo
 
 
 class CambioMiembro(BaseModel):
-    rol: str = Field(pattern="^(editor|lector)$")
+    rol: str | None = Field(default=None, pattern="^(editor|lector)$")
+    extender_dias: int | None = Field(default=None, ge=1, le=3650)   # suma días al plazo (desde hoy si ya venció)
+    plazo_dias: int | None = Field(default=None, ge=1, le=3650)      # pone un plazo desde hoy
+    sin_plazo: bool = False                                           # quita el plazo
 
 
 def _slug(texto):
@@ -76,10 +80,10 @@ def _fila(r):
 SQL_LISTA = """
 SELECT p.id, p.nombre, p.descripcion, p.plantilla, p.mapa_inicial, p.creado, p.actualizado, p.archivado, m.rol,
        m.favorito, m.abierto, u.nombre AS dueno_nombre, p.dueno_id,
-       (SELECT count(*) FROM miembros x WHERE x.proyecto_id = p.id) AS n_miembros,
+       (SELECT count(*) FROM miembros x WHERE x.proyecto_id = p.id AND (x.expira IS NULL OR x.expira > now())) AS n_miembros, m.expira AS acceso_expira,
        (SELECT count(*) FROM documentos d WHERE d.proyecto_id = p.id AND d.coleccion = 'cambios') AS n_cambios
 FROM proyectos p
-JOIN miembros m ON m.proyecto_id = p.id AND m.usuario_id = $1
+JOIN miembros m ON m.proyecto_id = p.id AND m.usuario_id = $1 AND (m.expira IS NULL OR m.expira > now())
 JOIN usuarios u ON u.id = p.dueno_id
 """
 
@@ -216,7 +220,7 @@ async def duplicar(pid: str, usuario=Depends(usuario_actual)):
 async def miembros(pid: str, usuario=Depends(usuario_actual)):
     await exigir_rol(pid, usuario)
     async with db.pool.acquire() as con:
-        filas = await con.fetch("SELECT u.id, u.nombre, u.email, u.avatar_v, m.rol, m.creado FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
+        filas = await con.fetch("SELECT u.id, u.nombre, u.email, u.avatar_v, m.rol, m.creado, m.expira, (m.expira IS NOT NULL AND m.expira <= now()) AS vencido, m.invitacion_id FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
                                 "WHERE m.proyecto_id = $1 ORDER BY (m.rol = 'dueno') DESC, u.nombre", parsear_uuid(pid))
     return [_fila(r) for r in filas]
 
@@ -232,9 +236,9 @@ async def invitar(pid: str, datos: NuevoMiembro, request: Request, usuario=Depen
         destino = await con.fetchrow("SELECT id, email FROM usuarios WHERE lower(email) = lower($1)", datos.email.strip())
         nombre = await con.fetchval("SELECT nombre FROM proyectos WHERE id = $1", p)
         if destino is not None:
-            await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, $3) "
-                              "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol WHERE miembros.rol <> 'dueno'",
-                              p, destino["id"], datos.rol)
+            await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol, expira) VALUES ($1, $2, $3, CASE WHEN $4::int IS NULL THEN NULL ELSE now() + make_interval(days => $4::int) END) "
+                              "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol, expira = excluded.expira WHERE miembros.rol <> 'dueno'",
+                              p, destino["id"], datos.rol, datos.dias)
             mapa = await con.fetchval("SELECT mapa_inicial FROM proyectos WHERE id = $1", p)
     if destino is not None:
         if destino["id"] != usuario["id"]:
@@ -244,18 +248,28 @@ async def invitar(pid: str, datos: NuevoMiembro, request: Request, usuario=Depen
     if not config.CORREO_ACTIVO:
         raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Crea un enlace de invitación y envíaselo.", "code": "not_found"})
     from .invitaciones import NuevaInvitacion, crear_de_proyecto
-    ficha = await crear_de_proyecto(pid, NuevaInvitacion(rol=datos.rol, dias=7, email=datos.email), request, usuario)
+    ficha = await crear_de_proyecto(pid, NuevaInvitacion(rol=datos.rol, dias=7, email=datos.email, acceso_dias=datos.dias), request, usuario)
     return {"ok": True, "invitado": True, "enviado": ficha.get("enviado", False)}
 
 
 @router.patch("/proyectos/{pid}/miembros/{uid}")
 async def cambiar_miembro(pid: str, uid: str, datos: CambioMiembro, usuario=Depends(usuario_actual)):
+    """Rol y plazo de acceso de un miembro (solo el dueño). El dueño no tiene plazo."""
     if await exigir_rol(pid, usuario) != "dueno":
         raise HTTPException(403, {"error": "Solo el dueño puede cambiar los permisos.", "code": "permission_denied"})
+    p, u = parsear_uuid(pid), parsear_uuid(uid)
     async with db.pool.acquire() as con:
-        await con.execute("UPDATE miembros SET rol = $3 WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'",
-                          parsear_uuid(pid), parsear_uuid(uid), datos.rol)
-    return {"ok": True}
+        if datos.rol:
+            await con.execute("UPDATE miembros SET rol = $3 WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u, datos.rol)
+        if datos.sin_plazo:
+            await con.execute("UPDATE miembros SET expira = NULL WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u)
+        elif datos.plazo_dias:
+            await con.execute("UPDATE miembros SET expira = now() + make_interval(days => $3) WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u, datos.plazo_dias)
+        elif datos.extender_dias:
+            await con.execute("UPDATE miembros SET expira = greatest(coalesce(expira, now()), now()) + make_interval(days => $3) "
+                              "WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u, datos.extender_dias)
+        fila = await con.fetchrow("SELECT expira FROM miembros WHERE proyecto_id = $1 AND usuario_id = $2", p, u)
+    return {"ok": True, "expira": fila["expira"].isoformat() if fila and fila["expira"] else None}
 
 
 @router.delete("/proyectos/{pid}/miembros/{uid}")

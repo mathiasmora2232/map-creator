@@ -24,7 +24,7 @@
       ? `${esc(inv.invita)} te invita a ${ROL[inv.rol]} «${esc(inv.proyecto)}»`
       : `${esc(inv.invita)} te invita a Map Creator`;
     const ficha = inv.tipo === 'proyecto' ? `<div class="inv-ficha"><span class="inv-mini">${miniatura('inv-' + inv.proyecto, { ancho: 320, alto: 200 })}</span>
-      <span><b>${esc(inv.proyecto)}</b><small>${inv.rol === 'editor' ? 'Podrás editar' : 'Solo podrás ver'}${inv.descripcion ? ' · ' + esc(inv.descripcion) : ''}</small></span></div>` : '';
+      <span><b>${esc(inv.proyecto)}</b><small>${inv.rol === 'editor' ? 'Podrás editar' : 'Solo podrás ver'}${inv.acceso_dias ? ' durante ' + inv.acceso_dias + (inv.acceso_dias === 1 ? ' día' : ' días') : ''}${inv.descripcion ? ' · ' + esc(inv.descripcion) : ''}</small></span></div>` : '';
 
     if (yo) {
       caja.innerHTML = `<h1>${titulo}</h1>${ficha}

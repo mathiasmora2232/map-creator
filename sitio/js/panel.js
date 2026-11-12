@@ -379,11 +379,7 @@
         ? '<b>Correo activo:</b> las cuentas nuevas verifican su correo con un código, se puede recuperar la contraseña y activar los dos pasos.'
         : '<b>Correo desactivado:</b> falta configurar <code>SMTP_HOST</code> (y el resto de <code>SMTP_*</code>) en el servidor. Sin correo no se verifican las cuentas ni se puede recuperar la contraseña.'}</div>
       <section class="bloque"><div class="bloque-cab"><h2>Enlaces de registro</h2></div>
-        ${enlaces.length ? `<div class="tabla"><table><thead><tr><th>Nota</th><th>Estado</th><th>Usos</th><th>Caducidad</th><th>Creado</th><th></th></tr></thead><tbody>
-          ${enlaces.map(i => `<tr><td>${esc(i.nota) || '<span class="tenue">Sin nota</span>'}</td><td><span class="estado-inv ${i.estado}">${ESTADO[i.estado]}</span></td><td>${usos(i)}</td>
-            <td>${i.estado === 'activa' ? fechaFut(i.expira) : '—'}</td><td>${fechaRel(i.creado)} · ${esc(i.creado_por_nombre)}</td>
-            <td>${i.estado === 'activa' ? `<button class="btn fantasma peq" data-a="revocar" data-id="${esc(i.id)}" data-vista-tras="admin">Revocar</button>` : ''}</td></tr>`).join('')}
-          </tbody></table></div>` : '<div class="vacio peq"><p>Todavía no hay enlaces de registro.</p></div>'}
+        ${enlaces.length ? `<div class="enlaces enlaces-admin">${enlaces.map(i => tarjetaEnlace(i, true)).join('')}</div>` : '<div class="vacio peq"><p>Todavía no hay enlaces de registro.</p></div>'}
       </section>
       <section class="bloque"><div class="bloque-cab"><h2>Usuarios <span class="mono tenue">${usuarios.length}</span></h2></div>
         <div class="tabla"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Mapas</th><th>Alta</th><th>Último acceso</th></tr></thead><tbody>
@@ -520,19 +516,35 @@
 
   // ───────────── Compartir: personas y enlaces ─────────────
   let compartiendo = null;
+  const fechaCorta = iso => new Date(iso).toLocaleDateString('es', { day: 'numeric', month: 'short', year: new Date(iso).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
+  const plazoTxt = m => !m.expira ? '' : m.vencido ? `<span class="insignia vencido">Venció el ${fechaCorta(m.expira)}</span>` : `<span class="insignia plazo" title="${esc(new Date(m.expira).toLocaleString('es'))}">Hasta el ${fechaCorta(m.expira)}</span>`;
   async function pintarMiembros() {
     const p = compartiendo, lista = await api('/api/proyectos/' + p.id + '/miembros'), dueno = p.rol === 'dueno';
-    $('#listaMiembros').innerHTML = lista.map(m => `<div class="miembro">${avatarHtml(m)}
-      <span class="datos"><b>${esc(m.nombre)}${m.id === yo.id ? ' (tú)' : ''}</b><small>${esc(m.email)}</small></span>
+    $('#listaMiembros').innerHTML = lista.map(m => `<div class="miembro${m.vencido ? ' miembro-vencido' : ''}">${avatarHtml(m)}
+      <span class="datos"><b>${esc(m.nombre)}${m.id === yo.id ? ' (tú)' : ''} ${plazoTxt(m)}</b><small>${esc(m.email)}${m.invitacion_id ? ' · entró con un enlace' : ''}</small>
+        ${dueno && m.rol !== 'dueno' ? `<span class="plazo-acc">${m.expira ? `<button class="enlace-btn" data-a="plazo-miembro" data-id="${esc(m.id)}" data-op="extender" data-dias="7">+7 días</button><button class="enlace-btn" data-a="plazo-miembro" data-id="${esc(m.id)}" data-op="extender" data-dias="30">+30 días</button><button class="enlace-btn" data-a="plazo-miembro" data-id="${esc(m.id)}" data-op="sin">Sin plazo</button>`
+          : `<button class="enlace-btn" data-a="plazo-miembro" data-id="${esc(m.id)}" data-op="poner" data-dias="7">Poner plazo de 7 días</button>`}</span>` : ''}</span>
       ${m.rol === 'dueno' || !dueno ? `<span class="rol">${esc(ROL[m.rol])}</span>` : `<select data-miembro="${esc(m.id)}" aria-label="Permiso de ${esc(m.nombre)}">
         <option value="editor"${m.rol === 'editor' ? ' selected' : ''}>Puede editar</option><option value="lector"${m.rol === 'lector' ? ' selected' : ''}>Solo ver</option><option value="__quitar">Quitar acceso</option></select>`}</div>`).join('');
   }
+  const ESTADO_INV = { activa: 'Activo', caducada: 'Caducado', agotada: 'Agotado', revocada: 'Revocado' };
+  function tarjetaEnlace(i, adm) {
+    const activa = i.estado === 'activa', quien = (i.usado_por || []);
+    const acc = (op, txt, extra) => `<button class="btn fantasma peq" data-a="inv-op" data-id="${esc(i.id)}" data-op="${op}"${extra || ''}${adm ? ' data-admin="1"' : ''}>${txt}</button>`;
+    return `<div class="enlace enlace-v2 ${activa ? '' : 'terminado'}">
+      <div class="enlace-cab"><span class="enlace-ic" aria-hidden="true">🔗</span>
+        <span class="datos"><b>${i.rol ? (i.rol === 'editor' ? 'Puede editar' : 'Solo ver') : (esc(i.nota) || 'Enlace de registro')} <span class="estado-inv ${i.estado}">${ESTADO_INV[i.estado]}</span></b>
+        <small>${usos(i)} · ${activa ? fechaFut(i.expira) : i.expira ? 'caducaba el ' + fechaCorta(i.expira) : 'sin caducidad'}${i.rol ? ' · acceso ' + (i.acceso_dias ? 'por ' + i.acceso_dias + (i.acceso_dias === 1 ? ' día' : ' días') : 'sin plazo') : ''} · creado ${fechaRel(i.creado)}</small></span></div>
+      ${quien.length ? `<div class="usado-por"><span class="tenue">Lo usaron:</span>${quien.map(u => `<span class="quien" title="${esc(new Date(u.fecha).toLocaleString('es'))}"><b>${esc(u.nombre)}</b> ${esc(u.email)} <span class="tenue">· ${fechaRel(u.fecha)}</span></span>`).join('')}</div>` : '<div class="usado-por tenue">Nadie lo ha usado todavía.</div>'}
+      <div class="enlace-acc">${acc('dias7', '+7 días')}${acc('dias30', '+30 días')}${acc('sin_caducidad', 'Sin caducidad')}${acc('mas5', '+5 usos')}${i.usos_max ? acc('sin_limite', 'Sin límite de usos') : ''}${i.rol ? `<select class="sel-acceso" data-a-sel="inv-acceso" data-id="${esc(i.id)}" aria-label="Cuánto dura el acceso"><option value="">Acceso: ${i.acceso_dias ? i.acceso_dias + ' días' : 'siempre'}</option><option value="sin">Siempre</option><option value="7">7 días</option><option value="30">30 días</option><option value="90">90 días</option></select>` : ''}
+        ${i.estado === 'revocada' ? acc('reactivar', 'Reactivar') : activa ? `<button class="btn fantasma peq peligro" data-a="revocar" data-id="${esc(i.id)}"${adm ? ' data-vista-tras="admin"' : ''}>Revocar</button>` : ''}</div>
+    </div>`;
+  }
   async function pintarEnlaces() {
     const lista = await api('/api/proyectos/' + compartiendo.id + '/invitaciones');
-    $('#listaEnlaces').innerHTML = lista.length ? `<h4>Enlaces activos</h4>` + lista.map(i => `<div class="enlace">
-        <span class="enlace-ic" aria-hidden="true">🔗</span>
-        <span class="datos"><b>${i.rol === 'editor' ? 'Puede editar' : 'Solo ver'}</b><small>${usos(i)} · ${fechaFut(i.expira)} · creado ${fechaRel(i.creado)}</small></span>
-        <button class="btn fantasma peq" data-a="revocar" data-id="${esc(i.id)}">Revocar</button></div>`).join('') : '';
+    const act = lista.filter(i => i.estado === 'activa'), fin = lista.filter(i => i.estado !== 'activa');
+    $('#listaEnlaces').innerHTML = (act.length ? `<h4>Enlaces activos</h4>` + act.map(i => tarjetaEnlace(i)).join('') : '')
+      + (fin.length ? `<details class="enlaces-fin"><summary>Enlaces terminados (${fin.length}) · ver quién los usó o reactivarlos</summary>${fin.map(i => tarjetaEnlace(i)).join('')}</details>` : '');
   }
   function abrirCompartir(p) {
     compartiendo = p;
@@ -551,7 +563,7 @@
     e.preventDefault();
     const d = Object.fromEntries(new FormData(e.target)), b = e.target.querySelector('button'); b.disabled = true;
     try {
-      const r = await api('/api/proyectos/' + compartiendo.id + '/invitaciones', { method: 'POST', json: { rol: d.rol, dias: numONulo(d.dias), usos_max: numONulo(d.usos_max) } });
+      const r = await api('/api/proyectos/' + compartiendo.id + '/invitaciones', { method: 'POST', json: { rol: d.rol, dias: numONulo(d.dias), usos_max: numONulo(d.usos_max), acceso_dias: numONulo(d.acceso_dias) } });
       $('#enlaceUrl').value = location.origin + r.ruta; $('#enlaceNuevo').hidden = false; $('#enlaceUrl').select();
       await pintarEnlaces();
       if (!pref('enlace_creado')) guardarPref({ enlace_creado: true });
@@ -562,11 +574,16 @@
     e.preventDefault(); $('#errInvitar').textContent = '';
     const d = Object.fromEntries(new FormData(e.target));
     try {
-      const r = await api('/api/proyectos/' + compartiendo.id + '/miembros', { method: 'POST', json: d }); e.target.reset();
+      const r = await api('/api/proyectos/' + compartiendo.id + '/miembros', { method: 'POST', json: { email: d.email, rol: d.rol, dias: numONulo(d.dias || '') } }); e.target.reset();
       if (r.invitado) { await pintarEnlaces(); aviso(r.enviado ? 'No tenía cuenta: le enviamos una invitación por correo.' : 'Se creó la invitación, pero el correo no salió. Revisa la configuración SMTP.', r.enviado ? '' : 'err'); }
       else { await pintarMiembros(); aviso('Añadido: ya puede abrir el mapa' + (yo.correo_activo ? ' y le avisamos por correo.' : '.')); refrescar(); }
     }
     catch (ex) { $('#errInvitar').textContent = ex.message; }
+  });
+  document.addEventListener('change', e => {
+    const s = e.target.closest && e.target.closest('[data-a-sel="inv-acceso"]'); if (!s || !s.value) return;
+    api('/api/invitaciones/' + s.dataset.id, { method: 'PATCH', json: s.value === 'sin' ? { acceso_sin_plazo: true } : { acceso_dias: +s.value } })
+      .then(() => { aviso('El acceso que da este enlace se cambió (vale para quienes entren a partir de ahora).'); return pintarEnlaces(); }).catch(ex => aviso(ex.message, 'err'));
   });
   $('#listaMiembros').addEventListener('change', async e => {
     const s = e.target.closest('[data-miembro]'); if (!s) return;
@@ -629,6 +646,14 @@
     else if (a === 'paso-recorrido') { const p = proyectos.find(x => x.rol !== 'lector') || proyectos[0]; if (p) location.href = urlEditor(p, '&recorrido=1'); else abrirNuevo(); }
     else if (a === 'paso-compartir') { const p = proyectos.find(x => x.rol === 'dueno'); if (p) abrirCompartir(p); else abrirNuevo(); }
     else if (a === 'paso-favorito') location.hash = '#mapas';
+    else if (a === 'plazo-miembro') {
+      const cuerpo = b.dataset.op === 'sin' ? { sin_plazo: true } : b.dataset.op === 'poner' ? { plazo_dias: +b.dataset.dias } : { extender_dias: +b.dataset.dias };
+      api('/api/proyectos/' + compartiendo.id + '/miembros/' + id, { method: 'PATCH', json: cuerpo }).then(r => { aviso(r.expira ? 'Acceso hasta el ' + fechaCorta(r.expira) + '.' : 'Acceso sin plazo.'); return pintarMiembros(); }).then(refrescar).catch(ex => aviso(ex.message, 'err'));
+    }
+    else if (a === 'inv-op') {
+      const op = b.dataset.op, cuerpo = { dias7: { dias: 7 }, dias30: { dias: 30 }, sin_caducidad: { sin_caducidad: true }, mas5: { mas_usos: 5 }, sin_limite: { sin_limite: true }, reactivar: { reactivar: true } }[op];
+      api('/api/invitaciones/' + id, { method: 'PATCH', json: cuerpo }).then(() => { aviso('Enlace actualizado.'); return b.dataset.admin ? mostrar() : pintarEnlaces(); }).catch(ex => aviso(ex.message, 'err'));
+    }
     else if (a === 'pestana-cuenta') { pestanaCuenta = b.dataset.t; ls('mc-cuenta-tab', pestanaCuenta); vistaCuenta(); }
     else if (a === 'tema') { aplicarTema(b.dataset.t); guardarPref({ tema: b.dataset.t === 'sistema' ? null : b.dataset.t }).then(vistaCuenta); }
     else if (a === 'quitar-foto') { if (!confirm('¿Quitar tu foto de perfil?')) return; api('/api/cuenta/avatar', { method: 'DELETE' }).then(() => { yo.avatar_v = 0; pintarAvatarMenu(); vistaCuenta(); aviso('Foto quitada.'); }).catch(ex => aviso(ex.message, 'err')); }

@@ -118,7 +118,8 @@ async def rol_en(proyecto_id, usuario_id) -> str | None:
     async with db.pool.acquire() as con:
         return await con.fetchval(
             "SELECT m.rol FROM miembros m JOIN proyectos p ON p.id = m.proyecto_id "
-            "WHERE m.proyecto_id = $1 AND m.usuario_id = $2 AND p.archivado IS NULL", proyecto_id, usuario_id)
+            "WHERE m.proyecto_id = $1 AND m.usuario_id = $2 AND p.archivado IS NULL AND (m.expira IS NULL OR m.expira > now())",
+            proyecto_id, usuario_id)  # un acceso con plazo vencido ya no cuenta
 
 
 async def exigir_rol(proyecto_id, usuario, escritura=False) -> str:
