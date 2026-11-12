@@ -14,16 +14,8 @@ from ..seguridad import ROLES_ESCRITURA, exigir_rol, parsear_uuid, usuario_actua
 router = APIRouter(prefix="/api", tags=["proyectos"])
 
 TERRENOS = ("cesped", "tierra", "concreto", "asfalto")
-# Las plantillas con `mapa` usan un mapa base del editor (editor/mapa_<mapa>.json); «vacio» crea un mapa propio en la colección
-# `mapas` (lo dibuja mapas_nuevos.js: una pieza de suelo del tamaño elegido).
-PLANTILLAS = {
-    "vacio": {"nombre": "En blanco", "descripcion": "Un terreno vacío del tamaño que elijas. Ideal para empezar desde cero.",
-              "mapa": None, "etiqueta": "Desde cero"},
-    "complejo": {"nombre": "Complejo industrial", "descripcion": "Galpones, oficinas, comedor y parqueadero: unas 27 000 piezas para "
-                 "explorar todas las herramientas.", "mapa": "complejo", "etiqueta": "Ejemplo grande"},
-    "parqueadero": {"nombre": "Parqueadero", "descripcion": "Un parqueadero con accesos, casetas y señalización.",
-                    "mapa": "parqueadero", "etiqueta": "Ejemplo"},
-}
+from . import plantillas as PL  # noqa: E402  (plantillas del sistema, semillas y de usuarios)
+PLANTILLAS = PL.BASE
 NO_ENCONTRADO = {"error": "Ese proyecto no existe o no tienes acceso.", "code": "not_found"}
 
 
@@ -48,10 +40,14 @@ class Favorito(BaseModel):
 class NuevoMiembro(BaseModel):
     email: str = Field(max_length=254)
     rol: str = Field(pattern="^(editor|lector)$")
+    dias: int | None = Field(default=None, ge=1, le=3650)   # acceso con plazo (días); sin él, sin plazo
 
 
 class CambioMiembro(BaseModel):
-    rol: str = Field(pattern="^(editor|lector)$")
+    rol: str | None = Field(default=None, pattern="^(editor|lector)$")
+    extender_dias: int | None = Field(default=None, ge=1, le=3650)   # suma días al plazo (desde hoy si ya venció)
+    plazo_dias: int | None = Field(default=None, ge=1, le=3650)      # pone un plazo desde hoy
+    sin_plazo: bool = False                                           # quita el plazo
 
 
 def _slug(texto):
@@ -76,17 +72,17 @@ def _fila(r):
 SQL_LISTA = """
 SELECT p.id, p.nombre, p.descripcion, p.plantilla, p.mapa_inicial, p.creado, p.actualizado, p.archivado, m.rol,
        m.favorito, m.abierto, u.nombre AS dueno_nombre, p.dueno_id,
-       (SELECT count(*) FROM miembros x WHERE x.proyecto_id = p.id) AS n_miembros,
+       (SELECT count(*) FROM miembros x WHERE x.proyecto_id = p.id AND (x.expira IS NULL OR x.expira > now())) AS n_miembros, m.expira AS acceso_expira,
        (SELECT count(*) FROM documentos d WHERE d.proyecto_id = p.id AND d.coleccion = 'cambios') AS n_cambios
 FROM proyectos p
-JOIN miembros m ON m.proyecto_id = p.id AND m.usuario_id = $1
+JOIN miembros m ON m.proyecto_id = p.id AND m.usuario_id = $1 AND (m.expira IS NULL OR m.expira > now())
 JOIN usuarios u ON u.id = p.dueno_id
 """
 
 
 @router.get("/plantillas")
-async def plantillas():
-    return [{"id": k} | v for k, v in PLANTILLAS.items()]
+async def plantillas(usuario=Depends(usuario_actual)):
+    return await PL.lista(usuario)
 
 
 @router.get("/proyectos")
@@ -99,20 +95,20 @@ async def listar(papelera: bool = Query(False), usuario=Depends(usuario_actual))
 
 @router.post("/proyectos", status_code=201)
 async def crear(datos: NuevoProyecto, usuario=Depends(usuario_actual)):
-    plantilla = PLANTILLAS.get(datos.plantilla)
-    if plantilla is None:
-        raise HTTPException(400, {"error": "Esa plantilla no existe.", "code": "invalid_argument"})
     async with db.pool.acquire() as con, con.transaction():
+        if not await PL.existe(con, datos.plantilla, usuario):
+            raise HTTPException(400, {"error": "Esa plantilla no existe.", "code": "invalid_argument"})
         n = await con.fetchval("SELECT count(*) FROM proyectos WHERE dueno_id = $1 AND archivado IS NULL", usuario["id"])
         if n >= config.MAX_PROYECTOS:
             raise HTTPException(400, {"error": "Llegaste al máximo de %d proyectos. Borra alguno para crear otro." % config.MAX_PROYECTOS,
                                       "code": "resource_exhausted"})
-        mapa = plantilla["mapa"] or ("u-" + _slug(datos.nombre))
+        mapa = await PL.mapa_de(con, datos.plantilla, _slug(datos.nombre))
         p = await con.fetchrow(
             "INSERT INTO proyectos (nombre, descripcion, dueno_id, plantilla, mapa_inicial) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-            datos.nombre.strip(), datos.descripcion.strip(), usuario["id"], datos.plantilla, mapa)
+            datos.nombre.strip(), datos.descripcion.strip(), usuario["id"], "plantilla" if datos.plantilla.startswith("u:") else datos.plantilla, mapa)
         await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, 'dueno')", p["id"], usuario["id"])
-        if plantilla["mapa"] is None:
+        await PL.aplicar(con, datos.plantilla, p["id"], usuario["id"], datos.nombre.strip())
+        if datos.plantilla == "vacio":
             doc = {"nombre": datos.nombre.strip()[:60], "ancho": datos.ancho, "largo": datos.largo,
                    "terreno": datos.terreno if datos.terreno in TERRENOS else "cesped", "creado": _ahora_iso()}
             await con.execute("INSERT INTO documentos (proyecto_id, coleccion, doc_id, datos, actualizado_por) VALUES ($1, 'mapas', $2, $3, $4)",
@@ -216,7 +212,7 @@ async def duplicar(pid: str, usuario=Depends(usuario_actual)):
 async def miembros(pid: str, usuario=Depends(usuario_actual)):
     await exigir_rol(pid, usuario)
     async with db.pool.acquire() as con:
-        filas = await con.fetch("SELECT u.id, u.nombre, u.email, u.avatar_v, m.rol, m.creado FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
+        filas = await con.fetch("SELECT u.id, u.nombre, u.email, u.avatar_v, m.rol, m.creado, m.expira, (m.expira IS NOT NULL AND m.expira <= now()) AS vencido, m.invitacion_id FROM miembros m JOIN usuarios u ON u.id = m.usuario_id "
                                 "WHERE m.proyecto_id = $1 ORDER BY (m.rol = 'dueno') DESC, u.nombre", parsear_uuid(pid))
     return [_fila(r) for r in filas]
 
@@ -232,9 +228,9 @@ async def invitar(pid: str, datos: NuevoMiembro, request: Request, usuario=Depen
         destino = await con.fetchrow("SELECT id, email FROM usuarios WHERE lower(email) = lower($1)", datos.email.strip())
         nombre = await con.fetchval("SELECT nombre FROM proyectos WHERE id = $1", p)
         if destino is not None:
-            await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, $3) "
-                              "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol WHERE miembros.rol <> 'dueno'",
-                              p, destino["id"], datos.rol)
+            await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol, expira) VALUES ($1, $2, $3, CASE WHEN $4::int IS NULL THEN NULL ELSE now() + make_interval(days => $4::int) END) "
+                              "ON CONFLICT (proyecto_id, usuario_id) DO UPDATE SET rol = excluded.rol, expira = excluded.expira WHERE miembros.rol <> 'dueno'",
+                              p, destino["id"], datos.rol, datos.dias)
             mapa = await con.fetchval("SELECT mapa_inicial FROM proyectos WHERE id = $1", p)
     if destino is not None:
         if destino["id"] != usuario["id"]:
@@ -244,18 +240,28 @@ async def invitar(pid: str, datos: NuevoMiembro, request: Request, usuario=Depen
     if not config.CORREO_ACTIVO:
         raise HTTPException(404, {"error": "No hay ninguna cuenta con ese correo. Crea un enlace de invitación y envíaselo.", "code": "not_found"})
     from .invitaciones import NuevaInvitacion, crear_de_proyecto
-    ficha = await crear_de_proyecto(pid, NuevaInvitacion(rol=datos.rol, dias=7, email=datos.email), request, usuario)
+    ficha = await crear_de_proyecto(pid, NuevaInvitacion(rol=datos.rol, dias=7, email=datos.email, acceso_dias=datos.dias), request, usuario)
     return {"ok": True, "invitado": True, "enviado": ficha.get("enviado", False)}
 
 
 @router.patch("/proyectos/{pid}/miembros/{uid}")
 async def cambiar_miembro(pid: str, uid: str, datos: CambioMiembro, usuario=Depends(usuario_actual)):
+    """Rol y plazo de acceso de un miembro (solo el dueño). El dueño no tiene plazo."""
     if await exigir_rol(pid, usuario) != "dueno":
         raise HTTPException(403, {"error": "Solo el dueño puede cambiar los permisos.", "code": "permission_denied"})
+    p, u = parsear_uuid(pid), parsear_uuid(uid)
     async with db.pool.acquire() as con:
-        await con.execute("UPDATE miembros SET rol = $3 WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'",
-                          parsear_uuid(pid), parsear_uuid(uid), datos.rol)
-    return {"ok": True}
+        if datos.rol:
+            await con.execute("UPDATE miembros SET rol = $3 WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u, datos.rol)
+        if datos.sin_plazo:
+            await con.execute("UPDATE miembros SET expira = NULL WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u)
+        elif datos.plazo_dias:
+            await con.execute("UPDATE miembros SET expira = now() + make_interval(days => $3) WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u, datos.plazo_dias)
+        elif datos.extender_dias:
+            await con.execute("UPDATE miembros SET expira = greatest(coalesce(expira, now()), now()) + make_interval(days => $3) "
+                              "WHERE proyecto_id = $1 AND usuario_id = $2 AND rol <> 'dueno'", p, u, datos.extender_dias)
+        fila = await con.fetchrow("SELECT expira FROM miembros WHERE proyecto_id = $1 AND usuario_id = $2", p, u)
+    return {"ok": True, "expira": fila["expira"].isoformat() if fila and fila["expira"] else None}
 
 
 @router.delete("/proyectos/{pid}/miembros/{uid}")

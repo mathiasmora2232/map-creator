@@ -1,0 +1,1157 @@
+{
+"orden": 10,
+"nombre": "Casa con jardín",
+"descripcion": "Casa pequeña con jardín, árboles y banca. Paredes, puertas, ventanas y cubierta listas para cambiar.",
+"etiqueta": "Vivienda",
+"mapa": "u-casa-con-jardin",
+"documentos": [
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "fundacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": -3,
+"sx": 7.6,
+"sy": 0.3,
+"sz": 6.6,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"area": 50.16,
+"base": "macizo",
+"borde": "recto",
+"color": "#b9b6ae",
+"forma": "rect",
+"giroY": 0,
+"matLat": "concreto",
+"matSup": "concreto",
+"origen": "base",
+"espesor": 0.2,
+"colorLat": "#8f8a80",
+"colorSup": "#b9b6ae",
+"material": "concreto",
+"elevacion": 0.3
+},
+"fotos": [],
+"props": {
+"nombre": "Fundación"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": -3,
+"sx": 6.8,
+"sy": 0.03,
+"sz": 5.8,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"alto": 2.6,
+"area": 39.44,
+"color": "#d8d2c4",
+"giroY": 0,
+"nombre": "Casa",
+"origen": "base",
+"puntos": [
+[
+-3.4,
+-2.9
+],
+[
+3.4,
+-2.9
+],
+[
+3.4,
+2.9
+],
+[
+-3.4,
+2.9
+]
+],
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "baldosa",
+"puntos_mundo": [
+[
+-3.4,
+-5.9
+],
+[
+3.4,
+-5.9
+],
+[
+3.4,
+-0.1
+],
+[
+-3.4,
+-0.1
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Casa",
+"material": "u:preset-madera_clara"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k1",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k10",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 1.96,
+"y": 0.3,
+"z": 0,
+"sx": 1.4,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k10",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k11",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 3.5,
+"y": 0.3,
+"z": -3,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k3",
+"color": "#3d7fbf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k3",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k11",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k12",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -3.5,
+"y": 0.3,
+"z": -3,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k5",
+"color": "#3d7fbf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k5",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k12",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k13",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 1.225,
+"y": 0.3,
+"z": -6,
+"sx": 1,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k4",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k13",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k14",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -1.225,
+"y": 0.3,
+"z": -6,
+"sx": 1,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k4",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k14",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k15",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 2.9,
+"z": -3,
+"sx": 7.2,
+"sy": 0.12,
+"sz": 6.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"color": "#b5562f",
+"forma": "dos_aguas",
+"giroY": 0,
+"grosor": 0.12,
+"origen": "base",
+"puntos": [
+[
+-3.6,
+-3.1
+],
+[
+3.6,
+-3.1
+],
+[
+3.6,
+3.1
+],
+[
+-3.6,
+3.1
+]
+],
+"espesor": 0.12,
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 2.6,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"cubierta": "tejas",
+"cumbrera": true,
+"material": "ladrillo",
+"voladizo": 0.4,
+"canaletas": true,
+"estructura": "ninguna",
+"inclinacion": 30,
+"orientacion": 0,
+"puntos_mundo": [
+[
+-3.6,
+-6.1
+],
+[
+3.6,
+-6.1
+],
+[
+3.6,
+0.1
+],
+[
+-3.6,
+0.1
+]
+],
+"de_habitacion": "n-u-casa-con-jardin-mwcuxp0zps358k1"
+},
+"fotos": [],
+"props": {
+"nombre": "Cubierta",
+"material": "u:kit-tejas_rojas-b5562f"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k15",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k16",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "escalera",
+"antes": null,
+"datos": {
+"n": 2,
+"x": -1.26,
+"y": 0,
+"z": 0.62,
+"sx": 0.64,
+"sy": 0.3,
+"sz": 1.4,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"alto": 0.3,
+"giro": "izq",
+"ancho": 1.4,
+"color": "#b9b4aa",
+"forma": "recta",
+"giroY": 90,
+"estilo": "maciza",
+"huella": 0.32,
+"origen": "base",
+"barandas": "ninguna",
+"descanso": false,
+"contrahuella": 0.15,
+"alturaBaranda": 0.9
+},
+"fotos": [],
+"props": {
+"nombre": "Escalones"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k16",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": 0,
+"sx": 7,
+"sy": 2.6,
+"sz": 0.2,
+"x1": -3.5,
+"x2": 3.5,
+"z1": 0,
+"z2": 0,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"color": "#efe6d2",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 3
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:kit-pared_blanca-efe6d2"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 3.5,
+"y": 0.3,
+"z": -3,
+"sx": 6,
+"sy": 2.6,
+"sz": 0.2,
+"x1": 3.5,
+"x2": 3.5,
+"z1": 0,
+"z2": -6,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"color": "#efe6d2",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": 90,
+"x": 3.5,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:kit-pared_blanca-efe6d2"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k3",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": -6,
+"sx": 7,
+"sy": 2.6,
+"sz": 0.2,
+"x1": 3.5,
+"x2": -3.5,
+"z1": -6,
+"z2": -6,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"color": "#efe6d2",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 0,
+"z": -3
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:kit-pared_blanca-efe6d2"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k4",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k5",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -3.5,
+"y": 0.3,
+"z": -3,
+"sx": 6,
+"sy": 2.6,
+"sz": 0.2,
+"x1": -3.5,
+"x2": -3.5,
+"z1": -6,
+"z2": 0,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"color": "#efe6d2",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": -90,
+"x": -3.5,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:kit-pared_blanca-efe6d2"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k5",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k6",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0.56,
+"y": 0.3,
+"z": -3,
+"sx": 6,
+"sy": 2.6,
+"sz": 0.12,
+"x1": 0.56,
+"x2": 0.56,
+"z1": 0,
+"z2": -6,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"color": "#efe6d2",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k0",
+"rel": {
+"g": 90,
+"x": 0.56,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Tabique",
+"material": "u:kit-pared_blanca-efe6d2"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k6",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k7",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": 0.56,
+"y": 0.3,
+"z": -4.2,
+"sx": 0.8,
+"sy": 2.1,
+"sz": 0.12,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"hoja": "#4a555a",
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k6",
+"color": "#5d666b",
+"giroY": 90,
+"estilo": "madera",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k6",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta del dormitorio"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k7",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": -1.26,
+"y": 0.3,
+"z": 0,
+"sx": 0.95,
+"sy": 2.1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"hoja": "#4a555a",
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"color": "#5d666b",
+"giroY": 0,
+"estilo": "madera",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta de entrada"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k8",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxp0zps358k9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -2.66,
+"y": 0.3,
+"z": 0,
+"sx": 1,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_pequena",
+"grupo": "kit-mwcuxp0zb43"
+},
+"muro": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-con-jardin-mwcuxp0zps358k2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.540Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxp0zps358k9",
+"actualizado": "2026-11-12T01:16:39.540Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxpbc4p7qz",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -11,
+"y": 0,
+"z": 7,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:39.912Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxpbc4p7qz",
+"actualizado": "2026-11-12T01:16:39.912Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxpl6ghh3v",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 11,
+"y": 0,
+"z": 8,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:40.266Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxpl6ghh3v",
+"actualizado": "2026-11-12T01:16:40.266Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxpvl6iwpa",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0,
+"z": -8,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:40.641Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxpvl6iwpa",
+"actualizado": "2026-11-12T01:16:40.641Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxq5q04nfc",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": 6,
+"y": 0,
+"z": 8,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:41.006Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxq5q04nfc",
+"actualizado": "2026-11-12T01:16:41.006Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxqfkm2qxi",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "objeto:planta_maceta",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0,
+"z": 4.2,
+"sx": 0.8,
+"sy": 1.1,
+"sz": 0.75,
+"color": "#4c692e",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:41.360Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxqfkm2qxi",
+"actualizado": "2026-11-12T01:16:41.360Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-con-jardin-mwcuxqpca5swb",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-con-jardin",
+"tipo": "objeto:planta_maceta",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 0,
+"z": 4.2,
+"sx": 0.8,
+"sy": 1.1,
+"sz": 0.75,
+"color": "#4c692e",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:41.712Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-con-jardin-mwcuxqpca5swb",
+"actualizado": "2026-11-12T01:16:41.712Z"
+}
+},
+{
+"coleccion": "mapas",
+"doc_id": "u-casa-con-jardin",
+"datos": {
+"ancho": 32.0,
+"largo": 26.0,
+"creado": "2026-11-12T01:16:30.677Z",
+"nombre": "Casa con jardín",
+"terreno": "cesped"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-pared_blanca-efe6d2",
+"datos": {
+"color": "#efe6d2",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:16:39.706Z",
+"escala": 2,
+"nombre": "Pared blanca #efe6d2",
+"patron": "enlucido",
+"preset": "pared_blanca",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.92,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:16:39.706Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-tejas_rojas-b5562f",
+"datos": {
+"color": "#b5562f",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:16:39.791Z",
+"escala": 1.2,
+"nombre": "Tejas rojas #b5562f",
+"patron": "tejas",
+"preset": "tejas_rojas",
+"emision": "#000000",
+"relieve": 1.4,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.75,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:16:39.791Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-madera_clara",
+"datos": {
+"color": "#c9a273",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:16:39.615Z",
+"escala": 1,
+"nombre": "Madera clara",
+"patron": "madera",
+"preset": "madera_clara",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.6,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:16:39.615Z"
+}
+}
+]
+}

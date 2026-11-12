@@ -85,6 +85,7 @@
         <label><span>Permiso</span><select name="rol"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select></label>
         <label><span>Caduca</span><select name="dias"><option value="1">En 1 día</option><option value="7" selected>En 7 días</option><option value="30">En 30 días</option><option value="">Nunca</option></select></label>
         <label><span>Usos</span><select name="usos_max"><option value="1">1 persona</option><option value="5">5 personas</option><option value="25">25 personas</option><option value="" selected>Sin límite</option></select></label>
+        <label><span>El acceso dura</span><select name="acceso_dias"><option value="" selected>Siempre</option><option value="1">1 día</option><option value="7">7 días</option><option value="30">30 días</option><option value="90">90 días</option></select></label>
         <button class="btn prim" type="submit">Crear enlace</button>
       </form>
       <div class="enlace-nuevo" id="enlaceNuevo" hidden>
@@ -100,6 +101,7 @@
       <form class="invitar" id="formInvitar">
         <input type="email" name="email" placeholder="correo@ejemplo.com" required aria-label="Correo de la persona">
         <select name="rol" aria-label="Permiso"><option value="editor">Puede editar</option><option value="lector">Solo ver</option></select>
+        <select name="dias" aria-label="Durante"><option value="">Siempre</option><option value="1">1 día</option><option value="7">7 días</option><option value="30">30 días</option></select>
         <button class="btn" type="submit">Invitar</button>
       </form>
       <p class="error-form" id="errInvitar" role="alert"></p>
@@ -109,6 +111,21 @@
       <div class="miembros" id="listaMiembros"></div>
     </section>
   </div>
+</dialog>
+
+<!-- Publicar como plantilla -->
+<dialog id="dlgPublicar" aria-labelledby="tPublicar">
+  <form method="dialog" id="formPublicar" novalidate>
+    <div class="dlg-cab"><h2 id="tPublicar">Publicar como plantilla</h2><button type="button" class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
+    <div class="dlg-cuerpo">
+      <p class="ayuda" id="ayudaPublicar"></p>
+      <label class="campo"><span>Nombre de la plantilla</span><input type="text" name="nombre" maxlength="60" required></label>
+      <label class="campo"><span>Descripción</span><textarea name="descripcion" maxlength="300" rows="3" placeholder="Qué trae y para qué sirve (opcional)"></textarea></label>
+      <label class="campo"><span>Quién puede usarla</span><select name="visibilidad"><option value="publica">Cualquiera en este servidor</option><option value="privada">Solo yo</option></select></label>
+      <p class="error-form" id="errPublicar" role="alert"></p>
+    </div>
+    <div class="dlg-pie"><button type="button" class="btn" data-a="cerrar-dlg">Cancelar</button><button class="btn prim">Guardar</button></div>
+  </form>
 </dialog>
 
 <!-- Enlace de registro (administración) -->
@@ -145,8 +162,6 @@
   </form>
 </dialog>
 
-<script src="/sitio/js/comun.js"></script>
-<script src="/sitio/js/recorrido.js"></script>
 <script src="/sitio/js/panel.js"></script>
 </body>
 </html>

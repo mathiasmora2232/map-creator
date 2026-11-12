@@ -473,3 +473,31 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .act-txt small{color:var(--fg3);font-size:12.5px}
 .act-ir{color:var(--acc);font-size:13px;font-weight:500;white-space:nowrap}
 .lateral .yo .avatar.foto{color:transparent}
+
+/* Enlaces de invitación con quién los usó y plazos */
+.enlace-v2{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.enlace-v2.terminado{opacity:.8}
+.enlace-cab{display:flex;gap:12px;align-items:center}
+.usado-por{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;padding-left:46px}
+.usado-por .quien{background:var(--bg2);border-radius:999px;padding:3px 10px}
+.usado-por .quien b{font-weight:500}
+.enlace-acc{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding-left:40px}
+.enlace-acc .sel-acceso{width:auto;height:32px;font-size:13px;padding:0 8px}
+.enlace-acc .peligro{color:var(--err)}
+.enlaces-fin{margin-top:8px}
+.enlaces-fin summary{cursor:pointer;color:var(--fg2);font-size:13.5px;padding:6px 0}
+.enlaces-admin{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px 16px}
+.enlaces-admin .enlace-v2:first-child{border-top:0}
+.insignia.plazo{background:color-mix(in srgb,var(--azul) 15%,transparent);color:var(--azul);margin-left:4px}
+.insignia.vencido{background:color-mix(in srgb,var(--err) 15%,transparent);color:var(--err);margin-left:4px}
+.miembro-vencido .avatar{opacity:.5}
+.plazo-acc{display:flex;gap:10px;font-size:12.5px;margin-top:2px}
+.estado-inv.caducada,.estado-inv.agotada,.estado-inv.revocada{background:var(--bg2);color:var(--fg3)}
+@media (max-width:560px){.usado-por,.enlace-acc{padding-left:0}}
+
+/* Plantillas: secciones y gestión */
+.desc-bloque{color:var(--fg2);font-size:14px;margin:-6px 0 12px}
+.pl-caja{display:grid;gap:6px}
+.pl-acc{display:flex;flex-wrap:wrap;gap:2px}
+.pl-acc .peligro{color:var(--err)}
+.plantilla .meta-pl{color:var(--fg3);font-size:12.5px;margin-top:6px}

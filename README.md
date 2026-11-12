@@ -56,15 +56,24 @@ map-creator/
 │   ├── migraciones/          SQL en orden (001_esquema.sql…), se aplican solas al arrancar
 │   ├── scripts/importar_local.py   pasa una carpeta datos_usuario del modo local a un proyecto
 │   └── pruebas/prueba_api.py       prueba de punta a punta (83 comprobaciones)
-├── sitio/                    landing, entrar, registro, invitación y panel (HTML + CSS + JS, sin build)
+├── package.json              esbuild + TypeScript: npm run build | dev | tipos
+├── tsconfig.json             tipos del sitio (estricto)
+├── scripts/build.mjs         compila sitio/src → sitio/js y editor/src → editor/js
+├── sitio/                    landing, entrar, registro, invitación y panel (HTML + CSS + TypeScript)
 │   ├── index.html  entrar.html  registro.html  invitacion.html  verificar.html  recuperar.html  app.html
 │   ├── css/sitio.css
-│   └── js/comun.js  cuenta.js  invitacion.js  panel.js  recorrido.js (recorrido guiado, también lo usa el editor)
-├── editor/                   el editor 3D (three.js, JS sin build)
+│   ├── src/                  TypeScript (un bundle por página)
+│   │   ├── comun.ts  dom.ts  tipos.ts (modelos de la API)  recorrido.ts (también lo carga el editor)
+│   │   ├── paginas/          landing, cuenta (entrar/registro), verificar, recuperar, invitacion
+│   │   └── panel/            index.ts (rutas y clics), estado.ts, piezas.ts, vistas/*, dialogos/*
+│   └── js/                   (generado, no está en git)
+├── editor/                   el editor 3D (three.js, TypeScript permisivo)
 │   ├── index.html
 │   ├── css/
-│   ├── js/
-│   │   ├── nucleo/           editor.js (motor), local.js (datos: modo local o nube), nube.js, paneles, geometría…
+│   ├── tsconfig.json
+│   ├── js/                   (generado 1:1 desde src/, no está en git)
+│   ├── src/                  scripts clásicos que comparten window.OO*; globales.d.ts declara esas globales y THREE
+│   │   ├── nucleo/           editor.ts (motor), local.ts (datos: modo local o nube), nube.ts, paneles, geometría…
 │   │   ├── construccion/     paredes, habitaciones, huecos, techos, escaleras, plataformas, anclajes…
 │   │   ├── catalogo/         catálogo, prefabs, kits de edificios, vegetación
 │   │   ├── mapa/             terreno, calco satelital, zonas, mapas nuevos
@@ -81,13 +90,27 @@ map-creator/
 
 ## Desarrollo sin Docker
 
+El sitio y el editor están en TypeScript. Se necesita Node 20 o más nuevo:
+
 ```bash
+npm ci                 # una vez: esbuild y typescript
+npm run dev            # compila y vigila sitio/src y editor/src (deja este terminal abierto)
+npm run tipos          # comprueba los tipos con tsc (sitio estricto, editor permisivo)
+npm run build          # compilación única (la imagen de Docker la hace sola, minificada)
+
 # Postgres local (o: docker compose up db)
 cd api && python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 DATABASE_URL=postgresql://mapcreator:clave@localhost:5432/mapcreator uvicorn app.main:app --reload
 ```
 
-El sitio y el editor se sirven desde las carpetas del repo, así que los cambios en HTML, CSS y JS se ven al recargar.
+El servidor sirve `sitio/` y `editor/` desde las carpetas del repo: con `npm run dev` abierto, los cambios en `.ts`, HTML y CSS se ven
+al recargar. El modo local del editor (`editor/local/servidor.py`) también necesita `npm run build` antes de abrirlo.
+
+- **Sitio** (`sitio/src`): TypeScript estricto. Los modelos de la API están en `tipos.ts`: si cambia un endpoint, cámbialo ahí y
+  `npm run tipos` dice qué hay que tocar. Cada página carga un solo archivo (`/sitio/js/<página>.js`).
+- **Editor** (`editor/src`): los 68 scripts de antes, ahora `.ts`, cargados en orden por `index.html`. Siguen siendo scripts clásicos
+  que se hablan por `window.OO*` (declaradas en `globales.d.ts`), con tipos permisivos (`strict: false`). Para tipar un módulo a fondo,
+  ve sustituyendo `any` por interfaces a partir de `nucleo/`.
 
 ## Pruebas
 

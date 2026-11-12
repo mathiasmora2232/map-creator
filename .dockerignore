@@ -3,3 +3,6 @@
 .datos
 **/__pycache__
 editor/local
+node_modules
+sitio/js
+editor/js

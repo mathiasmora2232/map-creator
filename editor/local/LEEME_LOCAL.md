@@ -17,7 +17,9 @@ El código sale de `herramientas/editor_mapa/` del repo del juego (rama `version
 del editor.
 
 ## Abrirlo
+El editor está en TypeScript (`editor/src`): la primera vez, y tras cada cambio de código, compílalo desde la raíz del repo (Node 20+):
 ```
+npm ci && npm run build
 python editor/local/servidor.py
 ```
 (o `abrir_editor.bat`). Las funciones que tocan el juego (mallas reales, exportar mapas, «Enviar al juego») buscan el repo del juego

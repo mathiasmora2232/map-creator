@@ -1,0 +1,1004 @@
+{
+"orden": 14,
+"nombre": "Local comercial con vereda",
+"descripcion": "Local comercial con toldo y vereda: bancas, macetero, tacho y postes de luz.",
+"etiqueta": "Comercio",
+"mapa": "u-local-comercial-con-vereda",
+"documentos": [
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "fundacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": -2.6,
+"sx": 8.6,
+"sy": 0.15,
+"sz": 7.4,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"area": 63.64,
+"base": "macizo",
+"borde": "bordillo",
+"color": "#b9b6ae",
+"forma": "rect",
+"giroY": 0,
+"matLat": "concreto",
+"matSup": "concreto",
+"origen": "base",
+"espesor": 0.2,
+"colorLat": "#8f8a80",
+"colorSup": "#b9b6ae",
+"material": "concreto",
+"elevacion": 0.15
+},
+"fotos": [],
+"props": {
+"nombre": "Fundación"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.15,
+"z": -3,
+"sx": 7.8,
+"sy": 0.03,
+"sz": 5.8,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"alto": 3.4,
+"area": 45.24,
+"color": "#d8d2c4",
+"giroY": 0,
+"nombre": "Local",
+"origen": "base",
+"puntos": [
+[
+-3.9,
+-2.9
+],
+[
+3.9,
+-2.9
+],
+[
+3.9,
+2.9
+],
+[
+-3.9,
+2.9
+]
+],
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": -0.4
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "baldosa",
+"puntos_mundo": [
+[
+-3.9,
+-5.9
+],
+[
+3.9,
+-5.9
+],
+[
+3.9,
+-0.1
+],
+[
+-3.9,
+-0.1
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Local",
+"material": "u:preset-porcelanato"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k1",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k10",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 3.55,
+"z": -3,
+"sx": 8.2,
+"sy": 0.2,
+"sz": 6.2,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"color": "#9a9a9a",
+"forma": "plano",
+"giroY": 0,
+"grosor": 0.2,
+"origen": "base",
+"pretil": 0.8,
+"puntos": [
+[
+-4.1,
+-3.1
+],
+[
+4.1,
+-3.1
+],
+[
+4.1,
+3.1
+],
+[
+-4.1,
+3.1
+]
+],
+"espesor": 0.2,
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 3.4,
+"z": -0.4
+},
+"tipo": "fundacion",
+"manual": true
+},
+"cubierta": "losa",
+"cumbrera": false,
+"material": "concreto",
+"voladizo": 0,
+"canaletas": false,
+"estructura": "ninguna",
+"inclinacion": 0,
+"orientacion": 0,
+"puntos_mundo": [
+[
+-4.1,
+-6.1
+],
+[
+4.1,
+-6.1
+],
+[
+4.1,
+0.1
+],
+[
+-4.1,
+0.1
+]
+],
+"de_habitacion": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k1"
+},
+"fotos": [],
+"props": {
+"nombre": "Cubierta"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k10",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k11",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "cartel",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.15,
+"z": 0.105,
+"sx": 1,
+"sy": 0.4,
+"sz": 0.02,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"alto": 0.32,
+"borde": 0,
+"giroY": 0,
+"placa": "si",
+"senal": "ninguna",
+"texto": "TIENDA",
+"altura": 3.05,
+"origen": "base",
+"montaje": "pared",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 2.705
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"colorFondo": "#1d4f9a",
+"colorTexto": "#ffffff"
+},
+"fotos": [],
+"props": {
+"nombre": "Letrero TIENDA"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k11",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k12",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 2.7,
+"z": 0.8,
+"sx": 6.5,
+"sy": 0.02,
+"sz": 1.4,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"lado": "A",
+"color": "#2f7d5a",
+"forma": "toldo",
+"giroY": 0,
+"grosor": 0.02,
+"origen": "base",
+"puntos": [
+[
+-3.25,
+-0.7
+],
+[
+3.25,
+-0.7
+],
+[
+3.25,
+0.7
+],
+[
+-3.25,
+0.7
+]
+],
+"espesor": 0.02,
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"tipo": "pared",
+"manual": true
+},
+"cubierta": "lona",
+"cumbrera": false,
+"voladizo": 0,
+"canaletas": false,
+"estructura": "ninguna",
+"inclinacion": 18,
+"orientacion": 0,
+"puntos_mundo": [
+[
+-3.25,
+0.1
+],
+[
+3.25,
+0.1
+],
+[
+3.25,
+1.5
+],
+[
+-3.25,
+1.5
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Toldo"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k12",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.15,
+"z": 0,
+"sx": 8,
+"sy": 3.4,
+"sz": 0.2,
+"x1": -4,
+"x2": 4,
+"z1": 0,
+"z2": 0,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"color": "#e8e6df",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 2.6
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:kit-pared_blanca-e8e6df"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 0.15,
+"z": -3,
+"sx": 6,
+"sy": 3.4,
+"sz": 0.2,
+"x1": 4,
+"x2": 4,
+"z1": 0,
+"z2": -6,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"color": "#e8e6df",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": 90,
+"x": 4,
+"y": 0,
+"z": -0.4
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:kit-pared_blanca-e8e6df"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k3",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.15,
+"z": -6,
+"sx": 8,
+"sy": 3.4,
+"sz": 0.2,
+"x1": 4,
+"x2": -4,
+"z1": -6,
+"z2": -6,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"color": "#e8e6df",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 0,
+"z": -3.4
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:kit-pared_blanca-e8e6df"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k4",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k5",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0.15,
+"z": -3,
+"sx": 6,
+"sy": 3.4,
+"sz": 0.2,
+"x1": -4,
+"x2": -4,
+"z1": -6,
+"z2": 0,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"color": "#e8e6df",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k0",
+"rel": {
+"g": -90,
+"x": -4,
+"y": 0,
+"z": -0.4
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:kit-pared_blanca-e8e6df"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k5",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k6",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.15,
+"z": 0,
+"sx": 1.8,
+"sy": 2.3,
+"sz": 0.2,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"hoja": "#4a555a",
+"muro": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"color": "#c9ced3",
+"giroY": 0,
+"estilo": "corrediza",
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 3.4
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta corrediza"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k6",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k7",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -2.1,
+"y": 0.15,
+"z": 0,
+"sx": 2,
+"sy": 2,
+"sz": 0.2,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"muro": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"color": "#c9ced3",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"tipo": "pared"
+},
+"alfeizar": 0.4,
+"muro_alto": 3.4
+},
+"fotos": [],
+"props": {
+"nombre": "Escaparate"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k7",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 2.1,
+"y": 0.15,
+"z": 0,
+"sx": 2,
+"sy": 2,
+"sz": 0.2,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"muro": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"color": "#c9ced3",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k2",
+"tipo": "pared"
+},
+"alfeizar": 0.4,
+"muro_alto": 3.4
+},
+"fotos": [],
+"props": {
+"nombre": "Escaparate"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k8",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": -2.4,
+"y": 0.15,
+"z": -6,
+"sx": 0.9,
+"sy": 2.1,
+"sz": 0.2,
+"kit": {
+"clave": "local_comercial",
+"grupo": "kit-mwcuz022j95"
+},
+"hoja": "#4a555a",
+"muro": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k4",
+"color": "#5d666b",
+"giroY": -180,
+"estilo": "metal_oficina",
+"origen": "base",
+"soporte": {
+"id": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k4",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 3.4
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta de servicio"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.491Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz022zmxf3k9",
+"actualizado": "2026-11-12T01:17:40.491Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz0eerefj4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": -6,
+"y": 0,
+"z": 6,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:40.934Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz0eerefj4",
+"actualizado": "2026-11-12T01:17:40.934Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz0o7swbw3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": 6,
+"y": 0,
+"z": 6,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:41.287Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz0o7swbw3",
+"actualizado": "2026-11-12T01:17:41.287Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz0y80rjmz",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "objeto:macetero",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": 6.5,
+"sx": 1.2,
+"sy": 0.85,
+"sz": 0.5,
+"color": "#9a958c",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:41.648Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz0y80rjmz",
+"actualizado": "2026-11-12T01:17:41.648Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz17z1egj4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "objeto:tacho",
+"antes": null,
+"datos": {
+"x": 9,
+"y": 0,
+"z": 6,
+"sx": 0.55,
+"sy": 0.95,
+"sz": 0.55,
+"color": "#3a6b45",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:41.999Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz17z1egj4",
+"actualizado": "2026-11-12T01:17:41.999Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz1je2044y",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "poste",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0,
+"z": 8,
+"sx": 1.6,
+"sy": 7,
+"sz": 0.4,
+"giroY": 0,
+"origen": "base",
+"alcance": 12
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:42.410Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz1je2044y",
+"actualizado": "2026-11-12T01:17:42.410Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-local-comercial-con-vereda-mwcuz1uvk3qoo",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-local-comercial-con-vereda",
+"tipo": "poste",
+"antes": null,
+"datos": {
+"x": 12,
+"y": 0,
+"z": 8,
+"sx": 1.6,
+"sy": 7,
+"sz": 0.4,
+"giroY": 0,
+"origen": "base",
+"alcance": 12
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:42.823Z",
+"esquema": 2,
+"id_objeto": "n-u-local-comercial-con-vereda-mwcuz1uvk3qoo",
+"actualizado": "2026-11-12T01:17:42.823Z"
+}
+},
+{
+"coleccion": "mapas",
+"doc_id": "u-local-comercial-con-vereda",
+"datos": {
+"ancho": 30.0,
+"largo": 22.0,
+"creado": "2026-11-12T01:17:32.054Z",
+"nombre": "Local comercial con vereda",
+"terreno": "concreto"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-pared_blanca-e8e6df",
+"datos": {
+"color": "#e8e6df",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:17:40.774Z",
+"escala": 2,
+"nombre": "Pared blanca #e8e6df",
+"patron": "enlucido",
+"preset": "pared_blanca",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.92,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:40.774Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-porcelanato",
+"datos": {
+"color": "#d9d3c9",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:17:40.662Z",
+"escala": 1.2,
+"nombre": "Porcelanato",
+"patron": "porcelanato",
+"preset": "porcelanato",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.2,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:40.662Z"
+}
+}
+]
+}

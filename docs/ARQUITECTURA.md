@@ -9,7 +9,7 @@
  /entrar /registro          ├── sitio/ ──────▶   estáticos con lista blanca
  /app         panel        ─┘                    /api/cuenta     ──────────────────────▶  usuarios, sesiones
  /editor/?p=<id>&m=<mapa>  ── editor/            /api/proyectos  ──────────────────────▶  proyectos, miembros
-     local.js (modo nube) ── X-OO-Proyecto ──▶   /api/db/<col>   ──────────────────────▶  documentos, colecciones
+     local.ts (modo nube) ── X-OO-Proyecto ──▶   /api/db/<col>   ──────────────────────▶  documentos, colecciones
                                                   /api/fotos, /_blob ── volumen archivos ─▶ archivos (ficha)
 ```
 
@@ -18,19 +18,32 @@ contenedor. Caddy (opcional) pone HTTPS delante.
 
 ## Decisión clave: no tocar el editor
 
-El editor (unos 60 archivos JS y 300 KB solo en `editor.js`) ya hablaba con sus datos a través de una capa pequeña:
+El editor (68 archivos, hoy en TypeScript, y 300 KB solo en `editor.ts`) ya hablaba con sus datos a través de una capa pequeña:
 `window.claude.use('db')`, una interfaz parecida a Firestore (`collection(c).doc(id).set/update/delete`, `onSnapshot`). En modo local la
-implementa `editor/js/nucleo/local.js` contra `servidor.py`, que guarda colecciones JSON en disco.
+implementa `editor/src/nucleo/local.ts` contra `servidor.py`, que guarda colecciones JSON en disco.
 
-La versión web **mantiene exactamente esa interfaz**: `local.js` detecta `?p=<proyecto>` en la URL y entonces:
+La versión web **mantiene exactamente esa interfaz**: `local.ts` detecta `?p=<proyecto>` en la URL y entonces:
 
 - añade la cabecera `X-OO-Proyecto` a toda petición `/api/…`;
 - pide cada colección con `If-None-Match` (ETag): casi siempre recibe un 304 vacío;
 - toma el usuario de `/api/cuenta/yo` y el rol de `/api/proyectos/<id>`;
 - si recibe un 401, lleva a `/entrar` y luego vuelve.
 
-`js/nucleo/nube.js` añade la barra del proyecto (volver a «Mis mapas», nombre, rol y aviso de solo lectura). Fuera de eso, el editor
+`nucleo/nube.ts` añade la barra del proyecto (volver a «Mis mapas», nombre, rol y aviso de solo lectura). Fuera de eso, el editor
 no sabe si está en local o en la nube.
+
+## TypeScript y compilación
+
+- `scripts/build.mjs` (esbuild): el sitio se empaqueta en un IIFE por página (`sitio/src/paginas/*.ts`, `sitio/src/panel/index.ts`
+  → `sitio/js/<página>.js`) y `recorrido.js` va suelto para el editor. El editor se transforma archivo por archivo (`editor/src/**.ts`
+  → `editor/js/**.js`) sin empaquetar: los `<script>` de `editor/index.html` y el orden de carga no cambian.
+- Las URLs que pide el navegador son las mismas de antes, así que el servidor (`main.py`, `?v=` contra la caché) no cambió.
+- `sitio/js` y `editor/js` no están en git. La imagen de Docker compila en una etapa `node:22-alpine` (`npm run tipos` y
+  `npm run build -- --min`) y copia el resultado; si los tipos fallan, la imagen no se construye.
+- Sitio estricto (`tsconfig.json`). Editor permisivo (`editor/tsconfig.json`): la migración desde JS se hizo con
+  `scripts/migrar-ts.mjs` (parámetros opcionales, `<any>` en `new Set/Map/…`) y `scripts/migrar-ts-paso2.mjs` (objetos que crecen
+  después → `: any`), más una docena de arreglos a mano. Pendiente: `validacion.ts` consulta `OOMaterialesPro`, que ningún módulo
+  define (la comprobación de materiales nunca se ejecuta; no rompe nada porque está protegida con `window.OOMaterialesPro &&`).
 
 ## Esquema de base de datos
 
@@ -110,8 +123,8 @@ las pide en `/_blob/<proyecto>/<archivo>`. Al duplicar un proyecto se copian las
 
 ## Ayuda en la interfaz
 
-- `sitio/js/recorrido.js`: recorrido guiado sin dependencias (resalta un elemento y pone una ficha; teclado ← → Esc). Lo usan el
-  panel (primera visita, Ayuda → Recorrido guiado o tecla `?`) y el editor en modo nube (`nube.js`: primera vez, `?recorrido=1` o
+- `sitio/src/recorrido.ts` (→ `/sitio/js/recorrido.js`): recorrido guiado sin dependencias (resalta un elemento y pone una ficha; teclado ← → Esc). Lo usan el
+  panel (primera visita, Ayuda → Recorrido guiado o tecla `?`) y el editor en modo nube (`nube.ts`: primera vez, `?recorrido=1` o
   botón «Guía»). Lo visto se guarda en `usuarios.preferencias`, así no se repite en otro dispositivo.
 - Panel: **Inicio** con «Continuar» (lo último que abriste) y **Primeros pasos**, que se deducen de los datos (crear, abrir, recorrido,
   compartir, favorito). Favoritos, orden (editado, abierto, nombre, creado) y vista en cuadrícula o lista.

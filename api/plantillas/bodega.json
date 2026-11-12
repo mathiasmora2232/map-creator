@@ -1,0 +1,1248 @@
+{
+"orden": 13,
+"nombre": "Bodega con patio de contenedores",
+"descripcion": "Galpón con patio de contenedores, montacargas, tarimas y un camión.",
+"etiqueta": "Industrial",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"documentos": [
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "fundacion",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0,
+"z": -6,
+"sx": 16.6,
+"sy": 0.2,
+"sz": 10.6,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"area": 175.96,
+"base": "macizo",
+"borde": "recto",
+"color": "#b9b6ae",
+"forma": "rect",
+"giroY": 0,
+"matLat": "concreto",
+"matSup": "concreto",
+"origen": "base",
+"espesor": 0.2,
+"colorLat": "#8f8a80",
+"colorSup": "#b9b6ae",
+"material": "concreto",
+"elevacion": 0.2
+},
+"fotos": [],
+"props": {
+"nombre": "Fundación"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0.2,
+"z": -6,
+"sx": 15.8,
+"sy": 0.03,
+"sz": 9.8,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"alto": 6,
+"area": 154.84,
+"color": "#d8d2c4",
+"giroY": 0,
+"nombre": "Nave",
+"origen": "base",
+"puntos": [
+[
+-7.9,
+-4.9
+],
+[
+7.9,
+-4.9
+],
+[
+7.9,
+4.9
+],
+[
+-7.9,
+4.9
+]
+],
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "baldosa",
+"puntos_mundo": [
+[
+-19.9,
+-10.9
+],
+[
+-4.1,
+-10.9
+],
+[
+-4.1,
+-1.1
+],
+[
+-19.9,
+-1.1
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Nave",
+"material": "u:preset-pavimento_industrial"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k1",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k10",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -20,
+"y": 0.2,
+"z": -7.75,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k5",
+"color": "#3d7fbf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k5",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k10",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k11",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -20,
+"y": 0.2,
+"z": -4.25,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k5",
+"color": "#3d7fbf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k5",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k11",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k12",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -7.8,
+"y": 0.2,
+"z": -11,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k12",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k13",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -10.6,
+"y": 0.2,
+"z": -11,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k13",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k14",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -13.4,
+"y": 0.2,
+"z": -11,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k14",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k15",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -16.2,
+"y": 0.2,
+"z": -11,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k15",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k16",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 6.2,
+"z": -6,
+"sx": 16.2,
+"sy": 0.06,
+"sz": 10.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"color": "#a3abb2",
+"forma": "galpon",
+"giroY": 0,
+"grosor": 0.06,
+"origen": "base",
+"puntos": [
+[
+-8.1,
+-5.1
+],
+[
+8.1,
+-5.1
+],
+[
+8.1,
+5.1
+],
+[
+-8.1,
+5.1
+]
+],
+"espesor": 0.06,
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 6,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"cubierta": "chapa",
+"cumbrera": true,
+"material": "chapa",
+"voladizo": 0.3,
+"canaletas": true,
+"estructura": "cerchas",
+"inclinacion": 12,
+"orientacion": 0,
+"puntos_mundo": [
+[
+-20.1,
+-11.1
+],
+[
+-3.9,
+-11.1
+],
+[
+-3.9,
+-0.9
+],
+[
+-20.1,
+-0.9
+]
+],
+"de_habitacion": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k1"
+},
+"fotos": [],
+"props": {
+"nombre": "Cubierta",
+"material": "u:kit-chapa_ondulada-a3abb2"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k16",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k17",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "rampa",
+"antes": null,
+"datos": {
+"x": -15,
+"y": 0,
+"z": 0.55,
+"sx": 2.5,
+"sy": 0.2,
+"sz": 5,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"alto": 0.2,
+"ancho": 5,
+"color": "#a9a49a",
+"giroY": 90,
+"largo": 2.5,
+"origen": "base",
+"barandas": "ninguna",
+"descanso": 0,
+"bordillos": false,
+"pendiente": 8
+},
+"fotos": [],
+"props": {
+"nombre": "Rampa del portón"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k17",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k2",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0.2,
+"z": -1,
+"sx": 16,
+"sy": 6,
+"sz": 0.2,
+"x1": -20,
+"x2": -4,
+"z1": -1,
+"z2": -1,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"color": "#cfccc4",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 5
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "bloque"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:preset-bloque"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k2",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0.2,
+"z": -6,
+"sx": 10,
+"sy": 6,
+"sz": 0.2,
+"x1": -4,
+"x2": -4,
+"z1": -1,
+"z2": -11,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"color": "#cfccc4",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"rel": {
+"g": 90,
+"x": 8,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "bloque"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:preset-bloque"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k3",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0.2,
+"z": -11,
+"sx": 16,
+"sy": 6,
+"sz": 0.2,
+"x1": -4,
+"x2": -20,
+"z1": -11,
+"z2": -11,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"color": "#cfccc4",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 0,
+"z": -5
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "bloque"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:preset-bloque"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k4",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k5",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -20,
+"y": 0.2,
+"z": -6,
+"sx": 10,
+"sy": 6,
+"sz": 0.2,
+"x1": -20,
+"x2": -20,
+"z1": -11,
+"z2": -1,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"color": "#cfccc4",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k0",
+"rel": {
+"g": -90,
+"x": -8,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "bloque"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:preset-bloque"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k5",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k6",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": -15,
+"y": 0.2,
+"z": -1,
+"sx": 4.5,
+"sy": 4.5,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"hoja": "#4a555a",
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k2",
+"color": "#5d666b",
+"giroY": 0,
+"estilo": "persiana",
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Portón enrollable"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k6",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k7",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": -5.12,
+"y": 0.2,
+"z": -1,
+"sx": 0.9,
+"sy": 2.1,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"hoja": "#4a555a",
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k2",
+"color": "#5d666b",
+"giroY": 0,
+"estilo": "metal_oficina",
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k7",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0.2,
+"z": -4.25,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k3",
+"color": "#3d7fbf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k3",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k8",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0.2,
+"z": -7.75,
+"sx": 2,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "bodega",
+"grupo": "kit-mwcv0xi36tv"
+},
+"muro": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k3",
+"color": "#3d7fbf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k3",
+"tipo": "pared"
+},
+"alfeizar": 4.5,
+"muro_alto": 6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:10.493Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0xi3gom66k9",
+"actualizado": "2026-11-12T01:19:10.493Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0y91y07qh",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "contenedor",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0,
+"z": -12,
+"sx": 6.06,
+"sy": 2.59,
+"sz": 2.44,
+"color": "#2f6e8e",
+"giroY": 0,
+"origen": "base",
+"subtipo": "20"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:11.461Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0y91y07qh",
+"actualizado": "2026-11-12T01:19:11.461Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0yiyy840x",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "contenedor",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0,
+"z": -8,
+"sx": 6.06,
+"sy": 2.59,
+"sz": 2.44,
+"color": "#2f6e8e",
+"giroY": 0,
+"origen": "base",
+"subtipo": "20"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:11.818Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0yiyy840x",
+"actualizado": "2026-11-12T01:19:11.818Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0ysxm8xq8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "contenedor",
+"antes": null,
+"datos": {
+"x": 20,
+"y": 0,
+"z": 6,
+"sx": 12.19,
+"sy": 2.59,
+"sz": 2.44,
+"color": "#b5452b",
+"giroY": 90,
+"origen": "base",
+"subtipo": "40"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:12.177Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0ysxm8xq8",
+"actualizado": "2026-11-12T01:19:12.177Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0z2qnj0hu",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "objeto:montacargas",
+"antes": null,
+"datos": {
+"x": 6,
+"y": 0,
+"z": 4,
+"sx": 2.75,
+"sy": 2.2,
+"sz": 1.1,
+"color": "#e0a800",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:12.530Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0z2qnj0hu",
+"actualizado": "2026-11-12T01:19:12.530Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0zd2tezpy",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "objeto:tarima",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 0,
+"z": 10,
+"sx": 1.2,
+"sy": 0.15,
+"sz": 1,
+"color": "#b07638",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:12.902Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0zd2tezpy",
+"actualizado": "2026-11-12T01:19:12.902Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0znox1esb",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "objeto:tarima",
+"antes": null,
+"datos": {
+"x": 6,
+"y": 0,
+"z": 10,
+"sx": 1.2,
+"sy": 0.15,
+"sz": 1,
+"color": "#b07638",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:13.284Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0znox1esb",
+"actualizado": "2026-11-12T01:19:13.284Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv0zxs6ssrh",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "objeto:tarima",
+"antes": null,
+"datos": {
+"x": 8,
+"y": 0,
+"z": 10,
+"sx": 1.2,
+"sy": 0.15,
+"sz": 1,
+"color": "#b07638",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:13.648Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv0zxs6ssrh",
+"actualizado": "2026-11-12T01:19:13.648Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-bodega-con-patio-de-contenedores-mwcv107wg9kif",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-bodega-con-patio-de-contenedores",
+"tipo": "coche",
+"antes": null,
+"datos": {
+"x": 22,
+"y": 0,
+"z": 16,
+"sx": 8,
+"sy": 3.4,
+"sz": 2.5,
+"color": "#2f5f8f",
+"giroY": 0,
+"origen": "base",
+"subtipo": "camion"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:19:14.012Z",
+"esquema": 2,
+"id_objeto": "n-u-bodega-con-patio-de-contenedores-mwcv107wg9kif",
+"actualizado": "2026-11-12T01:19:14.012Z"
+}
+},
+{
+"coleccion": "mapas",
+"doc_id": "u-bodega-con-patio-de-contenedores",
+"datos": {
+"ancho": 62.0,
+"largo": 46.0,
+"creado": "2026-11-12T01:19:01.678Z",
+"nombre": "Bodega con patio de contenedores",
+"terreno": "concreto"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-chapa_ondulada-a3abb2",
+"datos": {
+"color": "#a3abb2",
+"mapeo": "mundo",
+"metal": 0.7,
+"creado": "2026-11-12T01:19:11.311Z",
+"escala": 1,
+"nombre": "Chapa ondulada #a3abb2",
+"patron": "chapa",
+"preset": "chapa_ondulada",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.45,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:19:11.311Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-bloque",
+"datos": {
+"color": "#cfccc4",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:19:11.140Z",
+"escala": 1,
+"nombre": "Bloque de hormigón",
+"patron": "bloque",
+"preset": "bloque",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.9,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:19:11.140Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-pavimento_industrial",
+"datos": {
+"color": "#a9a69e",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:19:10.569Z",
+"escala": 6,
+"nombre": "Pavimento industrial",
+"patron": "industrial",
+"preset": "pavimento_industrial",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0.25,
+"rugosidad": 0.7,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:19:10.569Z"
+}
+}
+]
+}
