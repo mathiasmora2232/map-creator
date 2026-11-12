@@ -133,7 +133,7 @@ let D = null, N = 0, P = [], mapa = ls('oo-editor-mapa') === 'parqueadero' ? 'pa
 const cacheMapas = {};
 let nuevos = new Map<any, any>(), notasMarcas = [];
 const cols: any = {}; // colecciones: {snap: Map, ov: Map}
-['cambios', 'calcos', 'capas', 'grupos', 'componentes', 'guias', 'zonas', 'materiales', 'assets', 'terreno', 'reglas', 'etiquetas', 'mapas'].forEach((c?) => cols[c] = { snap: new Map<any, any>(), ov: new Map<any, any>() }); /* (editor v2) zonas, materiales propios y modelos importados */
+['cambios', 'calcos', 'capas', 'grupos', 'componentes', 'guias', 'zonas', 'materiales', 'assets', 'terreno', 'reglas', 'etiquetas', 'mapas'].forEach((c?) => cols[c] = { snap: new Map<any, any>(), ov: new Map<any, any>(), v: 0 }); /* (editor v2) zonas, materiales propios y modelos importados */
 let db = null, userCap = null, assets = null, autor = null;
 let estadoBD = 'cargando', errMsg = '', sinPermiso = false, pendientes = 0, segCarga = 10;
 let cola = Promise.resolve();
@@ -607,7 +607,16 @@ function actualizarMedidas() {
 }
 
 /* ====================== colecciones y documentos ====================== */
-function efectivos(col?) { col = col || 'cambios'; const c = cols[col]; const m = new Map<any, any>(c.snap); for (const [id, d] of c.ov) { if (d === null) m.delete(id); else m.set(id, d); } return m; }
+/* Vista de una colección (lo guardado + lo pendiente). Se reutiliza mientras la colección no cambie: antes se copiaba entera en cada
+   llamada y, como se llama por objeto (capa, propiedades, nombre…), exportar o validar un mapa grande era cuadrático.
+   Quien la recibe solo la lee; cualquier cambio en snap/ov tiene que subir c.v. */
+const vistasEf: any = {};
+function efectivos(col?) {
+  col = col || 'cambios'; const c = cols[col], h = vistasEf[col];
+  if (h && h.snap === c.snap && h.v === c.v) return h.m;
+  const m = new Map<any, any>(c.snap); for (const [id, d] of c.ov) { if (d === null) m.delete(id); else m.set(id, d); }
+  vistasEf[col] = { snap: c.snap, v: c.v, m }; return m;
+}
 function ponerDatos(i?, z?, id?) {
   const pz = P[i]; if (!pz || !z) return;
   if (isFinite(z.x) && isFinite(z.y) && isFinite(z.z)) pz.p.set(+z.x, +z.y, +z.z);
@@ -732,10 +741,11 @@ function trasParcial() {
 }
 function escribir(lista?) {
   for (const { id, data } of lista) cols.cambios.ov.set(id, data);
+  cols.cambios.v++;
   if (!recomputeParcial(lista)) { parcialStats.completo++; recompute(); } actualizarBotonesHistorial();
   for (const { id, data } of lista) encolar('cambios', id, data);
 }
-function guardarCol(col?, id?, data?) { cols[col].ov.set(id, data); encolar(col, id, data); trasCol(col); }
+function guardarCol(col?, id?, data?) { cols[col].ov.set(id, data); cols[col].v++; encolar(col, id, data); trasCol(col); }
 function trasCol(col?) { avisar('col', col); if (col === 'calcos') renderCalcos(); else if (col === 'capas') { renderCapas(); renderTodo(); } else if (col === 'grupos') { recompute(); } else if (col === 'componentes') { if (catActual === 'componentes') renderCatalogo(); } else if (col === 'guias') renderGuias(); }
 function encolar(col?, id?, data?) {
   pendientes++; actualizarEstado();
@@ -747,7 +757,7 @@ async function remoto(col?, id?, data?) {
   for (let n = 0; n < 6; n++) { /* (2.1 pro f4) hasta 6 intentos: un fallo de red (conexión cortada, sin «code») ya no pierde el documento */
     try {
       if (data) await ref.set(data); else await ref.delete();
-      if (ov.get(id) === data) { if (data) cols[col].snap.set(id, data); else cols[col].snap.delete(id); ov.delete(id); }
+      if (ov.get(id) === data) { if (data) cols[col].snap.set(id, data); else cols[col].snap.delete(id); ov.delete(id); cols[col].v++; }
       if (estadoBD === 'err') estadoBD = 'ok';
       return;
     } catch (e) {
