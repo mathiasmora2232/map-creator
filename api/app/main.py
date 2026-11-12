@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db
-from .rutas import admin, cuenta, editor_datos, invitaciones, proyectos
+from .rutas import admin, cuenta, editor_datos, invitaciones, plantillas, proyectos
 from .seguridad import usuario_opcional, verificado
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -34,22 +34,18 @@ app.add_middleware(GZipMiddleware, minimum_size=2048)  # mapa_complejo.json: 2,3
 
 
 @app.middleware("http")
-async def sin_cache_sitio(request: Request, siguiente):
-    """Los .js y .css del sitio se revalidan siempre (ETag): con ?v= cambian de URL en cada despliegue y sin él no se quedan viejos."""
-    respuesta = await siguiente(request)
-    if request.url.path.startswith("/sitio/"):
-        respuesta.headers["Cache-Control"] = "no-cache"
-    return respuesta
-
-
-@app.middleware("http")
-async def mismo_origen(request: Request, siguiente):
-    """Defensa CSRF además de SameSite=Lax: lo que escribe tiene que venir de esta misma web."""
+async def cabeceras_y_origen(request: Request, siguiente):
+    """Un solo middleware (encadenar dos de Starlette a veces truncaba las respuestas que corta el primero):
+    - defensa CSRF además de SameSite=Lax: lo que escribe tiene que venir de esta misma web;
+    - los .js y .css de /sitio se revalidan siempre (con ?v= cambian de URL en cada despliegue y sin él no se quedan viejos)."""
     if request.method not in ("GET", "HEAD", "OPTIONS"):
         origen = request.headers.get("origin")
         if origen and urlparse(origen).netloc != request.headers.get("host"):
             return JSONResponse({"error": "Origen no permitido", "code": "permission_denied"}, 403)
-    return await siguiente(request)
+    respuesta = await siguiente(request)
+    if request.url.path.startswith("/sitio/"):
+        respuesta.headers["Cache-Control"] = "no-cache"
+    return respuesta
 
 
 @app.exception_handler(HTTPException)
@@ -69,6 +65,7 @@ app.include_router(cuenta.router)
 app.include_router(cuenta.publico)
 app.include_router(invitaciones.router)
 app.include_router(admin.router)
+app.include_router(plantillas.router)
 app.include_router(proyectos.router)
 app.include_router(editor_datos.router)
 

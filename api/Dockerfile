@@ -12,6 +12,7 @@ RUN pip install -r requirements.txt
 COPY api/app ./app
 COPY api/migraciones ./migraciones
 COPY api/scripts ./scripts
+COPY api/plantillas ./plantillas
 COPY sitio /srv/sitio
 # Solo lo que sirve el navegador: el modo local (editor/local: servidor.py, datos_usuario…) no entra en la imagen.
 COPY editor/index.html /srv/editor/index.html

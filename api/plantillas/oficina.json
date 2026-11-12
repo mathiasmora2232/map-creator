@@ -1,0 +1,1761 @@
+{
+"orden": 12,
+"nombre": "Oficina con parqueadero",
+"descripcion": "Oficina modular con parqueadero, autos y una caseta de guardia en el acceso.",
+"etiqueta": "Trabajo",
+"mapa": "u-oficina-con-parqueadero",
+"documentos": [
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "fundacion",
+"antes": null,
+"datos": {
+"x": -10,
+"y": 0,
+"z": -6,
+"sx": 6.4,
+"sy": 0.45,
+"sz": 3.4,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"area": 21.76,
+"base": "losa",
+"borde": "recto",
+"color": "#8d949a",
+"forma": "rect",
+"giroY": 0,
+"matLat": "concreto",
+"matSup": "metal",
+"origen": "base",
+"espesor": 0.2,
+"colorLat": "#5a5f63",
+"colorSup": "#8d949a",
+"material": "metal",
+"elevacion": 0.45
+},
+"fotos": [],
+"props": {
+"nombre": "Fundación"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.336Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"actualizado": "2026-11-12T01:17:09.336Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": -10,
+"y": 0.45,
+"z": -6,
+"sx": 5.9,
+"sy": 0.03,
+"sz": 2.9,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"alto": 2.6,
+"area": 17.11,
+"color": "#d8d2c4",
+"giroY": 0,
+"nombre": "Habitación",
+"origen": "base",
+"puntos": [
+[
+-2.95,
+-1.45
+],
+[
+2.95,
+-1.45
+],
+[
+2.95,
+1.45
+],
+[
+-2.95,
+1.45
+]
+],
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "baldosa",
+"puntos_mundo": [
+[
+-12.95,
+-7.45
+],
+[
+-7.05,
+-7.45
+],
+[
+-7.05,
+-4.55
+],
+[
+-12.95,
+-4.55
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Piso",
+"material": "u:preset-baldosa"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk1",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk10",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -11.05,
+"y": 0.45,
+"z": -7.5,
+"sx": 1.1,
+"sy": 1,
+"sz": 0.1,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk4",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk10",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk11",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": -10,
+"y": 3.05,
+"z": -6,
+"sx": 6.1,
+"sy": 0.12,
+"sz": 3.1,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"color": "#8b959e",
+"forma": "una_pendiente",
+"giroY": 0,
+"grosor": 0.12,
+"origen": "base",
+"puntos": [
+[
+-3.05,
+-1.55
+],
+[
+3.05,
+-1.55
+],
+[
+3.05,
+1.55
+],
+[
+-3.05,
+1.55
+]
+],
+"espesor": 0.12,
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 2.6,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"cubierta": "chapa",
+"cumbrera": false,
+"material": "chapa",
+"voladizo": 0.15,
+"canaletas": true,
+"estructura": "ninguna",
+"inclinacion": 5,
+"orientacion": 0,
+"puntos_mundo": [
+[
+-13.05,
+-7.55
+],
+[
+-6.95,
+-7.55
+],
+[
+-6.95,
+-4.45
+],
+[
+-13.05,
+-4.45
+]
+],
+"de_habitacion": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk1"
+},
+"fotos": [],
+"props": {
+"nombre": "Cubierta",
+"material": "u:kit-chapa_ondulada-8b959e"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk11",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk12",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "escalera",
+"antes": null,
+"datos": {
+"n": 3,
+"x": -11.1,
+"y": 0,
+"z": -3.82,
+"sx": 0.96,
+"sy": 0.45,
+"sz": 1.2,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"alto": 0.45,
+"giro": "izq",
+"ancho": 1.2,
+"color": "#b9b4aa",
+"forma": "recta",
+"giroY": 90,
+"estilo": "maciza",
+"huella": 0.32,
+"origen": "base",
+"barandas": "ninguna",
+"descanso": false,
+"contrahuella": 0.15,
+"alturaBaranda": 0.9
+},
+"fotos": [],
+"props": {
+"nombre": "Escalones"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk12",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -10,
+"y": 0.45,
+"z": -4.5,
+"sx": 6,
+"sy": 2.6,
+"sz": 0.1,
+"x1": -13,
+"x2": -7,
+"z1": -4.5,
+"z2": -4.5,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"color": "#e8e8e4",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 1.5
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "chapa"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:kit-chapa_ondulada-e8e8e4"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -7,
+"y": 0.45,
+"z": -6,
+"sx": 3,
+"sy": 2.6,
+"sz": 0.1,
+"x1": -7,
+"x2": -7,
+"z1": -4.5,
+"z2": -7.5,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"color": "#e8e8e4",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"rel": {
+"g": 90,
+"x": 3,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "chapa"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:kit-chapa_ondulada-e8e8e4"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk3",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -10,
+"y": 0.45,
+"z": -7.5,
+"sx": 6,
+"sy": 2.6,
+"sz": 0.1,
+"x1": -7,
+"x2": -13,
+"z1": -7.5,
+"z2": -7.5,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"color": "#e8e8e4",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 0,
+"z": -1.5
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "chapa"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:kit-chapa_ondulada-e8e8e4"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk4",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk5",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -13,
+"y": 0.45,
+"z": -6,
+"sx": 3,
+"sy": 2.6,
+"sz": 0.1,
+"x1": -13,
+"x2": -13,
+"z1": -7.5,
+"z2": -4.5,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"color": "#e8e8e4",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk0",
+"rel": {
+"g": -90,
+"x": -3,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "chapa"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:kit-chapa_ondulada-e8e8e4"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk5",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk6",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": -11.1,
+"y": 0.45,
+"z": -4.5,
+"sx": 0.9,
+"sy": 2.1,
+"sz": 0.1,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"hoja": "#4a555a",
+"muro": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"color": "#5d666b",
+"giroY": 0,
+"estilo": "metal_oficina",
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk6",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk7",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -9.85,
+"y": 0.45,
+"z": -4.5,
+"sx": 1.1,
+"sy": 1,
+"sz": 0.1,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk7",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -8.65,
+"y": 0.45,
+"z": -4.5,
+"sx": 1.1,
+"sy": 1,
+"sz": 0.1,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk8",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -8.95,
+"y": 0.45,
+"z": -7.5,
+"sx": 1.1,
+"sy": 1,
+"sz": 0.1,
+"kit": {
+"clave": "oficina_modular",
+"grupo": "kit-mwcuyc0ozt7"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk4",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.6
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.337Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyc0nka30mk9",
+"actualizado": "2026-11-12T01:17:09.337Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "fundacion",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0,
+"z": 11,
+"sx": 3.1,
+"sy": 0.15,
+"sz": 3.1,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"area": 9.61,
+"base": "macizo",
+"borde": "recto",
+"color": "#b9b6ae",
+"forma": "rect",
+"giroY": 0,
+"matLat": "concreto",
+"matSup": "concreto",
+"origen": "base",
+"espesor": 0.2,
+"colorLat": "#8f8a80",
+"colorSup": "#b9b6ae",
+"material": "concreto",
+"elevacion": 0.15
+},
+"fotos": [],
+"props": {
+"nombre": "Fundación"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0.15,
+"z": 11,
+"sx": 2.45,
+"sy": 0.03,
+"sz": 2.45,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"alto": 2.5,
+"area": 6.003,
+"color": "#d8d2c4",
+"giroY": 0,
+"nombre": "Habitación",
+"origen": "base",
+"puntos": [
+[
+-1.225,
+-1.225
+],
+[
+1.225,
+-1.225
+],
+[
+1.225,
+1.225
+],
+[
+-1.225,
+1.225
+]
+],
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "baldosa",
+"puntos_mundo": [
+[
+14.775,
+9.775
+],
+[
+17.225,
+9.775
+],
+[
+17.225,
+12.225
+],
+[
+14.775,
+12.225
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Piso",
+"material": "u:preset-cemento_pulido"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k1",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k10",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0.15,
+"z": 9.7,
+"sx": 0.8,
+"sy": 0.6,
+"sz": 0.15,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k4",
+"tipo": "pared"
+},
+"alfeizar": 1.4,
+"muro_alto": 2.5
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.707Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k10",
+"actualizado": "2026-11-12T01:17:09.707Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k11",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 2.65,
+"z": 11,
+"sx": 2.75,
+"sy": 0.15,
+"sz": 2.75,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"color": "#6b7178",
+"forma": "plano",
+"giroY": 0,
+"grosor": 0.15,
+"origen": "base",
+"pretil": 0,
+"puntos": [
+[
+-1.375,
+-1.375
+],
+[
+1.375,
+-1.375
+],
+[
+1.375,
+1.375
+],
+[
+-1.375,
+1.375
+]
+],
+"espesor": 0.15,
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 2.5,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"cubierta": "losa",
+"cumbrera": false,
+"material": "concreto",
+"voladizo": 0.35,
+"canaletas": false,
+"estructura": "ninguna",
+"inclinacion": 0,
+"orientacion": 0,
+"puntos_mundo": [
+[
+14.625,
+9.625
+],
+[
+17.375,
+9.625
+],
+[
+17.375,
+12.375
+],
+[
+14.625,
+12.375
+]
+],
+"de_habitacion": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k1"
+},
+"fotos": [],
+"props": {
+"nombre": "Cubierta"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.707Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k11",
+"actualizado": "2026-11-12T01:17:09.707Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k12",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "escalera",
+"antes": null,
+"datos": {
+"n": 1,
+"x": 15.402,
+"y": 0,
+"z": 12.71,
+"sx": 0.32,
+"sy": 0.15,
+"sz": 1,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"alto": 0.15,
+"giro": "izq",
+"ancho": 1,
+"color": "#b9b4aa",
+"forma": "recta",
+"giroY": 90,
+"estilo": "maciza",
+"huella": 0.32,
+"origen": "base",
+"barandas": "ninguna",
+"descanso": false,
+"contrahuella": 0.15,
+"alturaBaranda": 0.9
+},
+"fotos": [],
+"props": {
+"nombre": "Escalones"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.707Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k12",
+"actualizado": "2026-11-12T01:17:09.707Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k2",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0.15,
+"z": 12.3,
+"sx": 2.6,
+"sy": 2.5,
+"sz": 0.15,
+"x1": 14.7,
+"x2": 17.3,
+"z1": 12.3,
+"z2": 12.3,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"color": "#dcd8cf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 1.3
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:kit-pared_blanca-dcd8cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k2",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 17.3,
+"y": 0.15,
+"z": 11,
+"sx": 2.6,
+"sy": 2.5,
+"sz": 0.15,
+"x1": 17.3,
+"x2": 17.3,
+"z1": 12.3,
+"z2": 9.7,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"color": "#dcd8cf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"rel": {
+"g": 90,
+"x": 1.3,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:kit-pared_blanca-dcd8cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k3",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 16,
+"y": 0.15,
+"z": 9.7,
+"sx": 2.6,
+"sy": 2.5,
+"sz": 0.15,
+"x1": 17.3,
+"x2": 14.7,
+"z1": 9.7,
+"z2": 9.7,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"color": "#dcd8cf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 0,
+"z": -1.3
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:kit-pared_blanca-dcd8cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k4",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k5",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 14.7,
+"y": 0.15,
+"z": 11,
+"sx": 2.6,
+"sy": 2.5,
+"sz": 0.15,
+"x1": 14.7,
+"x2": 14.7,
+"z1": 9.7,
+"z2": 12.3,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"color": "#dcd8cf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k0",
+"rel": {
+"g": -90,
+"x": -1.3,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:kit-pared_blanca-dcd8cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k5",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k6",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": 15.402,
+"y": 0.15,
+"z": 12.3,
+"sx": 0.8,
+"sy": 2.1,
+"sz": 0.15,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"hoja": "#4a555a",
+"muro": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k2",
+"color": "#5d666b",
+"giroY": 0,
+"estilo": "metal_oficina",
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 2.5
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.706Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k6",
+"actualizado": "2026-11-12T01:17:09.706Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k7",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 16.52,
+"y": 0.15,
+"z": 12.3,
+"sx": 0.988,
+"sy": 1,
+"sz": 0.15,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.5
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.707Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k7",
+"actualizado": "2026-11-12T01:17:09.707Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 17.3,
+"y": 0.15,
+"z": 11,
+"sx": 1.4,
+"sy": 1,
+"sz": 0.15,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k3",
+"color": "#3d7fbf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k3",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.5
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.707Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k8",
+"actualizado": "2026-11-12T01:17:09.707Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 14.7,
+"y": 0.15,
+"z": 11,
+"sx": 1.4,
+"sy": 1,
+"sz": 0.15,
+"kit": {
+"clave": "caseta",
+"grupo": "kit-mwcuycay6a4"
+},
+"muro": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k5",
+"color": "#3d7fbf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k5",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.5
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:09.707Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycaywrxg8k9",
+"actualizado": "2026-11-12T01:17:09.707Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycl3jikd9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "coche",
+"antes": null,
+"datos": {
+"x": 6,
+"y": 0,
+"z": -8,
+"sx": 4.6,
+"sy": 1.45,
+"sz": 1.8,
+"color": "#1d1f23",
+"giroY": 90,
+"origen": "base",
+"subtipo": "sedan"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:10.071Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycl3jikd9",
+"actualizado": "2026-11-12T01:17:10.071Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuycux3tdhs",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "coche",
+"antes": null,
+"datos": {
+"x": 9,
+"y": 0,
+"z": -8,
+"sx": 4.6,
+"sy": 1.45,
+"sz": 1.8,
+"color": "#1d1f23",
+"giroY": 90,
+"origen": "base",
+"subtipo": "sedan"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:10.425Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuycux3tdhs",
+"actualizado": "2026-11-12T01:17:10.425Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuyd4the95m",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "coche",
+"antes": null,
+"datos": {
+"x": 12,
+"y": 0,
+"z": -8,
+"sx": 4.6,
+"sy": 1.45,
+"sz": 1.8,
+"color": "#1d1f23",
+"giroY": 90,
+"origen": "base",
+"subtipo": "sedan"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:10.781Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuyd4the95m",
+"actualizado": "2026-11-12T01:17:10.781Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuydelde87f",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "coche",
+"antes": null,
+"datos": {
+"x": 15,
+"y": 0,
+"z": -8,
+"sx": 5.3,
+"sy": 1.85,
+"sz": 1.9,
+"color": "#4d535a",
+"giroY": 90,
+"origen": "base",
+"subtipo": "pickup"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:11.133Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuydelde87f",
+"actualizado": "2026-11-12T01:17:11.133Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuydp4kaxva",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -18,
+"y": 0,
+"z": 10,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:11.512Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuydp4kaxva",
+"actualizado": "2026-11-12T01:17:11.512Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuydz6v885q",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -10,
+"y": 0,
+"z": 11,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:11.874Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuydz6v885q",
+"actualizado": "2026-11-12T01:17:11.874Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-oficina-con-parqueadero-mwcuye9bq7ht9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-oficina-con-parqueadero",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": -14,
+"y": 0,
+"z": 6,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:12.239Z",
+"esquema": 2,
+"id_objeto": "n-u-oficina-con-parqueadero-mwcuye9bq7ht9",
+"actualizado": "2026-11-12T01:17:12.239Z"
+}
+},
+{
+"coleccion": "mapas",
+"doc_id": "u-oficina-con-parqueadero",
+"datos": {
+"ancho": 46.0,
+"largo": 34.0,
+"creado": "2026-11-12T01:17:00.669Z",
+"nombre": "Oficina con parqueadero",
+"terreno": "concreto"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-chapa_ondulada-8b959e",
+"datos": {
+"color": "#8b959e",
+"mapeo": "mundo",
+"metal": 0.7,
+"creado": "2026-11-12T01:17:09.541Z",
+"escala": 1,
+"nombre": "Chapa ondulada #8b959e",
+"patron": "chapa",
+"preset": "chapa_ondulada",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.45,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:09.541Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-chapa_ondulada-e8e8e4",
+"datos": {
+"color": "#e8e8e4",
+"mapeo": "mundo",
+"metal": 0.7,
+"creado": "2026-11-12T01:17:09.465Z",
+"escala": 1,
+"nombre": "Chapa ondulada #e8e8e4",
+"patron": "chapa",
+"preset": "chapa_ondulada",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.45,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:09.465Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-pared_blanca-dcd8cf",
+"datos": {
+"color": "#dcd8cf",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:17:09.819Z",
+"escala": 2,
+"nombre": "Pared blanca #dcd8cf",
+"patron": "enlucido",
+"preset": "pared_blanca",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.92,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:09.819Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-baldosa",
+"datos": {
+"color": "#d8d2c4",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:17:09.398Z",
+"escala": 1.2,
+"nombre": "Baldosa",
+"patron": "baldosa",
+"preset": "baldosa",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.55,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:09.398Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-cemento_pulido",
+"datos": {
+"color": "#b3b0a9",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:17:09.713Z",
+"escala": 3,
+"nombre": "Cemento pulido",
+"patron": "pulido",
+"preset": "cemento_pulido",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.32,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:17:09.713Z"
+}
+}
+]
+}

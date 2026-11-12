@@ -14,16 +14,8 @@ from ..seguridad import ROLES_ESCRITURA, exigir_rol, parsear_uuid, usuario_actua
 router = APIRouter(prefix="/api", tags=["proyectos"])
 
 TERRENOS = ("cesped", "tierra", "concreto", "asfalto")
-# Las plantillas con `mapa` usan un mapa base del editor (editor/mapa_<mapa>.json); «vacio» crea un mapa propio en la colección
-# `mapas` (lo dibuja mapas_nuevos.js: una pieza de suelo del tamaño elegido).
-PLANTILLAS = {
-    "vacio": {"nombre": "En blanco", "descripcion": "Un terreno vacío del tamaño que elijas. Ideal para empezar desde cero.",
-              "mapa": None, "etiqueta": "Desde cero"},
-    "complejo": {"nombre": "Complejo industrial", "descripcion": "Galpones, oficinas, comedor y parqueadero: unas 27 000 piezas para "
-                 "explorar todas las herramientas.", "mapa": "complejo", "etiqueta": "Ejemplo grande"},
-    "parqueadero": {"nombre": "Parqueadero", "descripcion": "Un parqueadero con accesos, casetas y señalización.",
-                    "mapa": "parqueadero", "etiqueta": "Ejemplo"},
-}
+from . import plantillas as PL  # noqa: E402  (plantillas del sistema, semillas y de usuarios)
+PLANTILLAS = PL.BASE
 NO_ENCONTRADO = {"error": "Ese proyecto no existe o no tienes acceso.", "code": "not_found"}
 
 
@@ -89,8 +81,8 @@ JOIN usuarios u ON u.id = p.dueno_id
 
 
 @router.get("/plantillas")
-async def plantillas():
-    return [{"id": k} | v for k, v in PLANTILLAS.items()]
+async def plantillas(usuario=Depends(usuario_actual)):
+    return await PL.lista(usuario)
 
 
 @router.get("/proyectos")
@@ -103,20 +95,20 @@ async def listar(papelera: bool = Query(False), usuario=Depends(usuario_actual))
 
 @router.post("/proyectos", status_code=201)
 async def crear(datos: NuevoProyecto, usuario=Depends(usuario_actual)):
-    plantilla = PLANTILLAS.get(datos.plantilla)
-    if plantilla is None:
-        raise HTTPException(400, {"error": "Esa plantilla no existe.", "code": "invalid_argument"})
     async with db.pool.acquire() as con, con.transaction():
+        if not await PL.existe(con, datos.plantilla, usuario):
+            raise HTTPException(400, {"error": "Esa plantilla no existe.", "code": "invalid_argument"})
         n = await con.fetchval("SELECT count(*) FROM proyectos WHERE dueno_id = $1 AND archivado IS NULL", usuario["id"])
         if n >= config.MAX_PROYECTOS:
             raise HTTPException(400, {"error": "Llegaste al máximo de %d proyectos. Borra alguno para crear otro." % config.MAX_PROYECTOS,
                                       "code": "resource_exhausted"})
-        mapa = plantilla["mapa"] or ("u-" + _slug(datos.nombre))
+        mapa = await PL.mapa_de(con, datos.plantilla, _slug(datos.nombre))
         p = await con.fetchrow(
             "INSERT INTO proyectos (nombre, descripcion, dueno_id, plantilla, mapa_inicial) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-            datos.nombre.strip(), datos.descripcion.strip(), usuario["id"], datos.plantilla, mapa)
+            datos.nombre.strip(), datos.descripcion.strip(), usuario["id"], "plantilla" if datos.plantilla.startswith("u:") else datos.plantilla, mapa)
         await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, 'dueno')", p["id"], usuario["id"])
-        if plantilla["mapa"] is None:
+        await PL.aplicar(con, datos.plantilla, p["id"], usuario["id"], datos.nombre.strip())
+        if datos.plantilla == "vacio":
             doc = {"nombre": datos.nombre.strip()[:60], "ancho": datos.ancho, "largo": datos.largo,
                    "terreno": datos.terreno if datos.terreno in TERRENOS else "cesped", "creado": _ahora_iso()}
             await con.execute("INSERT INTO documentos (proyecto_id, coleccion, doc_id, datos, actualizado_por) VALUES ($1, 'mapas', $2, $3, $4)",

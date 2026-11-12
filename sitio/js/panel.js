@@ -6,7 +6,7 @@
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const principal = $('#principal'), app = $('#app');
   const ROL = { dueno: 'Dueño', editor: 'Editor', lector: 'Solo ver' };
-  const NOMBRE_PLANTILLA = { vacio: 'En blanco', complejo: 'Complejo', parqueadero: 'Parqueadero', copia: 'Copia', importado: 'Importado' };
+  const NOMBRE_PLANTILLA = { vacio: 'En blanco', complejo: 'Complejo', parqueadero: 'Parqueadero', copia: 'Copia', importado: 'Importado', casa: 'Casa', casa_dos_plantas: 'Casa 2 plantas', oficina: 'Oficina', bodega: 'Bodega', local: 'Local', plaza: 'Plaza', plantilla: 'Plantilla' };
   const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
   let yo = null, proyectos = [], plantillas = [], filtro = '';
   let orden = ls('mc-orden') || 'editado', modoVista = ls('mc-vista') === 'lista' ? 'lista' : 'cuadricula';
@@ -112,7 +112,7 @@
       <div class="hola-acc"><button class="btn" data-a="recorrido">Ver el recorrido</button><button class="btn prim" data-a="nuevo">Nuevo mapa</button></div></div>`;
     html += pasosHtml();
     if (recientes.length) html += `<section class="bloque"><div class="bloque-cab"><h2>Continuar</h2><a href="#mapas">Ver todos</a></div><div class="tarjetas">${recientes.map(p => tarjeta(p)).join('')}</div></section>`;
-    html += `<section class="bloque"><div class="bloque-cab"><h2>Empezar desde una plantilla</h2><a href="#plantillas">Ver plantillas</a></div><div class="plantillas">${htmlPlantillas()}</div></section>`;
+    html += `<section class="bloque"><div class="bloque-cab"><h2>Empezar desde una plantilla</h2><a href="#plantillas">Ver plantillas</a></div><div class="plantillas">${plantillas.filter(t => t.origen !== 'usuario').slice(0, 6).map(t => tarjetaPlantilla(t)).join('')}</div></section>`;
     principal.innerHTML = html;
     principal.querySelectorAll('.plantillas [data-plantilla]').forEach(b => b.addEventListener('click', () => abrirNuevo(b.dataset.plantilla)));
   }
@@ -161,14 +161,33 @@
     principal.innerHTML = cab + (lista.length ? `<div class="tarjetas">${lista.map(p => tarjeta(p, true)).join('')}</div>` : '<div class="vacio"><h3>La papelera está vacía</h3></div>');
   }
 
-  function htmlPlantillas(sel) {
-    return plantillas.map(t => `<button type="button" class="plantilla${t.id === sel ? ' on' : ''}" data-plantilla="${esc(t.id)}" aria-pressed="${t.id === sel}">
+  function tarjetaPlantilla(t, sel) {
+    return `<button type="button" class="plantilla${t.id === sel ? ' on' : ''}" data-plantilla="${esc(t.id)}" aria-pressed="${t.id === sel}">
       <span class="mini">${miniatura('plantilla-' + t.id, { ancho: 320, alto: 160, acento: t.id !== 'vacio' })}</span>
-      <span class="info"><b>${esc(t.nombre)}<small>${esc(t.etiqueta)}</small></b><p>${esc(t.descripcion)}</p></span></button>`).join('');
+      <span class="info"><b>${esc(t.nombre)}<small>${esc(t.etiqueta)}</small></b><p>${esc(t.descripcion || '')}</p>${t.origen === 'usuario' ? `<p class="meta-pl">${t.usos} ${t.usos === 1 ? 'uso' : 'usos'} · ${t.n_documentos} objetos</p>` : ''}</span></button>`;
   }
+  function htmlPlantillas(sel) { return plantillas.map(t => tarjetaPlantilla(t, sel)).join(''); }
   function vistaPlantillas() {
-    principal.innerHTML = cabecera('Plantillas', 'Empieza un mapa nuevo desde una de estas bases.') + `<div class="plantillas">${htmlPlantillas()}</div>`;
+    const sis = plantillas.filter(t => t.origen !== 'usuario'), mias = plantillas.filter(t => t.mia), otras = plantillas.filter(t => t.origen === 'usuario' && !t.mia);
+    const gestion = t => `<div class="pl-acc">${t.mia ? `<button class="btn fantasma peq" data-a="pl-editar" data-id="${esc(t.id)}">Editar</button><button class="btn fantasma peq" data-a="pl-actualizar" data-id="${esc(t.id)}" title="Volver a copiar el mapa del que salió, tal como está ahora">Actualizar desde el mapa</button><button class="btn fantasma peq" data-a="pl-visibilidad" data-id="${esc(t.id)}" data-v="${t.visibilidad === 'publica' ? 'privada' : 'publica'}">${t.visibilidad === 'publica' ? 'Hacer privada' : 'Publicar para todos'}</button>` : ''}${t.mia || yo.es_admin ? `<button class="btn fantasma peq peligro" data-a="pl-borrar" data-id="${esc(t.id)}">Borrar</button>` : ''}</div>`;
+    const bloque = (titulo, desc, lista, conGestion) => lista.length ? `<section class="bloque"><div class="bloque-cab"><h2>${titulo}</h2></div>${desc ? `<p class="desc-bloque">${desc}</p>` : ''}<div class="plantillas">${lista.map(t => conGestion ? `<div class="pl-caja">${tarjetaPlantilla(t)}${gestion(t)}</div>` : tarjetaPlantilla(t)).join('')}</div></section>` : '';
+    principal.innerHTML = cabecera('Plantillas', 'Empieza un mapa nuevo desde una de estas bases. Cualquier mapa tuyo se puede publicar como plantilla: menú <b>⋮</b> del mapa → «Publicar como plantilla…».')
+      + bloque('Del sistema', '', sis, false)
+      + bloque('Tus plantillas', 'Solo tú ves las privadas; las públicas las puede usar cualquiera en este servidor.', mias, true)
+      + bloque('Publicadas por otras personas', '', otras, yo.es_admin)
+      + (mias.length || otras.length ? '' : `<div class="vacio peq"><p>Todavía nadie ha publicado plantillas. Abre el menú <b>⋮</b> de uno de tus mapas y elige «Publicar como plantilla…».</p></div>`);
     principal.querySelectorAll('[data-plantilla]').forEach(b => b.addEventListener('click', () => abrirNuevo(b.dataset.plantilla)));
+  }
+  async function recargarPlantillas() { plantillas = await api('/api/plantillas'); }
+  /* publicar un mapa como plantilla o editar una tuya (mismo diálogo) */
+  let editandoPl = null;
+  function abrirPublicar(p, t) {
+    editandoPl = t ? t.id : null; const f = $('#formPublicar');
+    $('#tPublicar').textContent = t ? 'Editar la plantilla' : 'Publicar «' + p.nombre + '» como plantilla';
+    f.nombre.value = t ? t.nombre : p.nombre.slice(0, 60); f.descripcion.value = t ? (t.descripcion || '') : (p.descripcion || '');
+    f.visibilidad.value = t ? t.visibilidad : 'publica'; f.dataset.pid = p ? p.id : ''; $('#errPublicar').textContent = '';
+    $('#ayudaPublicar').textContent = t ? 'Los mapas ya creados con ella no cambian.' : 'Se guarda una copia del mapa tal como está ahora (objetos, materiales y archivos). Si luego lo cambias, usa «Actualizar desde el mapa» en Plantillas.';
+    $('#dlgPublicar').showModal(); f.nombre.select();
   }
 
   function vistaAtajos() {
@@ -461,6 +480,7 @@
       html += op('favorito-menu', p.favorito ? 'Quitar de favoritos' : 'Añadir a favoritos');
       if (p.rol !== 'lector') html += op('renombrar', 'Renombrar…');
       html += op('compartir', p.rol === 'dueno' ? 'Compartir o invitar…' : 'Ver quién tiene acceso') + op('duplicar', 'Hacer una copia');
+      if (p.rol === 'dueno') html += op('publicar', 'Publicar como plantilla…');
       html += '<hr>' + (p.rol === 'dueno' ? op('borrar', 'Mover a la papelera', 'peligro') : op('salir-proyecto', 'Salir de este mapa', 'peligro'));
     }
     const m = document.createElement('div'); m.className = 'menu-ctx'; m.setAttribute('role', 'menu'); m.innerHTML = html;
@@ -494,6 +514,7 @@
       };
     }
     else if (a === 'compartir') abrirCompartir(p);
+    else if (a === 'publicar') abrirPublicar(p, null);
     else if (a === 'duplicar') {
       aviso('Haciendo la copia…');
       try { const n = await api('/api/proyectos/' + id + '/duplicar', { method: 'POST' }); await refrescar(); aviso('Copia creada: «' + n.nombre + '».'); location.hash = '#mapas'; }
@@ -608,6 +629,18 @@
     b.disabled = false;
   });
 
+  $('#formPublicar').addEventListener('submit', async e => {
+    e.preventDefault(); const f = e.target, d = Object.fromEntries(new FormData(f)); $('#errPublicar').textContent = '';
+    if (!d.nombre.trim()) { $('#errPublicar').textContent = 'Ponle un nombre.'; return; }
+    const b = f.querySelector('button.prim'); b.disabled = true;
+    try {
+      if (editandoPl) await api('/api/plantillas/' + editandoPl, { method: 'PATCH', json: d });
+      else { const r = await api('/api/proyectos/' + f.dataset.pid + '/publicar', { method: 'POST', json: d }); aviso('Publicada: ' + r.n_documentos + ' objetos.' + (d.visibilidad === 'publica' ? ' Ya la puede usar cualquiera.' : '')); }
+      $('#dlgPublicar').close(); await recargarPlantillas(); if ((location.hash || '').slice(1) === 'plantillas') mostrar(); else location.hash = '#plantillas';
+    } catch (ex) { $('#errPublicar').textContent = ex.message; }
+    b.disabled = false;
+  });
+
   // ───────────── Recorrido guiado del panel ─────────────
   function recorrido() {
     if (!window.MCRecorrido) return;
@@ -646,6 +679,10 @@
     else if (a === 'paso-recorrido') { const p = proyectos.find(x => x.rol !== 'lector') || proyectos[0]; if (p) location.href = urlEditor(p, '&recorrido=1'); else abrirNuevo(); }
     else if (a === 'paso-compartir') { const p = proyectos.find(x => x.rol === 'dueno'); if (p) abrirCompartir(p); else abrirNuevo(); }
     else if (a === 'paso-favorito') location.hash = '#mapas';
+    else if (a === 'pl-editar') { const t = plantillas.find(x => x.id === id); if (t) abrirPublicar(null, t); }
+    else if (a === 'pl-actualizar') { aviso('Actualizando…'); api('/api/plantillas/' + id, { method: 'PATCH', json: { actualizar: true } }).then(recargarPlantillas).then(() => { aviso('Plantilla actualizada con el mapa tal como está ahora.'); mostrar(); }).catch(ex => aviso(ex.message, 'err')); }
+    else if (a === 'pl-visibilidad') api('/api/plantillas/' + id, { method: 'PATCH', json: { visibilidad: b.dataset.v } }).then(recargarPlantillas).then(() => { aviso(b.dataset.v === 'publica' ? 'Ahora la puede usar cualquiera.' : 'Ahora solo la ves tú.'); mostrar(); }).catch(ex => aviso(ex.message, 'err'));
+    else if (a === 'pl-borrar') { if (!confirm('¿Borrar esta plantilla? Los mapas ya creados con ella no cambian.')) return; api('/api/plantillas/' + id, { method: 'DELETE' }).then(recargarPlantillas).then(() => { aviso('Plantilla borrada.'); mostrar(); }).catch(ex => aviso(ex.message, 'err')); }
     else if (a === 'plazo-miembro') {
       const cuerpo = b.dataset.op === 'sin' ? { sin_plazo: true } : b.dataset.op === 'poner' ? { plazo_dias: +b.dataset.dias } : { extender_dias: +b.dataset.dias };
       api('/api/proyectos/' + compartiendo.id + '/miembros/' + id, { method: 'PATCH', json: cuerpo }).then(r => { aviso(r.expira ? 'Acceso hasta el ' + fechaCorta(r.expira) + '.' : 'Acceso sin plazo.'); return pintarMiembros(); }).then(refrescar).catch(ex => aviso(ex.message, 'err'));

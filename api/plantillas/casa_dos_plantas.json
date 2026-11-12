@@ -1,0 +1,1716 @@
+{
+"orden": 11,
+"nombre": "Casa de dos plantas",
+"descripcion": "Casa de dos plantas con su losa, escalera interior y jardín.",
+"etiqueta": "Vivienda",
+"mapa": "u-casa-de-dos-plantas",
+"documentos": [
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "fundacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": -2,
+"sx": 8.6,
+"sy": 0.3,
+"sz": 7.6,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"area": 65.36,
+"base": "macizo",
+"borde": "recto",
+"color": "#b9b6ae",
+"forma": "rect",
+"giroY": 0,
+"matLat": "concreto",
+"matSup": "concreto",
+"origen": "base",
+"espesor": 0.2,
+"niveles": [
+{
+"id": "pb",
+"altura": 2.7
+},
+{
+"id": "p1",
+"altura": 2.7
+}
+],
+"colorLat": "#8f8a80",
+"colorSup": "#b9b6ae",
+"material": "concreto",
+"elevacion": 0.3
+},
+"fotos": [],
+"props": {
+"nombre": "Fundación"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": -2,
+"sx": 7.8,
+"sy": 0.03,
+"sz": 6.8,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"alto": 2.7,
+"area": 53.04,
+"color": "#d8d2c4",
+"giroY": 0,
+"nivel": "pb",
+"nombre": "Planta baja",
+"origen": "base",
+"puntos": [
+[
+-3.9,
+-3.4
+],
+[
+3.9,
+-3.4
+],
+[
+3.9,
+3.4
+],
+[
+-3.9,
+3.4
+]
+],
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "baldosa",
+"puntos_mundo": [
+[
+-3.9,
+-5.4
+],
+[
+3.9,
+-5.4
+],
+[
+3.9,
+1.4
+],
+[
+-3.9,
+1.4
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Planta baja",
+"material": "u:preset-parque"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k1",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k10",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0.3,
+"z": -0.95,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k5",
+"color": "#3d7fbf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k5",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k10",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k11",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 0.4,
+"y": 0.3,
+"z": -5.5,
+"sx": 0.9,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k4",
+"tipo": "pared"
+},
+"alfeizar": 1.3,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k11",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k12",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -0.4,
+"y": 0.3,
+"z": -5.5,
+"sx": 0.9,
+"sy": 0.8,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k4",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k4",
+"tipo": "pared"
+},
+"alfeizar": 1.3,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k12",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k13",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "habitacion",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 2.788,
+"z": -2,
+"sx": 7.8,
+"sy": 0.03,
+"sz": 6.8,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"alto": 2.7,
+"area": 53.04,
+"color": "#b9b6ae",
+"giroY": 0,
+"nivel": "p1",
+"suelo": true,
+"grosor": 0.2,
+"nombre": "Losa piso 1",
+"origen": "base",
+"puntos": [
+[
+-3.9,
+-3.4
+],
+[
+3.9,
+-3.4
+],
+[
+3.9,
+3.4
+],
+[
+-3.9,
+3.4
+]
+],
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 2.488,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "concreto",
+"puntos_mundo": [
+[
+-3.9,
+-5.4
+],
+[
+3.9,
+-5.4
+],
+[
+3.9,
+1.4
+],
+[
+-3.9,
+1.4
+]
+],
+"agujeros_auto": {
+"n-u-casa-de-dos-plantas-mwcuy0rs562o6k25": [
+[
+-3.6,
+-3.35
+],
+[
+0.45,
+-3.35
+],
+[
+0.45,
+-2.35
+],
+[
+-3.6,
+-2.35
+]
+]
+}
+},
+"fotos": [],
+"props": {
+"nombre": "Losa piso 1"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k13",
+"actualizado": "2026-11-12T01:16:54.766Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 3,
+"z": 1.5,
+"sx": 8,
+"sy": 2.7,
+"sz": 0.2,
+"x1": -4,
+"x2": 4,
+"z1": 1.5,
+"z2": 1.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": 0,
+"nivel": "p1",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 2.7,
+"z": 3.5
+},
+"tipo": "fundacion",
+"manual": true
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k15",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 3,
+"z": -2,
+"sx": 7,
+"sy": 2.7,
+"sz": 0.2,
+"x1": 4,
+"x2": 4,
+"z1": 1.5,
+"z2": -5.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": 90,
+"nivel": "p1",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 90,
+"x": 4,
+"y": 2.7,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k15",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k16",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 3,
+"z": -5.5,
+"sx": 8,
+"sy": 2.7,
+"sz": 0.2,
+"x1": 4,
+"x2": -4,
+"z1": -5.5,
+"z2": -5.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": -180,
+"nivel": "p1",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 2.7,
+"z": -3.5
+},
+"tipo": "fundacion",
+"manual": true
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k16",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k17",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 3,
+"z": -2,
+"sx": 7,
+"sy": 2.7,
+"sz": 0.2,
+"x1": -4,
+"x2": -4,
+"z1": -5.5,
+"z2": 1.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": -90,
+"nivel": "p1",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": -90,
+"x": -4,
+"y": 2.7,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k17",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k18",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -1.867,
+"y": 3,
+"z": 1.5,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k18",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k19",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 3,
+"z": 1.5,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k19",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": 1.5,
+"sx": 8,
+"sy": 2.7,
+"sz": 0.2,
+"x1": -4,
+"x2": 4,
+"z1": 1.5,
+"z2": 1.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": 0,
+"nivel": "pb",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 0,
+"z": 3.5
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared frente",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k20",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 1.867,
+"y": 3,
+"z": 1.5,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k14",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k20",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k21",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 3,
+"z": -2,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k15",
+"color": "#3d7fbf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k15",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k21",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k22",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 3,
+"z": -2,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k17",
+"color": "#3d7fbf",
+"giroY": -90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k17",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k22",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k23",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 1.4,
+"y": 3,
+"z": -5.5,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k16",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k16",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k23",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k24",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -1.4,
+"y": 3,
+"z": -5.5,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k16",
+"color": "#3d7fbf",
+"giroY": -180,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k16",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k24",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k25",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "escalera",
+"antes": null,
+"datos": {
+"n": 15,
+"x": -1.575,
+"y": 0.3,
+"z": -4.85,
+"sx": 4.05,
+"sy": 2.7,
+"sz": 1,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"alto": 2.7,
+"giro": "izq",
+"ancho": 1,
+"color": "#b9b4aa",
+"desde": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k1",
+"forma": "recta",
+"giroY": 0,
+"hasta": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k13",
+"nivel": "pb",
+"estilo": "maciza",
+"huella": 0.27,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 0,
+"x": -1.575,
+"y": 0,
+"z": -2.85
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"barandas": "der",
+"descanso": false,
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"contrahuella": 0.18,
+"alturaBaranda": 0.9
+},
+"fotos": [],
+"props": {
+"nombre": "Escalera"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k25",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k26",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "techo",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 5.7,
+"z": -2,
+"sx": 8.2,
+"sy": 0.12,
+"sz": 7.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#b5562f",
+"forma": "dos_aguas",
+"giroY": 0,
+"nivel": "p1",
+"grosor": 0.12,
+"origen": "base",
+"puntos": [
+[
+-4.1,
+-3.6
+],
+[
+4.1,
+-3.6
+],
+[
+4.1,
+3.6
+],
+[
+-4.1,
+3.6
+]
+],
+"espesor": 0.12,
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 0,
+"x": 0,
+"y": 5.4,
+"z": 0
+},
+"tipo": "fundacion",
+"manual": true
+},
+"cubierta": "tejas",
+"cumbrera": true,
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "ladrillo",
+"voladizo": 0.4,
+"canaletas": true,
+"estructura": "ninguna",
+"inclinacion": 30,
+"orientacion": 0,
+"puntos_mundo": [
+[
+-4.1,
+-5.6
+],
+[
+4.1,
+-5.6
+],
+[
+4.1,
+1.6
+],
+[
+-4.1,
+1.6
+]
+]
+},
+"fotos": [],
+"props": {
+"nombre": "Cubierta",
+"material": "u:kit-tejas_rojas-b5562f"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k26",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k27",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "escalera",
+"antes": null,
+"datos": {
+"n": 2,
+"x": 0,
+"y": 0,
+"z": 2.12,
+"sx": 0.64,
+"sy": 0.3,
+"sz": 1.6,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"alto": 0.3,
+"giro": "izq",
+"ancho": 1.6,
+"color": "#b9b4aa",
+"forma": "recta",
+"giroY": 90,
+"estilo": "maciza",
+"huella": 0.32,
+"origen": "base",
+"barandas": "ninguna",
+"descanso": false,
+"contrahuella": 0.15,
+"alturaBaranda": 0.9
+},
+"fotos": [],
+"props": {
+"nombre": "Escalones"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.763Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k27",
+"actualizado": "2026-11-12T01:16:54.763Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k3",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 0.3,
+"z": -2,
+"sx": 7,
+"sy": 2.7,
+"sz": 0.2,
+"x1": 4,
+"x2": 4,
+"z1": 1.5,
+"z2": -5.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": 90,
+"nivel": "pb",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": 90,
+"x": 4,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared derecha",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k3",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k4",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": -5.5,
+"sx": 8,
+"sy": 2.7,
+"sz": 0.2,
+"x1": 4,
+"x2": -4,
+"z1": -5.5,
+"z2": -5.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": -180,
+"nivel": "pb",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": -180,
+"x": 0,
+"y": 0,
+"z": -3.5
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared fondo",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k4",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k5",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "muro",
+"antes": null,
+"datos": {
+"x": -4,
+"y": 0.3,
+"z": -2,
+"sx": 7,
+"sy": 2.7,
+"sz": 0.2,
+"x1": -4,
+"x2": -4,
+"z1": -5.5,
+"z2": 1.5,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"color": "#e9e1cf",
+"giroY": -90,
+"nivel": "pb",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"rel": {
+"g": -90,
+"x": -4,
+"y": 0,
+"z": 0
+},
+"auto": true,
+"tipo": "fundacion"
+},
+"edificio": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k0",
+"material": "pintura"
+},
+"fotos": [],
+"props": {
+"nombre": "Pared izquierda",
+"material": "u:kit-pared_blanca-e9e1cf"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k5",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k6",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "puerta",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0.3,
+"z": 1.5,
+"sx": 1,
+"sy": 2.1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"hoja": "#4a555a",
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"color": "#5d666b",
+"giroY": 0,
+"estilo": "madera",
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"tipo": "pared"
+},
+"alfeizar": 0,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Puerta de entrada"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k6",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k7",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": -2.4,
+"y": 0.3,
+"z": 1.5,
+"sx": 1.3,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k7",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 2.4,
+"y": 0.3,
+"z": 1.5,
+"sx": 1.3,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"color": "#3d7fbf",
+"giroY": 0,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k2",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k8",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "ventana",
+"antes": null,
+"datos": {
+"x": 4,
+"y": 0.3,
+"z": -2,
+"sx": 1.2,
+"sy": 1,
+"sz": 0.2,
+"kit": {
+"clave": "casa_dos_plantas",
+"grupo": "kit-mwcuy0rtqrs"
+},
+"muro": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k3",
+"color": "#3d7fbf",
+"giroY": 90,
+"origen": "base",
+"soporte": {
+"id": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k3",
+"tipo": "pared"
+},
+"alfeizar": 1,
+"muro_alto": 2.7
+},
+"fotos": [],
+"props": {
+"nombre": "Ventana"
+},
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:54.762Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy0rs562o6k9",
+"actualizado": "2026-11-12T01:16:54.762Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy127swley",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -12,
+"y": 0,
+"z": 8,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:55.135Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy127swley",
+"actualizado": "2026-11-12T01:16:55.135Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy1c03rb70",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 12,
+"y": 0,
+"z": 9,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:55.488Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy1c03rb70",
+"actualizado": "2026-11-12T01:16:55.488Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy1m3wjtbh",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 12,
+"y": 0,
+"z": -9,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:55.851Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy1m3wjtbh",
+"actualizado": "2026-11-12T01:16:55.851Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-casa-de-dos-plantas-mwcuy1we3iwcn",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-casa-de-dos-plantas",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": -6,
+"y": 0,
+"z": 9,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:16:56.222Z",
+"esquema": 2,
+"id_objeto": "n-u-casa-de-dos-plantas-mwcuy1we3iwcn",
+"actualizado": "2026-11-12T01:16:56.222Z"
+}
+},
+{
+"coleccion": "mapas",
+"doc_id": "u-casa-de-dos-plantas",
+"datos": {
+"ancho": 32.0,
+"largo": 28.0,
+"creado": "2026-11-12T01:16:46.178Z",
+"nombre": "Casa de dos plantas",
+"terreno": "cesped"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-pared_blanca-e9e1cf",
+"datos": {
+"color": "#e9e1cf",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:16:54.894Z",
+"escala": 2,
+"nombre": "Pared blanca #e9e1cf",
+"patron": "enlucido",
+"preset": "pared_blanca",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.92,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:16:54.894Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "kit-tejas_rojas-b5562f",
+"datos": {
+"color": "#b5562f",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:16:54.994Z",
+"escala": 1.2,
+"nombre": "Tejas rojas #b5562f",
+"patron": "tejas",
+"preset": "tejas_rojas",
+"emision": "#000000",
+"relieve": 1.4,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.75,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:16:54.994Z"
+}
+},
+{
+"coleccion": "materiales",
+"doc_id": "preset-parque",
+"datos": {
+"color": "#a97b4d",
+"mapeo": "mundo",
+"metal": 0,
+"creado": "2026-11-12T01:16:54.838Z",
+"escala": 1,
+"nombre": "Parqué",
+"patron": "parque",
+"preset": "parque",
+"emision": "#000000",
+"relieve": 1,
+"semilla": 1,
+"desgaste": 0,
+"opacidad": 1,
+"suciedad": 0,
+"rugosidad": 0.45,
+"emisionInt": 0,
+"rotacionUV": 0,
+"actualizado": "2026-11-12T01:16:54.838Z"
+}
+}
+]
+}

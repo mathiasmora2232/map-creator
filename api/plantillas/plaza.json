@@ -1,0 +1,513 @@
+{
+"orden": 15,
+"nombre": "Plaza o parque",
+"descripcion": "Plaza o parque con árboles en círculo, bancas, macetero central y faroles.",
+"etiqueta": "Exterior",
+"mapa": "u-plaza-o-parque",
+"documentos": [
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzbsowawol",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:macetero",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": 0,
+"sx": 1.2,
+"sy": 0.85,
+"sz": 0.5,
+"color": "#9a958c",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:55.704Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzbsowawol",
+"actualizado": "2026-11-12T01:17:55.704Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzc2md5wa1",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 13,
+"y": 0,
+"z": 0,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:56.062Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzc2md5wa1",
+"actualizado": "2026-11-12T01:17:56.062Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzcce79wp8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 9.192,
+"y": 0,
+"z": 9.192,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:56.414Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzcce79wp8",
+"actualizado": "2026-11-12T01:17:56.414Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzcm51f4fa",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": 13,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:56.765Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzcm51f4fa",
+"actualizado": "2026-11-12T01:17:56.765Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzcw3uj0ds",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -9.192,
+"y": 0,
+"z": 9.192,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:57.123Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzcw3uj0ds",
+"actualizado": "2026-11-12T01:17:57.123Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzd5u5fem9",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -13,
+"y": 0,
+"z": 0,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:57.474Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzd5u5fem9",
+"actualizado": "2026-11-12T01:17:57.474Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzdfup33jc",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": -9.192,
+"y": 0,
+"z": -9.192,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:57.834Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzdfup33jc",
+"actualizado": "2026-11-12T01:17:57.834Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzdpmbq5iq",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 0,
+"y": 0,
+"z": -13,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:58.186Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzdpmbq5iq",
+"actualizado": "2026-11-12T01:17:58.186Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzdzddy7cw",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "arbol",
+"antes": null,
+"datos": {
+"x": 9.192,
+"y": 0,
+"z": -9.192,
+"sx": 3.5,
+"sy": 5.5,
+"sz": 3.5,
+"color": "#4f7a3a",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:58.537Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzdzddy7cw",
+"actualizado": "2026-11-12T01:17:58.537Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuze95gpehe",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": 4.243,
+"y": 0,
+"z": 4.243,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": -45,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:58.889Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuze95gpehe",
+"actualizado": "2026-11-12T01:17:58.889Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzejbm6to8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": -4.243,
+"y": 0,
+"z": 4.243,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": -135,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:59.255Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzejbm6to8",
+"actualizado": "2026-11-12T01:17:59.255Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzethvl51o",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": -4.243,
+"y": 0,
+"z": -4.243,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": -225,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:59.621Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzethvl51o",
+"actualizado": "2026-11-12T01:17:59.621Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzf385t2o0",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:banca",
+"antes": null,
+"datos": {
+"x": 4.243,
+"y": 0,
+"z": -4.243,
+"sx": 1.8,
+"sy": 0.85,
+"sz": 0.6,
+"color": "#8a6440",
+"giroY": -315,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:17:59.972Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzf385t2o0",
+"actualizado": "2026-11-12T01:17:59.972Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzfczpl5rk",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "poste",
+"antes": null,
+"datos": {
+"x": -8,
+"y": 0,
+"z": -8,
+"sx": 1.6,
+"sy": 7,
+"sz": 0.4,
+"giroY": 0,
+"origen": "base",
+"alcance": 12
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:18:00.323Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzfczpl5rk",
+"actualizado": "2026-11-12T01:18:00.323Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzfmrlqf4q",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "poste",
+"antes": null,
+"datos": {
+"x": 8,
+"y": 0,
+"z": 8,
+"sx": 1.6,
+"sy": 7,
+"sz": 0.4,
+"giroY": 0,
+"origen": "base",
+"alcance": 12
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:18:00.675Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzfmrlqf4q",
+"actualizado": "2026-11-12T01:18:00.675Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzfwmmont8",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:tacho",
+"antes": null,
+"datos": {
+"x": 5,
+"y": 0,
+"z": -5,
+"sx": 0.55,
+"sy": 0.95,
+"sz": 0.55,
+"color": "#3a6b45",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:18:01.030Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzfwmmont8",
+"actualizado": "2026-11-12T01:18:01.030Z"
+}
+},
+{
+"coleccion": "cambios",
+"doc_id": "n-u-plaza-o-parque-mwcuzg6dsewcx",
+"datos": {
+"ref": null,
+"capa": "General",
+"mapa": "u-plaza-o-parque",
+"tipo": "objeto:tacho",
+"antes": null,
+"datos": {
+"x": -5,
+"y": 0,
+"z": 5,
+"sx": 0.55,
+"sy": 0.95,
+"sz": 0.55,
+"color": "#3a6b45",
+"giroY": 0,
+"origen": "base"
+},
+"fotos": [],
+"texto": "",
+"accion": "agregar",
+"creado": "2026-11-12T01:18:01.381Z",
+"esquema": 2,
+"id_objeto": "n-u-plaza-o-parque-mwcuzg6dsewcx",
+"actualizado": "2026-11-12T01:18:01.381Z"
+}
+},
+{
+"coleccion": "mapas",
+"doc_id": "u-plaza-o-parque",
+"datos": {
+"ancho": 40.0,
+"largo": 40.0,
+"creado": "2026-11-12T01:17:47.246Z",
+"nombre": "Plaza o parque",
+"terreno": "cesped"
+}
+}
+]
+}

@@ -113,6 +113,21 @@
   </div>
 </dialog>
 
+<!-- Publicar como plantilla -->
+<dialog id="dlgPublicar" aria-labelledby="tPublicar">
+  <form method="dialog" id="formPublicar" novalidate>
+    <div class="dlg-cab"><h2 id="tPublicar">Publicar como plantilla</h2><button type="button" class="btn icono fantasma" data-a="cerrar-dlg" aria-label="Cerrar">✕</button></div>
+    <div class="dlg-cuerpo">
+      <p class="ayuda" id="ayudaPublicar"></p>
+      <label class="campo"><span>Nombre de la plantilla</span><input type="text" name="nombre" maxlength="60" required></label>
+      <label class="campo"><span>Descripción</span><textarea name="descripcion" maxlength="300" rows="3" placeholder="Qué trae y para qué sirve (opcional)"></textarea></label>
+      <label class="campo"><span>Quién puede usarla</span><select name="visibilidad"><option value="publica">Cualquiera en este servidor</option><option value="privada">Solo yo</option></select></label>
+      <p class="error-form" id="errPublicar" role="alert"></p>
+    </div>
+    <div class="dlg-pie"><button type="button" class="btn" data-a="cerrar-dlg">Cancelar</button><button class="btn prim">Guardar</button></div>
+  </form>
+</dialog>
+
 <!-- Enlace de registro (administración) -->
 <dialog id="dlgRegistro" aria-labelledby="tRegistro">
   <form method="dialog" id="formRegistro" novalidate>

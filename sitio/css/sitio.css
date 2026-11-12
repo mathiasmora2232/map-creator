@@ -494,3 +494,10 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .plazo-acc{display:flex;gap:10px;font-size:12.5px;margin-top:2px}
 .estado-inv.caducada,.estado-inv.agotada,.estado-inv.revocada{background:var(--bg2);color:var(--fg3)}
 @media (max-width:560px){.usado-por,.enlace-acc{padding-left:0}}
+
+/* Plantillas: secciones y gestión */
+.desc-bloque{color:var(--fg2);font-size:14px;margin:-6px 0 12px}
+.pl-caja{display:grid;gap:6px}
+.pl-acc{display:flex;flex-wrap:wrap;gap:2px}
+.pl-acc .peligro{color:var(--err)}
+.plantilla .meta-pl{color:var(--fg3);font-size:12.5px;margin-top:6px}
