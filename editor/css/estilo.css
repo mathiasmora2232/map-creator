@@ -529,3 +529,26 @@ details.zona input[type=color]{width:30px;height:26px}
 .menu-flot [data-solo-local] > button small{margin-left:auto;color:var(--fg2);font-size:11.5px;padding-left:10px}
 .modo-nube .menu-flot > [data-solo-local]{display:none}
 .modal .caja.guia{width:min(660px,100%)}
+
+/* Menú Construir en rejilla por secciones (editor.js, abrirMenuRail) */
+#menuHerr.con-rejilla{max-width:min(620px,calc(100vw - 120px));width:620px;max-height:calc(100vh - 90px);overflow:auto;padding:8px}
+.menu-rejilla-cab{display:flex;align-items:center;gap:10px;position:sticky;top:-8px;background:var(--panel);padding:2px 2px 8px;z-index:1}
+.menu-rejilla-cab .menu-tit{padding:0 4px;flex:none}
+.menu-rejilla-cab input{flex:1;min-width:0;height:30px}
+.menu-rejilla{display:grid;gap:10px}
+.menu-sec h4{margin:0 0 5px 4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--fg2)}
+.menu-sec[hidden],.baldosa[hidden]{display:none!important}
+.baldosas{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:4px}
+#menuHerr .baldosa{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;padding:9px 6px;min-height:68px;border:1px solid var(--line);border-radius:8px;background:var(--panel2,transparent);font-size:12px;line-height:1.25;position:relative}
+#menuHerr .baldosa svg{width:20px;height:20px;flex:none}
+#menuHerr .baldosa:hover{border-color:var(--acc);background:var(--hover)}
+#menuHerr .baldosa.on{border-color:var(--acc);background:var(--acc-suave);color:var(--acc)}
+#menuHerr .baldosa kbd{position:absolute;top:4px;right:5px;font-size:9.5px;margin:0;opacity:.7}
+
+/* Selección múltiple (seleccion_multiple.js) */
+.chips-sel{display:flex;flex-wrap:wrap;gap:5px;margin:2px 0 8px}
+.chip-sel{font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);background:var(--panel2,transparent);color:var(--fg);cursor:pointer;min-height:0}
+.chip-sel:hover{border-color:var(--acc);color:var(--acc)}
+.chip-sel.fijo{cursor:default;color:var(--fg2)}
+.chip-sel.fijo:hover{border-color:var(--line);color:var(--fg2)}
+.sub-sec{margin:10px 0 4px;font-size:11.5px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:.05em}

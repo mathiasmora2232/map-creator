@@ -730,3 +730,18 @@ migración con respaldo, apartados, copia nueva).
   quitar el último y reflejar. Usa los mismos estilos de peldaño, barandas y diseños que las demás escaleras y abre los huecos de
   las losas que alcanza.
 - La escalera normal tampoco exige terminar sobre algo más alto: si no hay nada, sube la «altura si no hay nada arriba» del panel.
+
+# Menú Construir, hueco libre, guías, selección múltiple y rampas
+
+- **Menú Construir** en rejilla por secciones (Paredes; Habitaciones, pisos y plataformas; Puertas, ventanas y huecos; Techos y
+  cubiertas; Escaleras, rampas y barandas) con buscador (escribe y Enter elige la primera). Se define en `GRUPOS_MENU` (editor.js).
+- **Hueco libre en pared** (`huecos_pared.js`): arrastra un rectángulo sobre la cara de una pared nueva y el hueco toma ese ancho,
+  alto y altura desde el suelo; un clic pone uno del tamaño del panel. Es el mismo objeto `hueco`.
+- **Guías** (`guias_borrar.js`): «Borrar una guía (clic sobre ella)» en el menú Guías resalta en rojo la guía más cercana y la
+  borra; «Borrar todas las guías» pide confirmación.
+- **Selección múltiple o grupo** (`seleccion_multiple.js`): sección «Selección» con el resumen por tipo (clic para quedarse solo con
+  ese tipo), alto, grosor, material y color de las paredes, ancho y alto de puertas, ventanas y huecos, color de todo, igualar el
+  alto de las paredes y agrupar o desagrupar. Todo en un paso de deshacer.
+- **Rampas**: por defecto terminan donde haces el segundo clic; si es una plataforma u objeto, en su borde, y la pendiente se calcula
+  sola (la etiqueta avisa si pasa del 12 %). «El largo sale de: la pendiente fija» vuelve al modo anterior. El inspector deja escribir
+  el largo. Pendiente admitida hasta el 100 %.

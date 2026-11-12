@@ -2915,11 +2915,44 @@ function usarItem(it) {
   if (it.h === 'suelo' && it.material && MATERIALES[it.material]) { params.suelo.material = it.material; params.suelo.color = MATERIALES[it.material].c; }
   ponerHerramienta(it.h, { forzar: true });
 }
+/* Menús largos (Construir) en rejilla por secciones, con buscador: antes era una lista de 35 elementos difícil de leer. */
+const GRUPOS_MENU = {
+  construir: [
+    ['Paredes', it => it.h === 'pared' || it.h === 'dividir'],
+    ['Habitaciones, pisos y plataformas', it => ['habitacion', 'piso', 'fundacion', 'plataforma'].includes(it.h)],
+    ['Puertas, ventanas y huecos', it => ['puerta', 'ventana', 'hueco', 'hueco_libre', 'hueco_losa', 'agujero'].includes(it.h)],
+    ['Techos y cubiertas', it => ['techo', 'cubierta'].includes(it.h)],
+    ['Escaleras, rampas y barandas', it => /^(escalera|rampa|baranda)/.test(it.h || '')]
+  ]
+};
+const corto = (n, grupo) => { const c = String(n).replace(/^(Cubierta|Plataforma):\s*/i, ''); return c === n ? n : c.charAt(0).toUpperCase() + c.slice(1); };
+function itemMenu(m, it, j, rejilla, grupo) {
+  it = normItem(it);
+  const on = it.h && it.h === herramienta && (!it.modo || params[it.h].modo === it.modo) && (!it.guia || params.medir.guia === it.guia) && (!it.material || params.suelo.material === it.material);
+  const ic = svg(it.ic || (it.h ? (it.h === 'medir' && it.modo === 'guia' ? 'guias' : it.h) : m.ic)), nom = rejilla ? corto(it.n, grupo) : it.n;
+  return `<button role="menuitem" data-rail-it="${j}" class="${on ? 'on' : ''}${rejilla ? ' baldosa' : ''}" title="${esc(it.nota || it.n)}" data-buscar="${esc(String(it.n).toLowerCase())}">${ic}<span>${esc(nom)}</span>${it.k ? `<kbd>${esc(it.k === 'Espacio' ? 'Esp' : it.k)}</kbd>` : ''}</button>`;
+}
 function abrirMenuRail(b) {
   const m = MENUS.find(x => x.id === b.dataset.rail); if (!m) return;
   if (m.items.length === 1) { usarItem(m.items[0]); return; }
-  const mh = $('#menuHerr');
-  mh.innerHTML = `<div class="menu-tit">${esc(m.n)}</div>` + m.items.map((it, j) => { it = normItem(it); const on = it.h && it.h === herramienta && (!it.modo || params[it.h].modo === it.modo) && (!it.guia || params.medir.guia === it.guia) && (!it.material || params.suelo.material === it.material); return `<button role="menuitem" data-rail-it="${j}" class="${on ? 'on' : ''}" title="${esc(it.nota || '')}">${svg(it.ic || (it.h ? (it.h === 'medir' && it.modo === 'guia' ? 'guias' : it.h) : m.ic))}<span>${esc(it.n)}</span>${it.k ? `<kbd>${esc(it.k === 'Espacio' ? 'Esp' : it.k)}</kbd>` : ''}</button>`; }).join('');
+  const mh = $('#menuHerr'), grupos = GRUPOS_MENU[m.id];
+  if (grupos && m.items.length > 8) {
+    const usados = new Set(), secs = grupos.map(([t, f]) => {
+      const js = m.items.map((it, j) => [normItem(it), j]).filter(([it, j]) => !usados.has(j) && f(it)); js.forEach(([, j]) => usados.add(j));
+      return js.length ? `<section class="menu-sec" data-sec><h4>${esc(t)}</h4><div class="baldosas">${js.map(([it, j]) => itemMenu(m, it, j, true, t)).join('')}</div></section>` : '';
+    });
+    const resto = m.items.map((it, j) => [it, j]).filter(([, j]) => !usados.has(j));
+    if (resto.length) secs.push(`<section class="menu-sec" data-sec><h4>Más</h4><div class="baldosas">${resto.map(([it, j]) => itemMenu(m, it, j, true, 'Más')).join('')}</div></section>`);
+    mh.innerHTML = `<div class="menu-rejilla-cab"><div class="menu-tit">${esc(m.n)}</div><input type="search" id="menuBuscar" placeholder="Buscar herramienta…" aria-label="Buscar herramienta" autocomplete="off"></div><div class="menu-rejilla">${secs.join('')}</div>`;
+    mh.classList.add('con-rejilla');
+    const bus = mh.querySelector('#menuBuscar');
+    bus.addEventListener('input', () => { const q = bus.value.trim().toLowerCase(); mh.querySelectorAll('[data-buscar]').forEach(x => { x.hidden = !!q && !x.dataset.buscar.includes(q); }); mh.querySelectorAll('[data-sec]').forEach(sec => { sec.hidden = ![...sec.querySelectorAll('[data-buscar]')].some(x => !x.hidden); }); });
+    bus.addEventListener('keydown', e => { if (e.key === 'Enter') { const x = [...mh.querySelectorAll('[data-rail-it]')].find(y => !y.hidden); if (x) x.click(); } e.stopPropagation(); });
+    setTimeout(() => bus.focus(), 30);
+  } else {
+    mh.classList.remove('con-rejilla');
+    mh.innerHTML = `<div class="menu-tit">${esc(m.n)}</div>` + m.items.map((it, j) => itemMenu(m, it, j, false)).join('');
+  }
   mh.dataset.railMenu = m.id;
   if (window.OOUI) OOUI.abrirMenu('menuHerr', b, { lado: 'derecha', siempre: true });
 }
