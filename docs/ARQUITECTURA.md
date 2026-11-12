@@ -45,6 +45,17 @@ no sabe si está en local o en la nube.
   después → `: any`), más una docena de arreglos a mano. Pendiente: `validacion.ts` consulta `OOMaterialesPro`, que ningún módulo
   define (la comprobación de materiales nunca se ejecuta; no rompe nada porque está protegida con `window.OOMaterialesPro &&`).
 
+## Motor en Rust (WebAssembly)
+
+- `motor/` es un crate sin dependencias con una interfaz C mínima (`reservar`, `liberar`, `version`, `crc32_bytes`), sin
+  wasm-bindgen. `editor/src/nucleo/motor.ts` carga `editor/wasm/motor.wasm` en segundo plano, copia los bytes a la memoria del
+  módulo, llama y libera. Si no hay WebAssembly, el archivo falta o la versión de la interfaz no coincide, devuelve `null` y quien
+  llama usa la versión en TypeScript.
+- Qué hace hoy: el CRC-32 de los ZIP de exportación (Unity, Godot), «slicing-by-8». 20 MB: 418 ms en JS → 50 ms.
+- Criterio para mover algo al motor: que esté medido como lento y sea cálculo puro sobre bytes o números (no objetos de three.js).
+  Candidatos: escribir el GLB, triangular techos y huecos, el terreno.
+- Imagen de Docker: etapa `rust:1-alpine` que pasa `cargo test` y compila a `wasm32-unknown-unknown`.
+
 ## Esquema de base de datos
 
 Archivo: `api/migraciones/001_esquema.sql`.

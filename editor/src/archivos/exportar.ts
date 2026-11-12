@@ -40,12 +40,15 @@
   /* ---------- ZIP sin compresión (los .glb ya van comprimidos por dentro): un solo archivo con todo lo de Unity o Godot ---------- */
   const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
   const crc32 = (u8?) => { let c = 0xffffffff; for (let i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
-  async function zip(archivos?) { /* [{ nombre, datos: string | ArrayBuffer | Uint8Array | Blob }] → Blob */
+  /* CRC con el motor de Rust si está cargado (nucleo/motor.ts); si no, la versión de aquí. */
+  const crcDe = (u8: Uint8Array): number => { const r = window.OOMotor ? OOMotor.crc32(u8) : null; return r === null ? crc32(u8) : r; };
+  async function zip(archivos?) {
+    if (window.OOMotor) await OOMotor.listo; /* [{ nombre, datos: string | ArrayBuffer | Uint8Array | Blob }] → Blob */
     const enc = new TextEncoder(), ahora = new Date(), partes = [], central = []; let off = 0;
     const hora = (ahora.getHours() << 11) | (ahora.getMinutes() << 5) | (ahora.getSeconds() >> 1), dia = ((ahora.getFullYear() - 1980) << 9) | ((ahora.getMonth() + 1) << 5) | ahora.getDate();
     for (const a of archivos) {
       const datos = typeof a.datos === 'string' ? enc.encode(a.datos) : a.datos instanceof Blob ? new Uint8Array(await a.datos.arrayBuffer()) : new Uint8Array(a.datos.buffer || a.datos, a.datos.byteOffset || 0, a.datos.byteLength);
-      const nom = enc.encode(a.nombre), crc = crc32(datos), h = new DataView(new ArrayBuffer(30));
+      const nom = enc.encode(a.nombre), crc = crcDe(datos), h = new DataView(new ArrayBuffer(30));
       h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true); h.setUint16(10, hora, true); h.setUint16(12, dia, true);
       h.setUint32(14, crc, true); h.setUint32(18, datos.length, true); h.setUint32(22, datos.length, true); h.setUint16(26, nom.length, true); h.setUint16(28, 0, true);
       partes.push(h.buffer, nom, datos);

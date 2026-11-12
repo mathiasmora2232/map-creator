@@ -83,3 +83,4 @@ declare var OOVersionMapa: any;
 declare var OOVistasRender: any;
 declare var OOZonas: any;
 declare var OOMaterialesPro: any;
+declare var OOMotor: { listo: Promise<boolean>; activo(): boolean; crc32(u8: Uint8Array): number | null; version: number } | undefined;
