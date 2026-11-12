@@ -62,13 +62,13 @@
   function todasLasClaves() { const ks = []; for (let i = 0; i < A.N; i++) if (!A.P[i].del) ks.push('p' + i); for (const o of E.nuevos().values()) if (A.tipoBase(o.tipo) !== 'nota') ks.push('n' + o.id); return ks; }
   /* agrupa: objetos automáticos o grupos del usuario como un objeto; el resto pieza a pieza */
   function entidades(keys?) {
-    const vistos = new Set<any>(), out = [];
+    const vistos = new Set<any>(), out = [], enKeys = new Set<any>(keys);
     for (const k of keys) {
       if (vistos.has(k)) continue;
       if (k[0] === 'n') { vistos.add(k); out.push({ tipo: 'nuevo', keys: [k] }); continue; }
       const gid = A.grupoDe(k); const a = A.autoActivo(k);
       let ks = [k];
-      if (gid) { const g = A.efectivos('grupos').get(gid); if (g) ks = g.miembros.filter((x?) => x[0] === 'p' && keys.includes(x)); }
+      if (gid) { const g = A.efectivos('grupos').get(gid); if (g) ks = g.miembros.filter((x?) => x[0] === 'p' && enKeys.has(x)); }
       else if (a) ks = a.keys.filter((x?) => !A.P[+x.slice(1)].del);
       ks.forEach((x?) => vistos.add(x)); out.push({ tipo: ks.length > 1 ? 'objeto' : 'pieza', keys: ks });
     }
@@ -271,7 +271,7 @@ Si los materiales salen rosados: revisa que glTFast esté instalado y que import
 `;
   async function exportarUnity(keys?, nombre?, zona?) {
     const todo = !(keys && keys.length); keys = todo ? todasLasClaves() : keys; const base = nombreArchivo(nombre);
-    const r = await glbDe(keys, { zona, todo }); if (!r) return null; const j = escenaJSON(null, { zona, todo });
+    const r = await glbDe(keys, { zona, todo }); if (!r) return null; const j = escenaJSON(keys, { zona, todo }); /* antes: null → el JSON de una zona traía el mapa entero */
     /* un .zip con una carpeta: el .glb, la escena .json y el LEEME (con la fecha y la hora de la exportación) */
     const leeme = LEEME_UNITY + '\nExportado: ' + new Date().toLocaleString('es') + ' · mapa «' + nombreMapa() + '»' + (zona ? ' · zona «' + zona.nombre + '»' : '') + '\n';
     const z = await zip([{ nombre: base + '/' + base + '.glb', datos: r.buf }, { nombre: base + '/' + base + '_escena.json', datos: JSON.stringify(j, null, 1) }, { nombre: base + '/LEEME_unity.txt', datos: leeme }]);
