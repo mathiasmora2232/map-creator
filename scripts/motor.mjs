@@ -5,8 +5,9 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const raiz = new URL('..', import.meta.url).pathname;
+const raiz = fileURLToPath(new URL('..', import.meta.url)); // .pathname da «/C:/…» en Windows
 const obligatorio = process.argv.includes('--obligatorio');
 const salida = join(raiz, 'editor/wasm/motor.wasm');
 const wasm = join(raiz, 'motor/target/wasm32-unknown-unknown/release/motor.wasm');
