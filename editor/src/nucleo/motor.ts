@@ -1,9 +1,9 @@
 /* Puente con el motor de Rust (motor/ → editor/wasm/motor.wasm). Carga el .wasm en segundo plano; mientras no esté (o si falla,
    o en un navegador sin WebAssembly) cada función devuelve null y quien la llama usa su versión en TypeScript.
-   window.OOMotor = { listo: Promise<boolean>, activo(), crc32(Uint8Array) → number | null, version } */
+   window.OOMotor = { listo: Promise<boolean>, activo(), crc32(Uint8Array) → number | null, glb(paquete) → Uint8Array | null, version } */
 (function () {
   'use strict';
-  const VERSION_INTERFAZ = 1;
+  const VERSION_INTERFAZ = 2;
   let ex: any = null;
   const yo = document.querySelector('script[src*="nucleo/motor.js"]') as HTMLScriptElement | null;
   const v = yo && /[?&]v=(\w+)/.exec(yo.src);
@@ -33,5 +33,15 @@
     try { return conBytes(u8, (p, n) => ex.crc32_bytes(p, n) >>> 0); } catch (err) { console.warn('motor.wasm crc32:', err); return null; }
   }
 
-  window.OOMotor = { listo, activo: () => !!ex, crc32, version: VERSION_INTERFAZ };
+  /* Paquete «OOGB» (archivos/glb_motor.ts) → bytes del .glb (copiados fuera de la memoria del módulo). */
+  function glb(paquete: Uint8Array): Uint8Array | null {
+    if (!ex) return null;
+    try {
+      const r = conBytes(paquete, (p, n) => ex.glb_crear(p, n));
+      if (r !== 0) { console.warn('motor.wasm glb: paquete rechazado (código ' + r + ')'); return null; }
+      const out = new Uint8Array(ex.memory.buffer, ex.glb_ptr(), ex.glb_len()).slice(); ex.glb_soltar(); return out;
+    } catch (err) { console.warn('motor.wasm glb:', err); return null; }
+  }
+
+  window.OOMotor = { listo, activo: () => !!ex, crc32, glb, version: VERSION_INTERFAZ };
 })();

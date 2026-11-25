@@ -3,14 +3,16 @@
 //! Interfaz C mínima (sin wasm-bindgen): el editor (`editor/src/nucleo/motor.ts`) reserva memoria con `reservar`, copia los
 //! bytes, llama a la función y libera con `liberar`. Si el .wasm no carga, el editor usa su versión en TypeScript.
 //!
-//! Primer paso: CRC-32 para el ZIP de las exportaciones a Unity y Godot (el .glb y el JSON de un mapa grande son ~20 MB).
+//! - CRC-32 para el ZIP de las exportaciones a Unity y Godot.
+//! - Escritor de GLB (`glb.rs`): de un paquete con la escena ya recorrida al archivo .glb.
 
 mod crc;
+pub mod glb;
 
 pub use crc::crc32;
 
 /// Versión de la interfaz: el editor comprueba que coincide antes de usar el motor.
-pub const VERSION: u32 = 1;
+pub const VERSION: u32 = 2;
 
 #[no_mangle]
 pub extern "C" fn version() -> u32 {
@@ -45,4 +47,38 @@ pub unsafe extern "C" fn crc32_bytes(p: *const u8, n: usize) -> u32 {
         return 0;
     }
     crc32(core::slice::from_raw_parts(p, n))
+}
+
+/// Último GLB creado (lo lee el editor con `glb_ptr`/`glb_len` y lo suelta con `glb_soltar`).
+static mut ULTIMO_GLB: Vec<u8> = Vec::new();
+
+/// Crea un GLB a partir de un paquete «OOGB» (ver `glb.rs`). Devuelve 0 si fue bien o el código de `glb::Fallo`.
+///
+/// # Safety
+/// `p..p+n` tiene que ser memoria válida del módulo (reservada con `reservar`).
+#[no_mangle]
+pub unsafe extern "C" fn glb_crear(p: *const u8, n: usize) -> u32 {
+    let paquete = core::slice::from_raw_parts(p, n);
+    match glb::crear(paquete) {
+        Ok(v) => {
+            *core::ptr::addr_of_mut!(ULTIMO_GLB) = v;
+            0
+        }
+        Err(e) => e as u32,
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn glb_ptr() -> *const u8 {
+    (*core::ptr::addr_of!(ULTIMO_GLB)).as_ptr()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn glb_len() -> usize {
+    (*core::ptr::addr_of!(ULTIMO_GLB)).len()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn glb_soltar() {
+    *core::ptr::addr_of_mut!(ULTIMO_GLB) = Vec::new();
 }

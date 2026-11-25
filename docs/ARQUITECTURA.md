@@ -51,9 +51,14 @@ no sabe si está en local o en la nube.
   wasm-bindgen. `editor/src/nucleo/motor.ts` carga `editor/wasm/motor.wasm` en segundo plano, copia los bytes a la memoria del
   módulo, llama y libera. Si no hay WebAssembly, el archivo falta o la versión de la interfaz no coincide, devuelve `null` y quien
   llama usa la versión en TypeScript.
-- Qué hace hoy: el CRC-32 de los ZIP de exportación (Unity, Godot), «slicing-by-8». 20 MB: 418 ms en JS → 50 ms.
+- Qué hace hoy:
+  - CRC-32 de los ZIP de exportación (Unity, Godot), «slicing-by-8». 20 MB: 418 ms en JS → 50 ms.
+  - Escritor de GLB (`motor/src/glb.rs` + `editor/src/archivos/glb_motor.ts`): el editor recorre la escena y la empaqueta (formato
+    «OOGB», documentado en glb.rs); Rust escribe el JSON, el binario (min/max, normales normalizadas) y el contenedor. Si la escena
+    trae texturas, huesos, morph, instancias u otros materiales o luces, se usa GLTFExporter. Con 29 000 mallas: ~105 ms frente a
+    130–220 ms de GLTFExporter, mismo resultado al recargarlo con GLTFLoader (mallas, vértices, luces, materiales y extras).
 - Criterio para mover algo al motor: que esté medido como lento y sea cálculo puro sobre bytes o números (no objetos de three.js).
-  Candidatos: escribir el GLB, triangular techos y huecos, el terreno.
+  Candidatos: triangular techos y huecos, el terreno. Armar la escena de three.js (lo más lento de exportar ahora) no se puede mover.
 - Imagen de Docker: etapa `rust:1-alpine` que pasa `cargo test` y compila a `wasm32-unknown-unknown`.
 
 ## Esquema de base de datos
