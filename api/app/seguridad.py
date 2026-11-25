@@ -70,13 +70,41 @@ async def usuario_opcional(request: Request):
         return request.state.usuario
     token = request.cookies.get(config.COOKIE_SESION)
     usuario = None
+    request.state.con_token = False
     if token:
         async with db.pool.acquire() as con:
             usuario = await con.fetchrow(
                 "SELECT u.id, u.email, u.nombre, u.es_admin, u.email_verificado, u.dos_pasos FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id "
                 "WHERE s.token_hash = $1 AND s.expira > now()", _hash_token(token))
+    else:
+        # Token de acceso personal (MCP, scripts): «Authorization: Bearer mc_…» (tokens_api, 007_mcp_biblioteca.sql)
+        cab = request.headers.get("authorization", "")
+        if cab[:7].lower() == "bearer " and cab[7:].strip().startswith("mc_"):
+            usuario = await usuario_de_token(cab[7:].strip())
+            request.state.con_token = usuario is not None
     request.state.usuario = usuario
     return usuario
+
+
+PREFIJO_TOKEN = "mc_"
+
+
+def nuevo_token_api() -> tuple[str, bytes, str]:
+    """(token completo, hash para guardar, prefijo visible)."""
+    t = PREFIJO_TOKEN + secrets.token_urlsafe(32)
+    return t, _hash_token(t), t[:10]
+
+
+async def usuario_de_token(token: str):
+    """Usuario de un token de acceso personal vigente, o None. Apunta el último uso (como mucho una vez por minuto)."""
+    async with db.pool.acquire() as con:
+        fila = await con.fetchrow(
+            "SELECT t.id AS token_id, u.id, u.email, u.nombre, u.es_admin, u.email_verificado, u.dos_pasos FROM tokens_api t "
+            "JOIN usuarios u ON u.id = t.usuario_id WHERE t.hash = $1 AND t.revocado IS NULL", _hash_token(token))
+        if fila:
+            await con.execute("UPDATE tokens_api SET ultimo_uso = now() WHERE id = $1 AND (ultimo_uso IS NULL OR ultimo_uso < now() - interval '1 minute')",
+                              fila["token_id"])
+    return fila
 
 
 def verificado(usuario) -> bool:

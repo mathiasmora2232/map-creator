@@ -48,11 +48,33 @@
   }
   function quitarMalla() { quitarAgua(); if (malla) { A.scene.remove(malla); malla.geometry.dispose(); malla.material.dispose(); malla = null; A.marcar(); } }
   /* (procedural) superficie del agua: un plano a la altura del agua que cubre el terreno; donde el terreno está más alto lo tapa */
+  /* (motor) detalle del suelo: grano que multiplica el color de cada zona y su relieve fino (mapa de normales), repetidos cada
+     DETALLE_M metros; y ondas en el agua. Texturas del motor de Rust (textura.rs), una vez por sesión. Sin motor, sin detalle. */
+  const DETALLE_M = 6; let texSuelo = null, texAgua = null;
+  function texturasMotor(): boolean {
+    if (texSuelo) return true;
+    if (!window.OOMotor || !OOMotor.activo() || !OOMotor.textura) return false;
+    const crear = (d?, normal?) => { const t = new T.DataTexture(d.normal && normal ? d.normal : d.color, d.lado, d.lado, T.RGBAFormat); t.wrapS = t.wrapT = T.RepeatWrapping; t.magFilter = T.LinearFilter; t.minFilter = T.LinearMipmapLinearFilter; t.generateMipmaps = true; t.anisotropy = 8; t.encoding = T.LinearEncoding; t.needsUpdate = true; return t; };
+    const s = OOMotor.textura(512, 7, 'suelo'), a = OOMotor.textura(256, 11, 'agua'); if (!s || !a) return false;
+    texSuelo = { color: crear(s, false), normal: crear(s, true) }; texAgua = crear(a, true); return true;
+  }
+  function ponerDetalle() {
+    if (!malla || !T0) return;
+    const aplicar = () => {
+      if (!malla || !texturasMotor()) return; const m = malla.material, rx = (T0.nx - 1) * T0.paso / DETALLE_M, rz = (T0.nz - 1) * T0.paso / DETALLE_M;
+      m.map = texSuelo.color.clone(); m.map.repeat.set(rx, rz); m.map.needsUpdate = true;
+      m.normalMap = texSuelo.normal.clone(); m.normalMap.repeat.set(rx, rz); m.normalMap.needsUpdate = true; m.normalScale.set(0.45, 0.45);
+      m.needsUpdate = true; if (aguaMalla) ponerAgua(); A.marcar();
+    };
+    if (window.OOMotor) OOMotor.listo.then(aplicar);
+  }
   function quitarAgua() { if (aguaMalla) { A.scene.remove(aguaMalla); aguaMalla.geometry.dispose(); aguaMalla.material.dispose(); aguaMalla = null; A.marcar(); } }
   function geoAgua() { const { nx, nz, paso } = T0, g = new T.PlaneGeometry((nx - 1) * paso, (nz - 1) * paso); g.rotateX(-Math.PI / 2); g.translate(T0.x0 + (nx - 1) * paso / 2, BASE_Y + T0.agua, T0.z0 + (nz - 1) * paso / 2); return g; }
   function ponerAgua() {
     quitarAgua(); if (!T0 || T0.agua == null) return;
-    aguaMalla = new T.Mesh(geoAgua(), new T.MeshStandardMaterial({ color: MAT.agua.c, transparent: true, opacity: 0.78, roughness: 0.15, metalness: 0.1, clippingPlanes: [A.clip] }));
+    const mAgua = new T.MeshStandardMaterial({ color: MAT.agua.c, transparent: true, opacity: 0.8, roughness: 0.08, metalness: 0.15, clippingPlanes: [A.clip] });
+    if (texAgua) { const { nx, nz, paso } = T0; mAgua.normalMap = texAgua.clone(); mAgua.normalMap.repeat.set((nx - 1) * paso / 24, (nz - 1) * paso / 24); mAgua.normalMap.needsUpdate = true; mAgua.normalScale.set(0.6, 0.6); }
+    aguaMalla = new T.Mesh(geoAgua(), mAgua);
     aguaMalla.name = 'agua'; aguaMalla.receiveShadow = true; aguaMalla.renderOrder = 1; A.scene.add(aguaMalla); A.marcar();
   }
   function construirMalla() {
@@ -60,7 +82,8 @@
     const { nx, nz, paso } = T0, g = new T.PlaneGeometry((nx - 1) * paso, (nz - 1) * paso, nx - 1, nz - 1); g.rotateX(-Math.PI / 2);
     g.translate(T0.x0 + (nx - 1) * paso / 2, 0, T0.z0 + (nz - 1) * paso / 2);
     g.setAttribute('color', new T.BufferAttribute(new Float32Array(nx * nz * 4), 4));
-    malla = new T.Mesh(g, new T.MeshLambertMaterial({ vertexColors: true, alphaTest: 0.5, clippingPlanes: [A.clip], polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+    malla = new T.Mesh(g, new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.96, metalness: 0, alphaTest: 0.5, clippingPlanes: [A.clip], polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+    ponerDetalle();
     malla.name = 'terreno'; malla.receiveShadow = true; malla.castShadow = true; A.scene.add(malla);
     refrescar(0, 0, nx - 1, nz - 1); ponerAgua();
   }

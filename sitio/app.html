@@ -23,6 +23,7 @@
       <a href="#compartidos" data-vista="compartidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5A5 5 0 0 1 21 19"/></svg>Compartidos conmigo<span class="cuenta-n" data-n="compartidos"></span></a>
       <a href="#favoritos" data-vista="favoritos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Favoritos<span class="cuenta-n" data-n="favoritos"></span></a>
       <a href="#plantillas" data-vista="plantillas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Plantillas</a>
+      <a href="#biblioteca" data-vista="biblioteca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M16 5l3.5-1 3 15.5-3.5 1z"/></svg>Biblioteca</a>
       <a href="#papelera" data-vista="papelera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Papelera</a>
     </nav>
     <div class="titulo-menu" data-solo-admin hidden>Servidor</div>
@@ -67,6 +68,22 @@
         <label class="campo"><span>Ancho (m)</span><input type="number" name="ancho" min="10" max="2000" step="5" value="120"></label>
         <label class="campo"><span>Fondo (m)</span><input type="number" name="largo" min="10" max="2000" step="5" value="80"></label>
         <label class="campo"><span>Terreno</span><select name="terreno"><option value="cesped">Césped</option><option value="tierra">Tierra</option><option value="concreto">Concreto</option><option value="asfalto">Asfalto</option></select></label>
+      </div>
+      <div id="nuevoRelieve">
+        <div class="fila2">
+          <label class="campo"><span>Relieve</span><select name="relieve">
+            <option value="">Sin relieve (plano)</option><option value="llanura">Llanura</option><option value="colinas">Colinas</option>
+            <option value="montanas">Montañas</option><option value="valle">Valle</option><option value="isla">Isla</option><option value="dunas">Dunas (desierto)</option></select></label>
+          <label class="campo relieve-opc"><span>Clima</span><select name="clima"><option value="templado">Templado</option><option value="humedo">Húmedo (mucho bosque)</option><option value="seco">Seco</option><option value="nevado">Con nieve</option></select></label>
+          <label class="campo relieve-opc"><span>Vegetación</span><select name="vegetacion"><option value="0">Ninguna</option><option value="1.2">Poca</option><option value="3" selected>Normal</option><option value="6">Mucha</option></select></label>
+        </div>
+        <div class="fila2 relieve-opc">
+          <label class="campo"><span>Zona plana: ancho (m)</span><input type="number" name="plano_ancho" min="10" max="2000" step="5" placeholder="35 % del ancho"></label>
+          <label class="campo"><span>Zona plana: fondo (m)</span><input type="number" name="plano_largo" min="10" max="2000" step="5" placeholder="35 % del fondo"></label>
+          <label class="campo"><span>Semilla</span><input type="number" name="semilla" min="0" step="1" placeholder="Al azar"></label>
+        </div>
+        <label class="chk relieve-opc"><input type="checkbox" name="rio"> Con un río</label>
+        <p class="ayuda relieve-opc">El ancho y el fondo de arriba son el tamaño total. La zona plana queda en el centro para construir; el relieve la rodea y se genera al abrir el mapa.</p>
       </div>
       <p class="error-form" id="errNuevo" role="alert"></p>
     </div>

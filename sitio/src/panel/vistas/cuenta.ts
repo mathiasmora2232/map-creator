@@ -4,9 +4,10 @@ import { $, datosForm, ls, objetivo, type El } from '../../dom';
 import type { Perfil, Sesion } from '../../tipos';
 import { avatarHtml, cargarYo, guardarPref, orden, ORDENES, pintarAvatarMenu, ponerOrden, principal, proyectos, urlEditor, yo, type Orden } from '../estado';
 import { cabecera, porEdicion } from '../piezas';
+import { enlazarConexiones, htmlConexiones } from './conexiones';
 
 const COLORES_AV = ['#e2690b', '#1f6feb', '#2e7d32', '#8e44ad', '#c62828', '#00838f', '#6d4c41', '#37474f'];
-const PESTANAS_CUENTA: [string, string][] = [['perfil', 'Perfil'], ['seguridad', 'Seguridad'], ['preferencias', 'Preferencias'], ['actividad', 'Actividad'], ['datos', 'Datos y cuenta']];
+const PESTANAS_CUENTA: [string, string][] = [['perfil', 'Perfil'], ['seguridad', 'Seguridad'], ['preferencias', 'Preferencias'], ['actividad', 'Actividad'], ['conexiones', 'Conexiones (MCP)'], ['datos', 'Datos y cuenta']];
 let pestanaCuenta = ls('mc-cuenta-tab') || 'perfil';
 export function ponerPestanaCuenta(t: string): void { pestanaCuenta = t; ls('mc-cuenta-tab', t); }
 
@@ -27,6 +28,7 @@ export function vistaCuenta(): void {
     </aside>`;
   const pest = `<nav class="pestanas-cuenta" role="tablist">${PESTANAS_CUENTA.map(([k, n]) => `<button role="tab" data-a="pestana-cuenta" data-t="${k}" aria-selected="${k === pestanaCuenta}" class="${k === pestanaCuenta ? 'on' : ''}">${n}</button>`).join('')}</nav>`;
   const secciones: Record<string, string> = {
+    conexiones: htmlConexiones(),
     perfil: `<form class="caja" id="formPerfil"><h2>Tu perfil</h2><p class="ayuda">Lo ven las personas con las que compartes mapas.</p>
         <div class="dos-col"><label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required value="${esc(yo.nombre)}"></label>
         <label class="campo"><span>Empresa o equipo</span><input type="text" name="empresa" maxlength="80" value="${esc(yo.empresa || '')}" placeholder="Opcional"></label></div>
@@ -87,6 +89,7 @@ export function vistaCuenta(): void {
   };
   principal.innerHTML = cabecera('Cuenta') + `<div class="cuenta-grid">${tarjeta}<div class="cuenta-der">${pest}<div class="cuenta-panel" role="tabpanel">${secciones[pestanaCuenta]}</div></div></div>`;
   cargarPerfil();
+  if (pestanaCuenta === 'conexiones') enlazarConexiones();
   const enlazar = (sel: string, ev: string, f: (e: Event) => void): void => { const el = $(sel); if (el) el.addEventListener(ev, f); };
   for (const id of ['#fotoPerfil', '#fotoPerfil2']) enlazar(id, 'change', e => { const f = objetivo(e).files && objetivo(e).files[0]; if (f) subirFoto(f); });
   enlazar('#formPerfil', 'submit', async e => {

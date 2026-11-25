@@ -56,3 +56,8 @@ ASISTENTE_ACTIVO = bool(ANTHROPIC_API_KEY)
 ASISTENTE_MODELO = os.environ.get("OO_ASISTENTE_MODELO", "claude-opus-5-5").strip() or "claude-opus-5-5"
 ASISTENTE_ESFUERZO = os.environ.get("OO_ASISTENTE_ESFUERZO", "medium").strip() or "medium"   # low | medium | high | xhigh | max
 ASISTENTE_LIMITE_HORA = int(os.environ.get("OO_ASISTENTE_LIMITE_HORA", "120"))               # llamadas por usuario y hora
+
+# ── Biblioteca y MCP ──
+# Carpeta con los assets del sistema (.glb + .json opcional): se cargan al arrancar como públicos. Añade archivos y reinicia.
+DIR_BIBLIOTECA = Path(os.environ.get("OO_DIR_BIBLIOTECA", RAIZ / "api" / "biblioteca"))
+MAX_TOKENS_USUARIO = int(os.environ.get("OO_MAX_TOKENS", "20"))

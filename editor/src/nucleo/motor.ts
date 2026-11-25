@@ -4,7 +4,7 @@
    terreno(params Float64Array(18), mascara Uint8Array) → { alturas, zonas, plantas } | null, version } */
 (function () {
   'use strict';
-  const VERSION_INTERFAZ = 3;
+  const VERSION_INTERFAZ = 4;
   let ex: any = null;
   const yo = document.querySelector('script[src*="nucleo/motor.js"]') as HTMLScriptElement | null;
   const v = yo && /[?&]v=(\w+)/.exec(yo.src);
@@ -59,5 +59,15 @@
     finally { ex.liberar(pp, np * 8); ex.liberar(pm, nm); }
   }
 
-  window.OOMotor = { listo, activo: () => !!ex, crc32, glb, terreno, version: VERSION_INTERFAZ };
+  /* Textura que se repite sin costura (motor/src/textura.rs): tipo 'suelo' (grano en gris + normales) o 'agua' (normales). */
+  function textura(tam: number, semilla: number, tipo: 'suelo' | 'agua'): { lado: number; color: Uint8ClampedArray; normal: Uint8ClampedArray } | null {
+    if (!ex || !ex.textura_generar) return null;
+    try {
+      const lado = ex.textura_generar(tam, semilla >>> 0, tipo === 'agua' ? 1 : 0), n = lado * lado * 4, b = ex.memory.buffer;
+      const out = { lado, color: new Uint8ClampedArray(b, ex.textura_color(), n).slice(), normal: new Uint8ClampedArray(b, ex.textura_normal(), n).slice() };
+      ex.textura_soltar(); return out;
+    } catch (err) { console.warn('motor.wasm textura:', err); return null; }
+  }
+
+  window.OOMotor = { listo, activo: () => !!ex, crc32, glb, terreno, textura, version: VERSION_INTERFAZ };
 })();

@@ -6,15 +6,17 @@
 //! - CRC-32 para el ZIP de las exportaciones a Unity y Godot.
 //! - Escritor de GLB (`glb.rs`): de un paquete con la escena ya recorrida al archivo .glb.
 //! - Terreno procedural (`procedural.rs`): relieve, erosión, zonas y vegetación.
+//! - Texturas que se repiten sin costura (`textura.rs`): grano y relieve del suelo, ondas del agua.
 
 mod crc;
 pub mod glb;
 pub mod procedural;
+pub mod textura;
 
 pub use crc::crc32;
 
 /// Versión de la interfaz: el editor comprueba que coincide antes de usar el motor.
-pub const VERSION: u32 = 3;
+pub const VERSION: u32 = 4;
 
 #[no_mangle]
 pub extern "C" fn version() -> u32 {
@@ -133,4 +135,30 @@ pub unsafe extern "C" fn terreno_n_plantas() -> usize {
 #[no_mangle]
 pub unsafe extern "C" fn terreno_soltar() {
     *core::ptr::addr_of_mut!(ULTIMO_TERRENO) = None;
+}
+
+static mut ULTIMA_TEXTURA: Option<textura::Texturas> = None;
+
+/// Genera una textura (tipo 0 = suelo, 1 = agua) de `tam` píxeles (potencia de dos entre 16 y 2048). Devuelve el tamaño real.
+#[no_mangle]
+pub unsafe extern "C" fn textura_generar(tam: usize, semilla: u32, tipo: u32) -> usize {
+    let t = textura::generar(tam, semilla as u64, if tipo == 1 { textura::Tipo::Agua } else { textura::Tipo::Suelo });
+    let lado = ((t.color.len() / 4) as f64).sqrt() as usize;
+    *core::ptr::addr_of_mut!(ULTIMA_TEXTURA) = Some(t);
+    lado
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn textura_color() -> *const u8 {
+    (*core::ptr::addr_of!(ULTIMA_TEXTURA)).as_ref().map_or(core::ptr::null(), |t| t.color.as_ptr())
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn textura_normal() -> *const u8 {
+    (*core::ptr::addr_of!(ULTIMA_TEXTURA)).as_ref().map_or(core::ptr::null(), |t| t.normal.as_ptr())
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn textura_soltar() {
+    *core::ptr::addr_of_mut!(ULTIMA_TEXTURA) = None;
 }

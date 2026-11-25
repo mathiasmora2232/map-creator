@@ -15,7 +15,8 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db
-from .rutas import admin, asistente, cuenta, editor_datos, invitaciones, plantillas, proyectos
+from .rutas import admin, asistente, biblioteca, cuenta, editor_datos, intercambio, invitaciones, plantillas, proyectos, tokens
+from . import mcp_servidor
 from .seguridad import usuario_opcional, verificado
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -25,7 +26,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 async def vida(_app):
     config.DIR_ARCHIVOS.mkdir(parents=True, exist_ok=True)
     await db.abrir()
-    yield
+    try:
+        n = await biblioteca.sincronizar_sistema()
+        if n:
+            logging.getLogger("biblioteca").info("biblioteca: %d assets del sistema", n)
+    except Exception:
+        logging.getLogger("biblioteca").exception("no se pudo sincronizar la biblioteca del sistema")
+    async with mcp_servidor.mcp.session_manager.run():   # servidor MCP en /mcp
+        yield
     await db.cerrar()
 
 
@@ -38,6 +46,8 @@ async def cabeceras_y_origen(request: Request, siguiente):
     """Un solo middleware (encadenar dos de Starlette a veces truncaba las respuestas que corta el primero):
     - defensa CSRF además de SameSite=Lax: lo que escribe tiene que venir de esta misma web;
     - los .js y .css de /sitio se revalidan siempre (con ?v= cambian de URL en cada despliegue y sin él no se quedan viejos)."""
+    if request.scope["path"] == "/mcp":   # el servidor MCP vive en /mcp/: los clientes suelen llamar sin la barra final
+        request.scope["path"] = "/mcp/"
     if request.method not in ("GET", "HEAD", "OPTIONS"):
         origen = request.headers.get("origin")
         if origen and urlparse(origen).netloc != request.headers.get("host"):
@@ -69,6 +79,10 @@ app.include_router(plantillas.router)
 app.include_router(proyectos.router)
 app.include_router(editor_datos.router)
 app.include_router(asistente.router)
+app.include_router(biblioteca.router)
+app.include_router(tokens.router)
+app.include_router(intercambio.router)
+app.mount("/mcp", mcp_servidor.app)
 
 
 @app.get("/api/salud")

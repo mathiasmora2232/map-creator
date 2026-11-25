@@ -23,9 +23,20 @@
   const slug = (t?) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'mapa';
   function crear(o?) {
     o = o || {}; let id = 'u-' + slug(o.nombre); const ya = A.efectivos('mapas'); if (ya.get(id)) id += '-' + Date.now().toString(36).slice(-4);
-    const doc = { nombre: String(o.nombre || 'Mapa nuevo').slice(0, 60), ancho: Math.max(10, Math.min(2000, +o.ancho || 100)), largo: Math.max(10, Math.min(2000, +o.largo || 100)), terreno: TERRENOS[o.terreno] ? o.terreno : 'cesped', creado: A.ahora() };
+    const ancho = Math.max(10, Math.min(2000, +o.ancho || 100)), largo = Math.max(10, Math.min(2000, +o.largo || 100));
+    const doc: any = { nombre: String(o.nombre || 'Mapa nuevo').slice(0, 60), ancho, largo, terreno: TERRENOS[o.terreno] ? o.terreno : 'cesped', creado: A.ahora() };
+    /* (procedural) con relieve: el suelo base es la zona plana del centro y el relieve la rodea hasta el tamaño total
+       (igual que el servidor en api/app/rutas/proyectos.py → _relieve); se genera al abrir el mapa (terreno_procedural.ts) */
+    if (o.relieve) {
+      const zw = Math.max(10, Math.min(ancho, Math.round(ancho * 0.35))), zl = Math.max(10, Math.min(largo, Math.round(largo * 0.35)));
+      const clima = CLIMAS[o.clima] || CLIMAS.templado;
+      doc.ancho = zw; doc.largo = zl;
+      doc.generar = { estilo: o.relieve, margen: Math.max(20, (ancho - zw) / 2, (largo - zl) / 2), rio: !!o.rio, densidad: +o.vegetacion || 0, humedad: clima[0], nieve: clima[1] ? (NIEVE[o.relieve] || 8) : 0, semilla: 0, total: [ancho, largo] };
+    }
     A.guardarCol('mapas', id, doc); opciones(); return id;
   }
+  const CLIMAS = { templado: [0, false], humedo: [0.7, false], seco: [-0.6, false], nevado: [0.2, true] };
+  const NIEVE = { montanas: 25, valle: 14, colinas: 8, isla: 9, llanura: 2, dunas: 4 };
   function abrir(id?) { const s = $('#selMapa'); if (!s) return; opciones(); s.value = id; s.dispatchEvent(new Event('change')); }
   function opciones() {
     const s = $('#selMapa'); if (!s) return; const actual = A.mapa;
@@ -36,15 +47,21 @@
     s.insertAdjacentHTML('beforeend', html); s.value = actual;
   }
   async function dialogo() {
-    const f = { nombre: 'Mapa nuevo', ancho: 120, largo: 80, terreno: 'cesped' };
+    const f: any = { nombre: 'Mapa nuevo', ancho: 120, largo: 80, terreno: 'cesped', relieve: '', clima: 'templado', vegetacion: 3, rio: false };
+    const ESTILOS = window.OOProcedural ? Object.entries(OOProcedural.ESTILOS).map(([k, v]: [string, any]) => [k, v.n]) : [];
     const r = A.abrirModal(`<div class="cab">Nuevo mapa en blanco</div><div class="cont"><div class="campos">
       <label class="campo"><span>Nombre</span><input type="text" data-nm="nombre" data-foco value="${f.nombre}"></label>
       <label class="campo"><span>Ancho (X, m)</span><input type="number" min="10" max="2000" step="5" data-nm="ancho" value="${f.ancho}"></label>
       <label class="campo"><span>Fondo (Z, m)</span><input type="number" min="10" max="2000" step="5" data-nm="largo" value="${f.largo}"></label>
-      <label class="campo"><span>Terreno</span><select data-nm="terreno">${Object.entries(TERRENOS).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('')}</select></label></div>
+      <label class="campo"><span>Terreno</span><select data-nm="terreno">${Object.entries(TERRENOS).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('')}</select></label>
+      ${ESTILOS.length ? `<label class="campo"><span>Relieve</span><select data-nm="relieve"><option value="">Sin relieve (plano)</option>${ESTILOS.map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</select></label>
+      <label class="campo"><span>Clima</span><select data-nm="clima"><option value="templado">Templado</option><option value="humedo">Húmedo</option><option value="seco">Seco</option><option value="nevado">Con nieve</option></select></label>
+      <label class="campo"><span>Vegetación</span><select data-nm="vegetacion"><option value="0">Ninguna</option><option value="1.2">Poca</option><option value="3" selected>Normal</option><option value="6">Mucha</option></select></label>
+      <label class="campo"><span>Río</span><select data-nm="rio"><option value="">Sin río</option><option value="1">Con un río</option></select></label>` : ''}</div>
+      <p class="ayuda">Con relieve, el ancho y el fondo son el tamaño total: el centro queda plano para construir y el relieve lo rodea (se genera al abrir el mapa).</p>
       <p class="ayuda">Se guarda como un mapa propio: el Complejo y el Parqueadero no cambian. Se edita con todas las herramientas; el suelo base queda bloqueado (desbloquéalo en la jerarquía si quieres cambiarlo). Todavía no se puede jugar en él (Unity).</p></div>
       <div class="pie"><button data-a="m-no">Cancelar</button><button class="prim" data-a="m-si">Crear y abrir</button></div>`);
-    setTimeout(() => document.querySelectorAll('[data-nm]').forEach((el?) => el.addEventListener('input', () => { f[el.dataset.nm] = el.type === 'number' ? +el.value : el.value; })), 30);
+    setTimeout(() => document.querySelectorAll('[data-nm]').forEach((el?) => el.addEventListener('input', () => { f[el.dataset.nm] = el.type === 'number' ? +el.value : el.dataset.nm === 'rio' ? !!el.value : el.value; })), 30);
     const ok = (await r) === true; if (!ok) { opciones(); return null; }
     const id = crear(f); abrir(id); return id;
   }

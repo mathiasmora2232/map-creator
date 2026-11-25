@@ -501,3 +501,13 @@ dialog.medio{width:min(640px,calc(100% - 32px))}
 .pl-acc{display:flex;flex-wrap:wrap;gap:2px}
 .pl-acc .peligro{color:var(--err)}
 .plantilla .meta-pl{color:var(--fg3);font-size:12.5px;margin-top:6px}
+
+/* Conexiones (MCP) y biblioteca de modelos */
+pre.codigo{margin:6px 0 12px;padding:10px 12px;background:var(--bg2);color:var(--fg);border:1px solid var(--line);border-radius:8px;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all}
+.sub-h{font-size:14px;margin:14px 0 4px}
+.tarjeta.asset .asset-mini{display:flex;align-items:center;justify-content:center;aspect-ratio:16/10;background:var(--bg2);overflow:hidden}
+.tarjeta.asset .asset-mini img{width:100%;height:100%;object-fit:contain}
+.tarjeta.asset .asset-ic{font-size:44px;opacity:.35}
+.tarjeta.asset .desc-asset{margin:6px 0 0;font-size:13px;opacity:.8}
+.tarjeta.asset .pl-acc{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.tarjeta.asset .sel-proy{max-width:100%;font-size:12.5px;padding:4px 6px}

@@ -34,6 +34,14 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
 - Pruebas sin gastar: un servidor que imita la API (`ANTHROPIC_BASE_URL=http://127.0.0.1:<puerto>`) y `ANTHROPIC_API_KEY` falsa. No
   pruebes contra la API real sin que el dueño lo pida (cuesta dinero).
 
+## MCP y biblioteca
+
+- Servidor MCP en `/mcp` (`api/app/mcp_servidor.py`) con tokens de acceso personales (`tokens_api`, Cuenta → Conexiones). Las
+  operaciones sobre datos van en `api/app/plataforma.py` (mismo formato de documentos que el editor). Detalles en `docs/MCP.md`.
+- Una herramienta nueva: función en `plataforma.py` (o en la ruta que toque) + `@mcp.tool` en `mcp_servidor.py` + comprobación en
+  `api/pruebas/prueba_mcp.py`. Lo que necesite el motor del navegador (terreno, exportar 3D) se deja pedido para el editor.
+- Biblioteca de assets: `api/app/rutas/biblioteca.py`; los `.glb` de `api/biblioteca/` se publican al arrancar.
+
 ## Producción
 
 - Stack `map-creator` en el VPS, publicado en https://map-creator.stellarcodestudio.com (Cloudflare Tunnel).

@@ -14,7 +14,7 @@ WORKDIR /web
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY tsconfig.json ./
-COPY scripts/build.mjs ./scripts/build.mjs
+COPY scripts/build.mjs scripts/catalogo.mjs ./scripts/
 COPY sitio/src ./sitio/src
 COPY editor/tsconfig.json ./editor/tsconfig.json
 COPY editor/src ./editor/src
@@ -34,6 +34,7 @@ COPY api/app ./app
 COPY api/migraciones ./migraciones
 COPY api/scripts ./scripts
 COPY api/plantillas ./plantillas
+COPY api/biblioteca ./biblioteca
 COPY sitio /srv/sitio
 COPY --from=web /web/sitio/js /srv/sitio/js
 # Solo lo que sirve el navegador: el modo local (editor/local: servidor.py, datos_usuario…) no entra en la imagen.

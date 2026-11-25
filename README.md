@@ -28,6 +28,12 @@ correos apunten a tu dominio. En producción las variables SMTP las inyecta el p
 («rodea el mapa de colinas con un río», «pon bancas y farolas en la plaza») y usa las herramientas del editor (terreno procedural,
 catálogo, vegetación, versiones). Guarda una versión antes de los cambios grandes. Sin la variable no aparece.
 
+**MCP** (conectar Claude Code, Claude Desktop, Cursor…): Cuenta → Conexiones (MCP) → crear un token, y
+`claude mcp add --transport http map-creator https://<servidor>/mcp --header "Authorization: Bearer mc_…"`. Ver `docs/MCP.md`.
+
+**Biblioteca**: modelos GLB que se publican y se añaden a cualquier proyecto (panel → Biblioteca) y mapas publicados (Plantillas). Los
+`.glb` de `api/biblioteca/` se publican solos al arrancar: para hacer crecer la biblioteca, añade modelos ahí.
+
 **Producción** (HTTPS automático con Caddy): apunta el DNS del dominio al servidor, pon `DOMINIO=mapas.tudominio.com` y
 `OO_COOKIE_SEGURA=true` en `.env`, y:
 

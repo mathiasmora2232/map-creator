@@ -65,7 +65,7 @@
     let t = cacheTex.get(k); if (t) { cacheTex.delete(k); cacheTex.set(k, t); return t; }
     const lz = TX.lienzos(patron, { color: m.color, tam, suciedad: m.suciedad, desgaste: m.desgaste, semilla: m.semilla || 1, relieve: 1 });
     const map = new T.CanvasTexture(lz.color); map.wrapS = map.wrapT = T.RepeatWrapping; map.encoding = T.sRGBEncoding; map.anisotropy = 8; map.name = 'oo_' + patron;
-    const normal = lz.normal ? new T.CanvasTexture(lz.normal) : null; if (normal) { normal.wrapS = normal.wrapT = T.RepeatWrapping; normal.anisotropy = 8; }
+    const normal = lz.normal ? new T.CanvasTexture(lz.normal) : null; if (normal) { normal.wrapS = normal.wrapT = T.RepeatWrapping; normal.anisotropy = 8; normal.encoding = T.LinearEncoding; }
     t = { map, normal, alfa: lz.alfa, lienzo: lz.color }; cacheTex.set(k, t);
     while (cacheTex.size > 48) { const [k0, t0] = cacheTex.entries().next().value; cacheTex.delete(k0); t0.map.dispose(); if (t0.normal) t0.normal.dispose(); }
     return t;
@@ -222,7 +222,7 @@
   let rPrev = null;
   function vistaPrevia(cv?, m?) {
     try {
-      if (!rPrev) { rPrev = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); rPrev.setPixelRatio(1); rPrev.outputEncoding = T.sRGBEncoding; }
+      if (!rPrev) { rPrev = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); rPrev.setPixelRatio(1); rPrev.outputEncoding = T.sRGBEncoding; if (window.OOColor && OOColor.realista) { rPrev.toneMapping = T.ACESFilmicToneMapping; rPrev.toneMappingExposure = 1.45; } }
       rPrev.setSize(cv.width, cv.height, false);
       const sc = new T.Scene(); sc.add(new T.HemisphereLight(0xffffff, 0x666666, 0.75)); const dl = new T.DirectionalLight(0xffffff, 0.9); dl.position.set(-2, 4, 3); sc.add(dl);
       const mt = construirMaterial(m); const cubo = new T.Mesh(new T.BoxGeometry(1.6, 1.6, 1.6), mt); cubo.position.set(-1.1, 0, 0); cubo.rotation.y = 0.6;
