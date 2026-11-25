@@ -50,7 +50,8 @@ IP_CABECERA = os.environ.get("OO_IP_CABECERA", "").strip().lower()
 
 # ── Asistente (bot del editor con Claude). Sin ANTHROPIC_API_KEY queda desactivado. En producción la inyecta el panel desde la bóveda
 #    (grupo map-creator-app), como el SMTP: nunca en el código ni en el repo. ──
-ANTHROPIC_API_KEY = _sin_comillas("ANTHROPIC_API_KEY")
+# Se acepta también CLAUDE_API (el nombre que tiene en el grupo «comun» de la bóveda).
+ANTHROPIC_API_KEY = _sin_comillas("ANTHROPIC_API_KEY") or _sin_comillas("CLAUDE_API")
 ASISTENTE_ACTIVO = bool(ANTHROPIC_API_KEY)
 ASISTENTE_MODELO = os.environ.get("OO_ASISTENTE_MODELO", "claude-opus-5-5").strip() or "claude-opus-5-5"
 ASISTENTE_ESFUERZO = os.environ.get("OO_ASISTENTE_ESFUERZO", "medium").strip() or "medium"   # low | medium | high | xhigh | max

@@ -25,7 +25,8 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
 
 ## Asistente (bot con Claude)
 
-- Variable `ANTHROPIC_API_KEY` (más opcionales `OO_ASISTENTE_MODELO`, `OO_ASISTENTE_ESFUERZO`, `OO_ASISTENTE_LIMITE_HORA`). Igual que el
+- Variable `ANTHROPIC_API_KEY` o `CLAUDE_API` (así se llama en el grupo `comun` de la bóveda; `map-creator-app` tiene que
+  referenciarla, como las SMTP) (más opcionales `OO_ASISTENTE_MODELO`, `OO_ASISTENTE_ESFUERZO`, `OO_ASISTENTE_LIMITE_HORA`). Igual que el
   SMTP: **nunca en el código ni en el repo**; en producción la inyecta el panel desde la bóveda (grupo `map-creator-app`). Sin ella el
   asistente queda desactivado y el botón no aparece.
 - Servidor: `api/app/rutas/asistente.py` (prompt del sistema, herramientas, llamada a la API). Editor: `editor/src/nucleo/asistente.ts`
