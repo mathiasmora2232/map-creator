@@ -153,3 +153,33 @@ export interface RespuestaEntrada {
   verificar?: boolean;
   proyecto?: { id: string; mapa_inicial: string } | null;
 }
+
+/* Biblioteca de assets (api/app/rutas/biblioteca.py) */
+export interface AssetBiblioteca {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  categoria: string;
+  etiquetas: string[];
+  visibilidad: 'privada' | 'publica';
+  tamano_m: number[] | null;
+  escala: number;
+  mini: string | null;
+  bytes: number;
+  usos: number;
+  creado: string;
+  autor: string;
+  autor_id: string | null;
+  mio: boolean;
+  url: string;
+}
+
+/* Tokens de acceso personales (api/app/rutas/tokens.py) */
+export interface TokenApi {
+  id: string;
+  nombre: string;
+  prefijo: string;
+  creado: string;
+  ultimo_uso: string | null;
+  token?: string;
+}

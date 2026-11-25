@@ -4,6 +4,7 @@
    - Editor: cada editor/src/**.ts se transforma 1:1 a editor/js/**.js (son scripts clásicos que comparten globales window.OO*;
      index.html los carga en orden). Las declaraciones .d.ts no se emiten.
    - Motor (Rust → WebAssembly): scripts/motor.mjs deja editor/wasm/motor.wasm (se salta con --sin-motor).
+   - Catálogo para el servidor: scripts/catalogo.mjs deja editor/js/catalogo_items.json (herramientas MCP).
    Uso: node scripts/build.mjs [--watch] [--min] [--sin-motor]  */
 import * as esbuild from 'esbuild';
 import { readdirSync, rmSync, statSync } from 'node:fs';
@@ -69,4 +70,5 @@ if (watch) {
   console.log('Vigilando sitio/src y editor/src… (Ctrl+C para salir)');
 } else {
   await Promise.all([esbuild.build(sitio), esbuild.build(editor)]);
+  spawnSync(process.execPath, [join(raiz, 'scripts/catalogo.mjs')], { stdio: 'inherit' });
 }

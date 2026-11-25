@@ -192,8 +192,25 @@
       if (A.encuadrarCaja && TR.datos()) { const T0 = TR.datos(), Th = A.THREE; A.encuadrarCaja(new Th.Box3(new Th.Vector3(T0.x0, -2, T0.z0), new Th.Vector3(T0.x0 + (T0.nx - 1) * T0.paso, 10, T0.z0 + (T0.nz - 1) * T0.paso))); }
     } catch (e: any) { A.pista('No se pudo generar el relieve: ' + (e.message || e) + ' Puedes hacerlo desde Terreno → «Generar terreno…».'); pendiente = ''; }
   }
-  E.on('mapa', () => { generarSiToca(); });
+  /* Peticiones del servidor (herramienta MCP generar_terreno → terreno/gen-<mapa>): se generan aunque ya haya terreno, con versión
+     automática antes, y se borra la petición. Se mira al abrir el mapa y cada vez que cambia la colección (si el mapa está abierto). */
+  let atendiendo = false;
+  async function peticionServidor(): Promise<void> {
+    const mapa = A.mapa, id = 'gen-' + mapa, pet = mapa && A.efectivos('terreno').get(id);
+    if (!pet || !pet.generar || atendiendo) return;
+    if (window.OONube) { const p = await OONube.info; if (!p || p.rol === 'lector') return; }
+    atendiendo = true;
+    try {
+      A.pista('Generando el terreno pedido' + (pet.por ? ' por ' + pet.por : '') + '…');
+      await generar(Object.assign({}, pet.generar));
+      A.guardarCol('terreno', id, null);
+    } catch (e: any) { A.pista('No se pudo generar el terreno pedido: ' + (e.message || e)); }
+    finally { atendiendo = false; }
+  }
+  E.on('mapa', () => { generarSiToca(); setTimeout(peticionServidor, 2500); });
+  E.on('col', (c: string) => { if (c === 'terreno') setTimeout(peticionServidor, 300); });
   setTimeout(generarSiToca, 500);
+  setTimeout(peticionServidor, 3000);
 
   window.OOProcedural = { generar, abrir, ESTILOS, PREDETERMINADOS, mascara, sueloLejano, generarSiToca };
 })();
