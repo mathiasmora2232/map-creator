@@ -467,4 +467,4 @@ async def ver_avatar(uid: str, _usuario=Depends(usuario_actual)):
 @publico.get("/config")
 async def config_publica():
     """Lo que el sitio necesita saber antes de entrar (p. ej. si mostrar «Crear cuenta» o «¿Olvidaste tu contraseña?»)."""
-    return {"registro_abierto": config.REGISTRO_ABIERTO, "correo": config.CORREO_ACTIVO}
+    return {"registro_abierto": config.REGISTRO_ABIERTO, "correo": config.CORREO_ACTIVO, "asistente": config.ASISTENTE_ACTIVO}

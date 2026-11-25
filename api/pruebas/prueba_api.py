@@ -348,5 +348,18 @@ for ruta in ("/editor/local/servidor.py", "/editor/local/datos_usuario/cambios.j
     st, _, _ = ana.pedir("GET", ruta)
     comprobar(st == 404, "no se sirve " + ruta)
 
+# ── Asistente (sin llamar a la API de Claude: solo validación y permisos) ──
+st, conf = Cliente().j("GET", "/api/config")
+comprobar(st == 200 and isinstance(conf.get("asistente"), bool), "/api/config dice si hay asistente")
+st, pa = ana.j("POST", "/api/proyectos", {"nombre": "Asistente %s" % sufijo, "plantilla": "vacio"})
+st, r = Cliente().j("POST", "/api/proyectos/%s/asistente" % pa["id"], {"mensajes": [{"role": "user", "content": "hola"}]})
+comprobar(st == 401, "asistente sin sesión: 401")
+st, r = carla.j("POST", "/api/proyectos/%s/asistente" % pa["id"], {"mensajes": [{"role": "user", "content": "hola"}]})
+comprobar(st in (404, 503), "asistente de un proyecto ajeno: no")
+st, r = ana.j("POST", "/api/proyectos/%s/asistente" % pa["id"], {"mensajes": []})
+comprobar(st == (400 if conf.get("asistente") else 503), "asistente: conversación vacía rechazada (o 503 sin clave)")
+st, r = ana.j("POST", "/api/proyectos/%s/asistente" % pa["id"], {"mensajes": [{"role": "assistant", "content": "x"}]})
+comprobar(st == (400 if conf.get("asistente") else 503), "asistente: tiene que empezar el usuario")
+
 print("fallos=%d" % cliente.fallos)
 sys.exit(1 if cliente.fallos else 0)

@@ -7,10 +7,12 @@
    Uso: node scripts/build.mjs [--watch] [--min] [--sin-motor]  */
 import * as esbuild from 'esbuild';
 import { readdirSync, rmSync, statSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const raiz = new URL('..', import.meta.url).pathname;
+// fileURLToPath y no .pathname: en Windows .pathname da «/C:/…» y join() lo convierte en «C:\C:\…».
+const raiz = fileURLToPath(new URL('..', import.meta.url));
 const watch = process.argv.includes('--watch');
 const minify = process.argv.includes('--min');
 const conMotor = !process.argv.includes('--sin-motor');

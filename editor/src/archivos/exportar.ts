@@ -143,8 +143,14 @@
     if (opts && opts.todo && window.OOTerreno) { const t = OOTerreno.mallaExport(); if (t) raiz.add(t); }
     A.pista('Exportando ' + A.fmtInt(nPiezas) + ' piezas a glTF…'); await new Promise<any>((r?) => setTimeout(r, 30));
     raiz.updateMatrixWorld(true);
-    const buf = await new Promise<any>((ok?, mal?) => { try { ex.parse(raiz, ok, mal, { binary: true, onlyVisible: false, maxTextureSize: 2048 }); } catch (e) { mal(e); } });
-    return { buf, raiz, nPiezas };
+    /* (motor) con el motor de Rust si la escena no trae nada que solo sepa escribir GLTFExporter (texturas, huesos…) */
+    let buf = null, motor = false;
+    if (window.OOGlbMotor && window.OOMotor && await OOMotor.listo) {
+      try { buf = OOGlbMotor.exportar(raiz); } catch (e) { console.warn('GLB con el motor:', e); buf = null; }
+      motor = !!buf; if (!buf) console.info('GLB con GLTFExporter: ' + OOGlbMotor.motivo());
+    }
+    if (!buf) buf = await new Promise<any>((ok?, mal?) => { try { ex.parse(raiz, ok, mal, { binary: true, onlyVisible: false, maxTextureSize: 2048 }); } catch (e) { mal(e); } });
+    return { buf, raiz, nPiezas, motor };
   }
   async function exportarGLB(keys?, nombre?, zona?) {
     const todo = !(keys && keys.length); keys = todo ? todasLasClaves() : keys; const r = await glbDe(keys, { zona, todo }); if (!r) return null;

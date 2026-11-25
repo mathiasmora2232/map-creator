@@ -40,6 +40,12 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-}
+      # Asistente (bot con Claude): sin ANTHROPIC_API_KEY queda desactivado. En producción la inyecta el panel desde la bóveda.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_API: ${CLAUDE_API:-}
+      OO_ASISTENTE_MODELO: ${OO_ASISTENTE_MODELO:-claude-opus-5-5}
+      OO_ASISTENTE_ESFUERZO: ${OO_ASISTENTE_ESFUERZO:-medium}
+      OO_ASISTENTE_LIMITE_HORA: ${OO_ASISTENTE_LIMITE_HORA:-120}
       OO_MAX_SUBIDA_MB: ${OO_MAX_SUBIDA_MB:-50}
       OO_MAX_PROYECTOS: ${OO_MAX_PROYECTOS:-50}
     volumes:

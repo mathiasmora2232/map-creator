@@ -15,33 +15,46 @@
   if (!MAT.arena) MAT.arena = { n: 'Arena', c: '#d8c49a', patron: 'moteado' };
   if (!MAT.grava) MAT.grava = { n: 'Grava', c: '#9a958c', patron: 'moteado' };
   if (!MAT.marmol) MAT.marmol = { n: 'Mármol', c: '#e9e6e0', patron: 'baldosa' };
-  const PALETA = ['cesped', 'tierra', 'arena', 'grava', 'asfalto', 'concreto', 'adoquin', 'baldosa', 'madera', 'marmol', 'pintura'];
+  /* (procedural) zonas del terreno generado */
+  if (!MAT.agua) MAT.agua = { n: 'Agua', c: '#3f78a8', patron: 'liso' };
+  if (!MAT.bosque) MAT.bosque = { n: 'Bosque', c: '#4a7236', patron: 'moteado' };
+  if (!MAT.roca) MAT.roca = { n: 'Roca', c: '#8a857c', patron: 'moteado' };
+  if (!MAT.nieve) MAT.nieve = { n: 'Nieve', c: '#eef2f5', patron: 'liso' };
+  const PALETA = ['cesped', 'tierra', 'arena', 'grava', 'asfalto', 'concreto', 'adoquin', 'baldosa', 'madera', 'marmol', 'pintura', 'agua', 'bosque', 'roca', 'nieve']; /* solo se añade al final: los terrenos guardados llevan su propia paleta */
   const BASE_Y = 0.025; // justo encima del suelo del mapa; solo se ve donde se ha tocado (pintura ≠ 255 o altura ≠ 0)
   const SIN = 255;
-  let T0 = null, malla = null, docId = null, deshacer = [];
+  let T0 = null, malla = null, aguaMalla = null, docId = null, deshacer = [];
   let modo = 'subir', radio = 6, fuerza = 1, alturaObj = 0, pintarCon = 'tierra', ancho = 6, est = null, suavidad = 1; /* (2.1 pro f5) suavidad: 0 = borde duro, 1 = caída desde el centro */
   const caida = (d?, r?) => { const s = Math.max(0.01, Math.min(1, suavidad)), r0 = r * (1 - s); return d <= r0 ? 1 : Math.pow(Math.cos(Math.min(1, (d - r0) / (r - r0 || 1e-6)) * Math.PI / 2), 2); };
   const b64 = (arr?) => { const u = new Uint8Array(arr.buffer, arr.byteOffset, arr.byteLength); let s = ''; for (let i = 0; i < u.length; i += 32768) s += String.fromCharCode.apply(null, u.subarray(i, i + 32768)); return btoa(s); };
   const deb64 = (s?, Tipo?) => { const bin = atob(s || ''); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Tipo(u.buffer); };
   function paletaColor(clave?) { if (String(clave).startsWith('u:')) { const m = A.efectivos('materiales').get(clave.slice(2)); return (m && m.color) || '#999999'; } return (MAT[clave] || MAT.cesped).c; }
   /* ---------- crear o cargar ---------- */
-  function nuevoTerreno() {
-    const L = A.limitesMapa, mg = 80, x0 = Math.floor(L.min.x - mg), z0 = Math.floor(L.min.z - mg), w = L.max.x - L.min.x + 2 * mg, h = L.max.z - L.min.z + 2 * mg;
+  function nuevoTerreno(margen?) {
+    const L = A.limitesMapa, mg = Math.max(10, Math.min(1000, +margen || 80)), x0 = Math.floor(L.min.x - mg), z0 = Math.floor(L.min.z - mg), w = L.max.x - L.min.x + 2 * mg, h = L.max.z - L.min.z + 2 * mg;
     const paso = Math.max(2, Math.ceil(Math.max(w, h) / 240)), nx = Math.ceil(w / paso) + 1, nz = Math.ceil(h / paso) + 1;
-    return { x0, z0, paso, nx, nz, alt: new Float32Array(nx * nz), pin: new Uint8Array(nx * nz).fill(SIN), paleta: PALETA.slice() };
+    return { x0, z0, paso, nx, nz, alt: new Float32Array(nx * nz), pin: new Uint8Array(nx * nz).fill(SIN), paleta: PALETA.slice(), agua: null };
   }
   function cargar() {
     docId = 'hm-' + A.mapa; const d = A.efectivos('terreno').get(docId);
     if (!d) { T0 = null; quitarMalla(); return; }
     const cm = deb64(d.alturas, Int16Array), pin = deb64(d.pintura, Uint8Array);
-    T0 = { x0: d.x0, z0: d.z0, paso: d.paso, nx: d.nx, nz: d.nz, alt: Float32Array.from(cm, (v: any) => v / 100), pin: pin.length === d.nx * d.nz ? pin : new Uint8Array(d.nx * d.nz).fill(SIN), paleta: Array.isArray(d.paleta) ? d.paleta : PALETA.slice() };
+    T0 = { x0: d.x0, z0: d.z0, paso: d.paso, nx: d.nx, nz: d.nz, alt: Float32Array.from(cm, (v: any) => v / 100), pin: pin.length === d.nx * d.nz ? pin : new Uint8Array(d.nx * d.nz).fill(SIN), paleta: Array.isArray(d.paleta) ? d.paleta : PALETA.slice(), agua: typeof d.agua === 'number' ? d.agua : null };
     construirMalla();
   }
   function guardar() {
     if (!T0) return; const act = A.ahora(); T0.act = act; const cm = new Int16Array(T0.alt.length); for (let i = 0; i < cm.length; i++) cm[i] = Math.max(-32000, Math.min(32000, Math.round(T0.alt[i] * 100)));
-    A.guardarCol('terreno', docId, { mapa: A.mapa, x0: T0.x0, z0: T0.z0, paso: T0.paso, nx: T0.nx, nz: T0.nz, alturas: b64(cm), pintura: b64(T0.pin), paleta: T0.paleta, base_y: BASE_Y, actualizado: act });
+    A.guardarCol('terreno', docId, { mapa: A.mapa, x0: T0.x0, z0: T0.z0, paso: T0.paso, nx: T0.nx, nz: T0.nz, alturas: b64(cm), pintura: b64(T0.pin), paleta: T0.paleta, base_y: BASE_Y, agua: T0.agua == null ? null : T0.agua, actualizado: act });
   }
-  function quitarMalla() { if (malla) { A.scene.remove(malla); malla.geometry.dispose(); malla.material.dispose(); malla = null; A.marcar(); } }
+  function quitarMalla() { quitarAgua(); if (malla) { A.scene.remove(malla); malla.geometry.dispose(); malla.material.dispose(); malla = null; A.marcar(); } }
+  /* (procedural) superficie del agua: un plano a la altura del agua que cubre el terreno; donde el terreno está más alto lo tapa */
+  function quitarAgua() { if (aguaMalla) { A.scene.remove(aguaMalla); aguaMalla.geometry.dispose(); aguaMalla.material.dispose(); aguaMalla = null; A.marcar(); } }
+  function geoAgua() { const { nx, nz, paso } = T0, g = new T.PlaneGeometry((nx - 1) * paso, (nz - 1) * paso); g.rotateX(-Math.PI / 2); g.translate(T0.x0 + (nx - 1) * paso / 2, BASE_Y + T0.agua, T0.z0 + (nz - 1) * paso / 2); return g; }
+  function ponerAgua() {
+    quitarAgua(); if (!T0 || T0.agua == null) return;
+    aguaMalla = new T.Mesh(geoAgua(), new T.MeshStandardMaterial({ color: MAT.agua.c, transparent: true, opacity: 0.78, roughness: 0.15, metalness: 0.1, clippingPlanes: [A.clip] }));
+    aguaMalla.name = 'agua'; aguaMalla.receiveShadow = true; aguaMalla.renderOrder = 1; A.scene.add(aguaMalla); A.marcar();
+  }
   function construirMalla() {
     quitarMalla(); if (!T0) return;
     const { nx, nz, paso } = T0, g = new T.PlaneGeometry((nx - 1) * paso, (nz - 1) * paso, nx - 1, nz - 1); g.rotateX(-Math.PI / 2);
@@ -49,7 +62,7 @@
     g.setAttribute('color', new T.BufferAttribute(new Float32Array(nx * nz * 4), 4));
     malla = new T.Mesh(g, new T.MeshLambertMaterial({ vertexColors: true, alphaTest: 0.5, clippingPlanes: [A.clip], polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
     malla.name = 'terreno'; malla.receiveShadow = true; malla.castShadow = true; A.scene.add(malla);
-    refrescar(0, 0, nx - 1, nz - 1);
+    refrescar(0, 0, nx - 1, nz - 1); ponerAgua();
   }
   const col = new T.Color();
   function refrescar(i0?, j0?, i1?, j1?) {
@@ -96,8 +109,8 @@
     }
     refrescar(0, 0, nx - 1, nz - 1);
   }
-  function apilarDeshacer() { if (!T0) return; deshacer.push({ alt: T0.alt.slice(), pin: T0.pin.slice(), paleta: T0.paleta.slice() }); if (deshacer.length > 15) deshacer.shift(); }
-  function deshacerTerreno() { const s = deshacer.pop(); if (!s || !T0) { A.pista('No hay nada que deshacer en el terreno.'); return; } T0.alt = s.alt; T0.pin = s.pin; T0.paleta = s.paleta; refrescar(0, 0, T0.nx - 1, T0.nz - 1); guardar(); A.pista('Terreno: deshecho el último trazo.'); }
+  function apilarDeshacer() { if (!T0) return; deshacer.push({ alt: T0.alt.slice(), pin: T0.pin.slice(), paleta: T0.paleta.slice(), agua: T0.agua, rejilla: [T0.x0, T0.z0, T0.paso, T0.nx, T0.nz] }); if (deshacer.length > 15) deshacer.shift(); }
+  function deshacerTerreno() { const s = deshacer.pop(); if (!s || !T0) { A.pista('No hay nada que deshacer en el terreno.'); return; } const cambia = s.rejilla && s.rejilla.join() !== [T0.x0, T0.z0, T0.paso, T0.nx, T0.nz].join(); if (s.rejilla) [T0.x0, T0.z0, T0.paso, T0.nx, T0.nz] = s.rejilla; T0.alt = s.alt; T0.pin = s.pin; T0.paleta = s.paleta; T0.agua = s.agua === undefined ? T0.agua : s.agua; if (cambia) construirMalla(); else { refrescar(0, 0, T0.nx - 1, T0.nz - 1); ponerAgua(); } guardar(); A.pista('Terreno: deshecho el último trazo.'); }
   /* marcador del pincel */
   const anillo = new T.Mesh(new T.RingGeometry(0.94, 1, 48), new T.MeshBasicMaterial({ color: 0xf07a1a, depthTest: false, transparent: true, opacity: 0.9, side: T.DoubleSide })); anillo.rotation.x = -Math.PI / 2; anillo.renderOrder = 47; anillo.visible = false; A.scene.add(anillo);
   const lineaPrev = new T.Line(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0xf07a1a, depthTest: false })); lineaPrev.renderOrder = 47; lineaPrev.frustumCulled = false; A.scene.add(lineaPrev); lineaPrev.visible = false;
@@ -124,7 +137,8 @@
         ${modo === 'rampa' ? `<label class="campo"><span>Ancho (m)</span><input type="number" data-ter="ancho" step="0.5" min="1" value="${ancho}"></label><label class="campo"><span>Altura inicio</span><input type="number" data-ter="hA" step="0.1" placeholder="la del terreno"></label><label class="campo"><span>Altura final</span><input type="number" data-ter="hB" step="0.1" placeholder="la del terreno"></label>` : ''}</div>
         ${modo === 'pintar' || modo === 'poligono' ? `<div class="muestras">${mats.map((k?) => `<button class="muestra${k === pintarCon ? ' on' : ''}" data-ter-mat="${esc(k)}"><span class="sw" style="background:${esc(paletaColor(k))}"></span><span>${esc(k.startsWith('u:') ? (A.efectivos('materiales').get(k.slice(2)) || {}).nombre : MAT[k].n)}</span></button>`).join('')}</div><p class="ayuda">Más materiales: pestaña Material → «Nuevo» (con textura importada).</p>` : ''}
         <p class="ayuda">${modo === 'poligono' ? 'Clic en cada esquina; clic en el primer punto o Enter para cerrar.' : modo === 'rampa' ? 'Clic en el inicio y clic en el final de la rampa.' : modo === 'aplanar' ? 'Alt+clic toma la altura del terreno bajo el ratón.' : 'Mantén pulsado y arrastra.'}</p>
-        <div class="fila"><button data-ter-acc="deshacer">${svg('deshacer')}Deshacer trazo</button><button data-ter-acc="alturas">${svg('bajar')}Alturas (PNG/RAW)</button><button class="peligro" data-ter-acc="borrar">Borrar terreno</button></div>`;
+        <div class="fila"><button data-ter-acc="deshacer">${svg('deshacer')}Deshacer trazo</button><button data-ter-acc="alturas">${svg('bajar')}Alturas (PNG/RAW)</button><button class="peligro" data-ter-acc="borrar">Borrar terreno</button></div>
+        <div class="fila"><button class="prim" data-ter-acc="procedural">${svg('terreno')}Generar terreno…</button></div>`;
     },
     down: (e?) => {
       const p = punto(e); if (!p) return;
@@ -157,14 +171,16 @@
     const a = e.target.closest('[data-ter-acc]'); if (!a) return;
     if (a.dataset.terAcc === 'deshacer') deshacerTerreno();
     else if (a.dataset.terAcc === 'alturas') exportarAlturas();
+    else if (a.dataset.terAcc === 'procedural') { if (window.OOProcedural) OOProcedural.abrir(); }
     else if (a.dataset.terAcc === 'borrar' && await A.confirmar('¿Borrar el terreno?', 'Se quitan las alturas y la pintura del terreno de este mapa (los suelos con forma se quedan).', 'Borrar')) { A.guardarCol('terreno', docId, null); T0 = null; quitarMalla(); deshacer = []; }
   });
   document.addEventListener('keydown', (e?) => { if (A.herramienta === 'terreno' && modo === 'poligono' && e.key === 'Enter' && est && est.pts.length >= 3 && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) { crearSueloPoligono(est.pts); est = null; polPrev([]); } });
   const menuT = [{ h: 'terreno', modo: 'pintar', n: 'Pintar suelo (pincel)', ic: 'pintar' }, { h: 'terreno', modo: 'poligono', n: 'Pintar suelo (polígono)', ic: 'zona' }, { h: 'terreno', modo: 'subir', n: 'Subir (montañas, lomas)', ic: 'terreno' }, { h: 'terreno', modo: 'bajar', n: 'Bajar', ic: 'terreno' }, { h: 'terreno', modo: 'aplanar', n: 'Aplanar a una altura', ic: 'terreno' }, { h: 'terreno', modo: 'suavizar', n: 'Suavizar', ic: 'terreno' }, { h: 'terreno', modo: 'zanja', n: 'Zanja o hueco', ic: 'terreno' }, { h: 'terreno', modo: 'rampa', n: 'Rampa o talud', ic: 'terreno' }];
   menuT.forEach((it?) => E.agregarHerramienta('terreno', it));
   /* ---------- exportación ---------- */
-  function mallaExport() { if (!malla) return null; const m = new T.Mesh(malla.geometry.clone(), new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, alphaTest: 0.5 })); m.name = 'Terreno'; m.userData = { oo_terreno: { x0: T0.x0, z0: T0.z0, paso: T0.paso, nx: T0.nx, nz: T0.nz, base_y: BASE_Y, paleta: T0.paleta } }; return m; }
-  function terrenoJSON() { if (!T0) return null; return { x0: T0.x0, z0: T0.z0, paso: T0.paso, nx: T0.nx, nz: T0.nz, base_y: BASE_Y, orden: 'filas de z (sur creciente), cada fila de x (este creciente)', alturas: Array.from(T0.alt, (v: any) => Math.round(v * 100) / 100), paleta: T0.paleta, pintura: Array.from(T0.pin), pintura_sin: SIN, nota: 'pintura = índice en paleta; 255 = sin tocar (no se dibuja si además la altura es 0)' }; }
+  function mallaExport() { if (!malla) return null; const m = new T.Mesh(malla.geometry.clone(), new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, alphaTest: 0.5 })); m.name = 'Terreno'; m.userData = { oo_terreno: { x0: T0.x0, z0: T0.z0, paso: T0.paso, nx: T0.nx, nz: T0.nz, base_y: BASE_Y, paleta: T0.paleta, agua: T0.agua } };
+    if (T0.agua != null) { const w = new T.Mesh(geoAgua(), new T.MeshStandardMaterial({ color: MAT.agua.c, transparent: true, opacity: 0.78, roughness: 0.15, metalness: 0.1 })); w.name = 'Agua'; m.add(w); } return m; }
+  function terrenoJSON() { if (!T0) return null; return { x0: T0.x0, z0: T0.z0, paso: T0.paso, nx: T0.nx, nz: T0.nz, base_y: BASE_Y, agua: T0.agua, orden: 'filas de z (sur creciente), cada fila de x (este creciente)', alturas: Array.from(T0.alt, (v: any) => Math.round(v * 100) / 100), paleta: T0.paleta, pintura: Array.from(T0.pin), pintura_sin: SIN, nota: 'pintura = índice en paleta; 255 = sin tocar (no se dibuja si además la altura es 0)' }; }
   function descargar(datos?, nombre?, tipo?) { const blob = datos instanceof Blob ? datos : new Blob([datos], { type: tipo || 'application/octet-stream' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
   /* PNG de 8 bits (min-max), RAW de 16 bits cuadrado (257/513/1025, como pide Unity) y JSON con la escala */
   function alturas() {
@@ -188,5 +204,10 @@
   /* (2.1 pro f5) para terreno_pro.js y las pruebas: pincel con parámetros, refresco de una zona, guardado y deshacer del terreno */
   const pincelCon = (p?, dt?, o?) => { const g = { modo, radio, fuerza, suavidad, alturaObj }; o = o || {}; if (o.modo) modo = o.modo; if (o.radio) radio = o.radio; if (o.fuerza) fuerza = o.fuerza; if (o.suavidad != null) suavidad = o.suavidad; if (o.alturaObj != null) alturaObj = o.alturaObj; try { pincel(p, dt); } finally { ({ modo, radio, fuerza, suavidad, alturaObj } = g); } };
   const parametros = () => ({ modo, radio, fuerza, suavidad, alturaObj, pintarCon });
-  window.OOTerreno = { mallaExport, terrenoJSON, alturas, exportarAlturas, alturaEn, datos: () => T0, cargar, pincel: pincelCon, caida, parametros, refrescar: () => { if (T0) refrescar(0, 0, T0.nx - 1, T0.nz - 1); }, refrescarZona: (i0?, j0?, i1?, j1?) => refrescar(i0, j0, i1, j1), guardar, asegurar, apilarDeshacer, deshacer: deshacerTerreno, rampa };
+  /* (procedural) rejilla nueva alrededor del mapa con otro margen (borra alturas y pintura; se deshace con «Deshacer trazo»),
+     índice de un material en la paleta (lo añade si falta) y nivel del agua (null = sin agua) */
+  function rehacer(margen?) { const agua = T0 ? T0.agua : null; T0 = nuevoTerreno(margen); T0.agua = agua; docId = 'hm-' + A.mapa; construirMalla(); return T0; }
+  function indicePaleta(clave?) { asegurar(); let i = T0.paleta.indexOf(clave); if (i < 0) { if (T0.paleta.length >= SIN) return 0; T0.paleta.push(clave); i = T0.paleta.length - 1; } return i; }
+  function ponerNivelAgua(n?) { if (!T0) return; T0.agua = n == null || !isFinite(n) ? null : +n; ponerAgua(); }
+  window.OOTerreno = { mallaExport, terrenoJSON, alturas, exportarAlturas, alturaEn, datos: () => T0, cargar, pincel: pincelCon, caida, parametros, refrescar: () => { if (T0) refrescar(0, 0, T0.nx - 1, T0.nz - 1); }, refrescarZona: (i0?, j0?, i1?, j1?) => refrescar(i0, j0, i1, j1), guardar, asegurar, apilarDeshacer, deshacer: deshacerTerreno, rampa, rehacer, indicePaleta, ponerNivelAgua, construir: () => construirMalla(), BASE_Y };
 })();

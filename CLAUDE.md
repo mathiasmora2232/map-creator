@@ -23,6 +23,17 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
   `env_file: /root/.config/panel-vault/map-creator-app.env` en el compose de producción.
 - Para cambiar el SMTP no se toca el código: se cambia en el panel (Secretos → `comun`) y se redespliega.
 
+## Asistente (bot con Claude)
+
+- Variable `ANTHROPIC_API_KEY` o `CLAUDE_API` (así se llama en el grupo `comun` de la bóveda; `map-creator-app` tiene que
+  referenciarla, como las SMTP) (más opcionales `OO_ASISTENTE_MODELO`, `OO_ASISTENTE_ESFUERZO`, `OO_ASISTENTE_LIMITE_HORA`). Igual que el
+  SMTP: **nunca en el código ni en el repo**; en producción la inyecta el panel desde la bóveda (grupo `map-creator-app`). Sin ella el
+  asistente queda desactivado y el botón no aparece.
+- Servidor: `api/app/rutas/asistente.py` (prompt del sistema, herramientas, llamada a la API). Editor: `editor/src/nucleo/asistente.ts`
+  (panel, bucle y ejecución de las herramientas en el mapa).
+- Pruebas sin gastar: un servidor que imita la API (`ANTHROPIC_BASE_URL=http://127.0.0.1:<puerto>`) y `ANTHROPIC_API_KEY` falsa. No
+  pruebes contra la API real sin que el dueño lo pida (cuesta dinero).
+
 ## Producción
 
 - Stack `map-creator` en el VPS, publicado en https://map-creator.stellarcodestudio.com (Cloudflare Tunnel).
@@ -54,5 +65,6 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
 
 - `motor/` se compila a `editor/wasm/motor.wasm` (generado, fuera de git) con `npm run build`. Sin Rust instalado en el equipo se usa
   un contenedor `rust:1-alpine` con podman; no instales rustup en la PC del dueño sin preguntar.
-- Toda función del motor necesita su versión en TypeScript de respaldo y pruebas en Rust (`cargo test`). Si cambias la interfaz, sube
+- Lo que el motor acelera de algo que ya existía necesita su versión en TypeScript de respaldo; una función nueva que solo existe en el
+  motor (p. ej. el terreno procedural) puede no tenerla, pero tiene que avisar sin romper si el motor no carga. Siempre con pruebas en Rust (`cargo test`). Si cambias la interfaz, sube
   `VERSION` en `motor/src/lib.rs` y `VERSION_INTERFAZ` en `editor/src/nucleo/motor.ts`.

@@ -51,10 +51,41 @@ no sabe si está en local o en la nube.
   wasm-bindgen. `editor/src/nucleo/motor.ts` carga `editor/wasm/motor.wasm` en segundo plano, copia los bytes a la memoria del
   módulo, llama y libera. Si no hay WebAssembly, el archivo falta o la versión de la interfaz no coincide, devuelve `null` y quien
   llama usa la versión en TypeScript.
-- Qué hace hoy: el CRC-32 de los ZIP de exportación (Unity, Godot), «slicing-by-8». 20 MB: 418 ms en JS → 50 ms.
+- Qué hace hoy:
+  - CRC-32 de los ZIP de exportación (Unity, Godot), «slicing-by-8». 20 MB: 418 ms en JS → 50 ms.
+  - Escritor de GLB (`motor/src/glb.rs` + `editor/src/archivos/glb_motor.ts`): el editor recorre la escena y la empaqueta (formato
+    «OOGB», documentado en glb.rs); Rust escribe el JSON, el binario (min/max, normales normalizadas) y el contenedor. Si la escena
+    trae texturas, huesos, morph, instancias u otros materiales o luces, se usa GLTFExporter. Con 29 000 mallas: ~105 ms frente a
+    130–220 ms de GLTFExporter, mismo resultado al recargarlo con GLTFLoader (mallas, vértices, luces, materiales y extras).
+  - Terreno procedural (`motor/src/procedural.rs` + `editor/src/mapa/terreno_procedural.ts`, menú Terreno → «Generar terreno…»):
+    ruido de gradiente con semilla (fBm, crestas, deformación del dominio) en seis estilos (llanura, colinas, montañas, valle, isla,
+    dunas) y río opcional; erosión hidráulica por gotas; zonas (agua, arena, césped, bosque, tierra, roca, nieve) por altura,
+    pendiente, humedad y distancia al agua; puntos de vegetación por zona. Determinista por semilla. Lo construido del mapa (suelo base
+    `limitesMapa`, objetos añadidos y piezas de tamaño normal) queda protegido y el relieve sube con una transición suave. El agua es un
+    plano a `T0.agua` (guardado en el documento del terreno, exportado en el GLB como «Agua» y en el JSON). ~100 ms para 35 000 celdas.
+    Es una función nueva que solo existe en el motor: sin WebAssembly avisa y no genera.
 - Criterio para mover algo al motor: que esté medido como lento y sea cálculo puro sobre bytes o números (no objetos de three.js).
-  Candidatos: escribir el GLB, triangular techos y huecos, el terreno.
+  Candidatos: triangular techos y huecos, el terreno. Armar la escena de three.js (lo más lento de exportar ahora) no se puede mover.
 - Imagen de Docker: etapa `rust:1-alpine` que pasa `cargo test` y compila a `wasm32-unknown-unknown`.
+
+## Asistente del editor (Claude)
+
+- El bucle de herramientas lo lleva el navegador: `nucleo/asistente.ts` manda la conversación a `POST /api/proyectos/<p>/asistente`;
+  el servidor (`rutas/asistente.py`) llama a la API de Claude (SDK `anthropic`, `client.beta.messages.create`, modelo
+  `claude-opus-5-5`, esfuerzo `medium`, caché del prompt, `fallbacks: "default"` por si el modelo rechaza la petición) con el
+  prompt del sistema y 8 herramientas, y devuelve la respuesta. Si hay `tool_use`, el editor ejecuta las herramientas sobre el mapa
+  y vuelve a llamar con los `tool_result`. La API key no sale del servidor; el estado del mapa no sale del editor.
+- Herramientas: estado_mapa, buscar_catalogo, generar_terreno (OOProcedural), colocar_objetos, pintar_vegetacion, borrar_objetos
+  (solo objetos añadidos), guardar_version, deshacer. Cada colocación o borrado es un paso de deshacer con etiqueta «Asistente: …».
+- No se usa Managed Agents porque las herramientas tienen que ejecutarse en el editor del usuario, no en un contenedor remoto.
+- La conversación se reenvía sin tocar (los bloques de razonamiento con su firma) y vive en sessionStorage por proyecto.
+- Solo editores y dueños; límite de llamadas por usuario y hora (en memoria).
+
+## Versiones del mapa
+
+- `nucleo/productividad.ts`: una versión guarda los cambios de objetos del mapa y (desde el formato 2) sus colecciones propias:
+  terreno, grupos, zonas, guías, calcos, etiquetas y reglas. Restaurar devuelve todo, también el terreno. Se guarda una automática
+  antes de generar terreno y el asistente guarda una antes de cambios grandes.
 
 ## Esquema de base de datos
 

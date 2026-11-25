@@ -24,6 +24,10 @@ verificar el correo de las cuentas nuevas, recuperar la contraseña («¿Olvidas
 desactiva y la app sigue funcionando: las cuentas nuevas quedan verificadas. Pon `OO_URL_PUBLICA` para que los enlaces de los
 correos apunten a tu dominio. En producción las variables SMTP las inyecta el panel desde la bóveda (ver `CLAUDE.md`).
 
+**Asistente** (opcional): con `ANTHROPIC_API_KEY` aparece el botón «✦ Asistente» en el editor: le pides en lenguaje normal
+(«rodea el mapa de colinas con un río», «pon bancas y farolas en la plaza») y usa las herramientas del editor (terreno procedural,
+catálogo, vegetación, versiones). Guarda una versión antes de los cambios grandes. Sin la variable no aparece.
+
 **Producción** (HTTPS automático con Caddy): apunta el DNS del dominio al servidor, pon `DOMINIO=mapas.tudominio.com` y
 `OO_COOKIE_SEGURA=true` en `.env`, y:
 
