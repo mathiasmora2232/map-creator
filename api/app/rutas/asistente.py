@@ -33,7 +33,7 @@ para encontrar el identificador de un objeto antes de colocarlo.
 
 Antes de un cambio grande (generar terreno, colocar muchos objetos, borrar) guarda una versión con un nombre que diga qué vas a hacer, \
 para que el usuario pueda volver atrás. Si una petición es ambigua y el cambio es grande, pregunta antes. Cuando termines, cuenta en \
-pocas frases qué hiciste y cómo deshacerlo. Responde en el idioma del usuario (normalmente español)."""
+pocas frases qué hiciste y cómo deshacerlo. Escribe todo en el idioma del usuario (normalmente español), también los comentarios breves entre herramientas."""
 
 N = {"type": "number"}
 HERRAMIENTAS = [

@@ -112,7 +112,7 @@
   #asis .asis-msjs{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.5}
   #asis .m-yo{align-self:flex-end;background:var(--acc);color:var(--acc-fg,#fff);padding:8px 11px;border-radius:12px 12px 2px 12px;max-width:85%;white-space:pre-wrap}
   #asis .m-ia{align-self:flex-start;background:var(--panel2);padding:8px 11px;border-radius:12px 12px 12px 2px;max-width:92%}
-  #asis .m-ia p{margin:0 0 6px}#asis .m-ia p:last-child{margin:0}
+  #asis .m-ia p{margin:0 0 6px}#asis .m-ia p:last-child{margin:0}#asis .m-ia ul{margin:0 0 6px;padding-left:18px}#asis .m-ia li{margin:2px 0}
   #asis .m-her{align-self:flex-start;font-size:12px;color:var(--fg2);display:flex;gap:6px;align-items:center}
   #asis .m-her.ok::before{content:'✓';color:var(--ok)}#asis .m-her.err::before{content:'✕';color:var(--err)}#asis .m-her.va::before{content:'…'}
   #asis .m-err{align-self:stretch;color:var(--err);font-size:12.5px;border:1px solid var(--err);border-radius:8px;padding:6px 9px}
@@ -132,7 +132,14 @@
   const msjs = caja.querySelector('.asis-msjs') as HTMLElement, form = caja.querySelector('form') as HTMLFormElement, ta = caja.querySelector('textarea') as HTMLTextAreaElement, bEnviar = form.querySelector('button') as HTMLButtonElement;
   const SUGERENCIAS = ['Rodea el mapa de colinas con un río y bosque', 'Haz una isla tropical con playa y palmeras alrededor del mapa', 'Montañas nevadas al norte y un lago', '¿Qué hay en este mapa?'];
 
-  const formato = (t: string): string => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').split(/\n{2,}/).map((p) => '<p>' + p.replace(/\n/g, '<br>') + '</p>').join('');
+  /* Markdown mínimo: párrafos, **negrita** y listas con «- » o «1. » */
+  const formato = (t: string): string => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').split(/\n{2,}/).map((p) => {
+    const ls = p.split('\n'), lista = ls.length > 0 && ls.every((l) => /^\s*(?:[-*•]|\d+\.)\s+/.test(l));
+    if (lista) return '<ul>' + ls.map((l) => '<li>' + l.replace(/^\s*(?:[-*•]|\d+\.)\s+/, '') + '</li>').join('') + '</ul>';
+    const i = ls.findIndex((l) => /^\s*(?:[-*•]|\d+\.)\s+/.test(l));
+    if (i > 0 && ls.slice(i).every((l) => /^\s*(?:[-*•]|\d+\.)\s+/.test(l))) return '<p>' + ls.slice(0, i).join('<br>') + '</p><ul>' + ls.slice(i).map((l) => '<li>' + l.replace(/^\s*(?:[-*•]|\d+\.)\s+/, '') + '</li>').join('') + '</ul>';
+    return '<p>' + ls.join('<br>') + '</p>';
+  }).join('');
   const abajo = (): void => { msjs.scrollTop = msjs.scrollHeight; };
   function añadir(clase: string, html: string): HTMLElement { const d = document.createElement('div'); d.className = clase; d.innerHTML = html; msjs.appendChild(d); abajo(); return d; }
   function pintarTodo(): void {
