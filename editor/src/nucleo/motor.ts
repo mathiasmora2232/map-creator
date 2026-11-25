@@ -1,9 +1,10 @@
 /* Puente con el motor de Rust (motor/ → editor/wasm/motor.wasm). Carga el .wasm en segundo plano; mientras no esté (o si falla,
    o en un navegador sin WebAssembly) cada función devuelve null y quien la llama usa su versión en TypeScript.
-   window.OOMotor = { listo: Promise<boolean>, activo(), crc32(Uint8Array) → number | null, glb(paquete) → Uint8Array | null, version } */
+   window.OOMotor = { listo: Promise<boolean>, activo(), crc32(Uint8Array) → number | null, glb(paquete) → Uint8Array | null,
+   terreno(params Float64Array(18), mascara Uint8Array) → { alturas, zonas, plantas } | null, version } */
 (function () {
   'use strict';
-  const VERSION_INTERFAZ = 2;
+  const VERSION_INTERFAZ = 3;
   let ex: any = null;
   const yo = document.querySelector('script[src*="nucleo/motor.js"]') as HTMLScriptElement | null;
   const v = yo && /[?&]v=(\w+)/.exec(yo.src);
@@ -43,5 +44,20 @@
     } catch (err) { console.warn('motor.wasm glb:', err); return null; }
   }
 
-  window.OOMotor = { listo, activo: () => !!ex, crc32, glb, version: VERSION_INTERFAZ };
+  /* Terreno procedural (motor/src/procedural.rs): parámetros en el orden de procedural::parametros_de y máscara de celdas protegidas. */
+  function terreno(params: Float64Array, mascara: Uint8Array): { alturas: Float32Array; zonas: Uint8Array; plantas: Float32Array } | null {
+    if (!ex) return null;
+    const np = params.length, pp = ex.reservar(np * 8), nm = mascara.length, pm = ex.reservar(nm);
+    try {
+      new Float64Array(ex.memory.buffer, pp, np).set(params); new Uint8Array(ex.memory.buffer, pm, nm).set(mascara);
+      const r = ex.terreno_generar(pp, np, pm, nm);
+      if (r !== 0) { console.warn('motor.wasm terreno: parámetros rechazados (código ' + r + ')'); return null; }
+      const n = nm, b = ex.memory.buffer, npl = ex.terreno_n_plantas();
+      const out = { alturas: new Float32Array(b, ex.terreno_alturas(), n).slice(), zonas: new Uint8Array(b, ex.terreno_zonas(), n).slice(), plantas: new Float32Array(b, ex.terreno_plantas(), npl * 3).slice() };
+      ex.terreno_soltar(); return out;
+    } catch (err) { console.warn('motor.wasm terreno:', err); return null; }
+    finally { ex.liberar(pp, np * 8); ex.liberar(pm, nm); }
+  }
+
+  window.OOMotor = { listo, activo: () => !!ex, crc32, glb, terreno, version: VERSION_INTERFAZ };
 })();

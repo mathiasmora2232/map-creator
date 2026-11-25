@@ -54,5 +54,6 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
 
 - `motor/` se compila a `editor/wasm/motor.wasm` (generado, fuera de git) con `npm run build`. Sin Rust instalado en el equipo se usa
   un contenedor `rust:1-alpine` con podman; no instales rustup en la PC del dueño sin preguntar.
-- Toda función del motor necesita su versión en TypeScript de respaldo y pruebas en Rust (`cargo test`). Si cambias la interfaz, sube
+- Lo que el motor acelera de algo que ya existía necesita su versión en TypeScript de respaldo; una función nueva que solo existe en el
+  motor (p. ej. el terreno procedural) puede no tenerla, pero tiene que avisar sin romper si el motor no carga. Siempre con pruebas en Rust (`cargo test`). Si cambias la interfaz, sube
   `VERSION` en `motor/src/lib.rs` y `VERSION_INTERFAZ` en `editor/src/nucleo/motor.ts`.

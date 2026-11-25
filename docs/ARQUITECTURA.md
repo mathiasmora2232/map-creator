@@ -57,6 +57,13 @@ no sabe si está en local o en la nube.
     «OOGB», documentado en glb.rs); Rust escribe el JSON, el binario (min/max, normales normalizadas) y el contenedor. Si la escena
     trae texturas, huesos, morph, instancias u otros materiales o luces, se usa GLTFExporter. Con 29 000 mallas: ~105 ms frente a
     130–220 ms de GLTFExporter, mismo resultado al recargarlo con GLTFLoader (mallas, vértices, luces, materiales y extras).
+  - Terreno procedural (`motor/src/procedural.rs` + `editor/src/mapa/terreno_procedural.ts`, menú Terreno → «Generar terreno…»):
+    ruido de gradiente con semilla (fBm, crestas, deformación del dominio) en seis estilos (llanura, colinas, montañas, valle, isla,
+    dunas) y río opcional; erosión hidráulica por gotas; zonas (agua, arena, césped, bosque, tierra, roca, nieve) por altura,
+    pendiente, humedad y distancia al agua; puntos de vegetación por zona. Determinista por semilla. Lo construido del mapa (suelo base
+    `limitesMapa`, objetos añadidos y piezas de tamaño normal) queda protegido y el relieve sube con una transición suave. El agua es un
+    plano a `T0.agua` (guardado en el documento del terreno, exportado en el GLB como «Agua» y en el JSON). ~100 ms para 35 000 celdas.
+    Es una función nueva que solo existe en el motor: sin WebAssembly avisa y no genera.
 - Criterio para mover algo al motor: que esté medido como lento y sea cálculo puro sobre bytes o números (no objetos de three.js).
   Candidatos: triangular techos y huecos, el terreno. Armar la escena de three.js (lo más lento de exportar ahora) no se puede mover.
 - Imagen de Docker: etapa `rust:1-alpine` que pasa `cargo test` y compila a `wasm32-unknown-unknown`.

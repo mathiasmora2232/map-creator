@@ -156,5 +156,5 @@
     if (a === 'camino-apoyar') adaptarCamino(ids[0], 'apoyar'); if (a === 'camino-terreno') adaptarCamino(ids[0], 'terreno');
   });
 
-  window.OOTerrenoPro = { nivelarConPlataforma, apoyarPlataforma, pintarVegetacion, pintarVegetacionGrupo, borrarVegetacion, adaptarCamino, seguirLote, esVegetacion, editarZona, params: PV };
+  window.OOTerrenoPro = { datosPlanta, azar, nivelarConPlataforma, apoyarPlataforma, pintarVegetacion, pintarVegetacionGrupo, borrarVegetacion, adaptarCamino, seguirLote, esVegetacion, editarZona, params: PV };
 })();
