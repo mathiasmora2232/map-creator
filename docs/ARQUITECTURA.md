@@ -64,9 +64,26 @@ no sabe si está en local o en la nube.
     `limitesMapa`, objetos añadidos y piezas de tamaño normal) queda protegido y el relieve sube con una transición suave. El agua es un
     plano a `T0.agua` (guardado en el documento del terreno, exportado en el GLB como «Agua» y en el JSON). ~100 ms para 35 000 celdas.
     Es una función nueva que solo existe en el motor: sin WebAssembly avisa y no genera.
+  - Texturas que se repiten sin costura (`motor/src/textura.rs`): grano y relieve fino del suelo del terreno (mapa de color que
+    multiplica cada zona + mapa de normales, cada 6 m) y ondas del agua (normales). Sin motor, el terreno se ve sin detalle.
 - Criterio para mover algo al motor: que esté medido como lento y sea cálculo puro sobre bytes o números (no objetos de three.js).
   Candidatos: triangular techos y huecos, el terreno. Armar la escena de three.js (lo más lento de exportar ahora) no se puede mover.
 - Imagen de Docker: etapa `rust:1-alpine` que pasa `cargo test` y compila a `wasm32-unknown-unknown`.
+
+## Mapas nuevos con relieve
+
+- «Nuevo mapa» (panel y «＋ Nuevo mapa…» del editor) con «En blanco» tiene **Relieve** (estilo, clima, vegetación, río, zona plana y
+  semilla). El servidor (`rutas/proyectos.py` → `_relieve`) guarda los parámetros en el documento del mapa (`mapas/<id>.generar`);
+  el ancho y el fondo pedidos son el total, y el suelo base pasa a ser la zona plana del centro (35 % por defecto).
+- La primera vez que lo abre alguien que puede editar, `terreno_procedural.ts` (`generarSiToca`) genera el relieve con el motor y
+  marca el documento con `generado`, así no se repite.
+
+## Color realista
+
+- `editor/src/nucleo/color.ts` se carga justo después de three.js: `ColorManagement.legacyMode = false` (los hex se leen como sRGB),
+  todos los `WebGLRenderer` salen en sRGB con ACES (exposición 1,45) y los `CanvasTexture` se marcan sRGB. Los mapas de normales se
+  marcan lineales donde se crean. El GLB exporta así los colores en lineal, como pide glTF.
+- Ajustes → «Color»: realista (por defecto) o clásico; se aplica al recargar.
 
 ## Asistente del editor (Claude)
 

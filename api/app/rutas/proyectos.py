@@ -26,6 +26,32 @@ class NuevoProyecto(BaseModel):
     ancho: float = Field(default=120, ge=10, le=2000)
     largo: float = Field(default=80, ge=10, le=2000)
     terreno: str = "cesped"
+    generar: dict | None = None   # relieve procedural para un mapa en blanco (lo genera el editor al abrirlo por primera vez)
+
+
+ESTILOS_RELIEVE = {"llanura", "colinas", "montanas", "valle", "isla", "dunas"}
+
+
+def _relieve(g: dict | None, ancho: float, largo: float) -> tuple[dict | None, float, float]:
+    """Parámetros de relieve saneados y el tamaño del suelo base (la zona plana para construir). ancho y largo son el total."""
+    if not isinstance(g, dict) or g.get("estilo") not in ESTILOS_RELIEVE:
+        return None, ancho, largo
+    def num(k, d, mn, mx):
+        try:
+            v = float(g.get(k, d))
+        except (TypeError, ValueError):
+            return d
+        return d if v != v else max(mn, min(mx, v))
+    zw = num("plano_ancho", round(ancho * 0.35), 10, ancho)
+    zl = num("plano_largo", round(largo * 0.35), 10, largo)
+    margen = max(20.0, (ancho - zw) / 2, (largo - zl) / 2)
+    out = {"estilo": g["estilo"], "margen": round(margen, 1), "rio": bool(g.get("rio")),
+           "densidad": num("densidad", 3, 0, 50), "humedad": num("humedad", 0, -1, 1), "nieve": num("nieve", 0, 0, 1000),
+           "semilla": int(num("semilla", 0, 0, 2147483647)), "total": [ancho, largo]}
+    for k, (mn, mx) in {"altura": (0, 500), "escala": (5, 5000), "rugosidad": (0, 1), "erosion": (0, 1)}.items():
+        if k in g:
+            out[k] = num(k, 0, mn, mx)
+    return out, zw, zl
 
 
 class CambioProyecto(BaseModel):
@@ -109,8 +135,11 @@ async def crear(datos: NuevoProyecto, usuario=Depends(usuario_actual)):
         await con.execute("INSERT INTO miembros (proyecto_id, usuario_id, rol) VALUES ($1, $2, 'dueno')", p["id"], usuario["id"])
         await PL.aplicar(con, datos.plantilla, p["id"], usuario["id"], datos.nombre.strip())
         if datos.plantilla == "vacio":
-            doc = {"nombre": datos.nombre.strip()[:60], "ancho": datos.ancho, "largo": datos.largo,
+            gen, zw, zl = _relieve(datos.generar, datos.ancho, datos.largo)
+            doc = {"nombre": datos.nombre.strip()[:60], "ancho": zw, "largo": zl,
                    "terreno": datos.terreno if datos.terreno in TERRENOS else "cesped", "creado": _ahora_iso()}
+            if gen:
+                doc["generar"] = gen
             await con.execute("INSERT INTO documentos (proyecto_id, coleccion, doc_id, datos, actualizado_por) VALUES ($1, 'mapas', $2, $3, $4)",
                               p["id"], mapa, json.dumps(doc, ensure_ascii=False), usuario["id"])
             await con.execute("INSERT INTO colecciones (proyecto_id, coleccion, version) VALUES ($1, 'mapas', 1)", p["id"])

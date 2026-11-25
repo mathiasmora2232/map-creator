@@ -97,6 +97,17 @@
       T0.alt[k] = res.alturas[k]; const z = res.zonas[k];
       T0.pin[k] = z === 255 ? 255 : idx[z]; if (z !== 255) cuenta[ZONAS[z]] = (cuenta[ZONAS[z]] || 0) + 1;
     }
+    /* Celdas protegidas sin nada encima del suelo base (el margen del 8 % de limitesMapa): sin pintar serían transparentes y se
+       vería el agua de debajo. Se pintan, a altura 0, con el material del suelo del mapa. */
+    if (A.N) {
+      const base = A.cajaEntidades(['p0']), docMapa = A.efectivos('mapas').get(A.mapa), mat = TR.indicePaleta((docMapa && docMapa.terreno) || 'cesped');
+      for (let j = 0; j < T0.nz; j++) for (let i = 0; i < T0.nx; i++) {
+        const k = j * T0.nx + i; if (!masc[k] || T0.pin[k] !== 255) continue;
+        const x = T0.x0 + i * T0.paso, z = T0.z0 + j * T0.paso;
+        const m = T0.paso; /* también el borde de una celda hacia dentro: si no, el medio triángulo transparente deja ver el agua */
+        if (base.isEmpty() || x < base.min.x + m || x > base.max.x - m || z < base.min.z + m || z > base.max.z - m) { T0.pin[k] = mat; T0.alt[k] = 0; }
+      }
+    }
     TR.ponerNivelAgua(cuenta.agua ? nivel : null); TR.refrescar(); TR.guardar();
 
     /* vegetación: fuera la generada antes; la nueva en grupos por teselas */
@@ -161,5 +172,28 @@
     catch (e: any) { A.pista(e.message || String(e)); }
   }
 
-  window.OOProcedural = { generar, abrir, ESTILOS, PREDETERMINADOS, mascara, sueloLejano };
+  /* Mapa nuevo con relieve: el documento del mapa (colección «mapas», lo crea el panel o «＋ Nuevo mapa…») trae «generar» con los
+     parámetros. La primera vez que lo abre alguien que puede editar, se genera y se marca «generado» para no repetirlo. */
+  let pendiente = '';
+  async function generarSiToca(): Promise<void> {
+    const mapa = A.mapa; if (!mapa || pendiente === mapa) return;
+    for (let i = 0; i < 60 && A.mapa === mapa; i++) { if (A.efectivos('mapas').get(mapa) && A.N) break; await new Promise((r) => setTimeout(r, 250)); }
+    const doc = A.efectivos('mapas').get(mapa);
+    if (!doc || !doc.generar || doc.generado || A.mapa !== mapa) return;
+    await new Promise((r) => setTimeout(r, 1200)); /* que llegue el terreno guardado, si ya lo hay */
+    if (TR.datos() || A.mapa !== mapa) return;
+    if (window.OONube) { const p = await OONube.info; if (!p || p.rol === 'lector') return; }
+    pendiente = mapa;
+    A.pista('Generando el relieve del mapa nuevo…');
+    try {
+      const r = await generar(Object.assign({}, doc.generar, { guardarVersion: false }));
+      const act = A.efectivos('mapas').get(mapa) || doc;
+      A.guardarCol('mapas', mapa, Object.assign({}, act, { generado: A.ahora(), semilla_usada: r.semilla }));
+      if (A.encuadrarCaja && TR.datos()) { const T0 = TR.datos(), Th = A.THREE; A.encuadrarCaja(new Th.Box3(new Th.Vector3(T0.x0, -2, T0.z0), new Th.Vector3(T0.x0 + (T0.nx - 1) * T0.paso, 10, T0.z0 + (T0.nz - 1) * T0.paso))); }
+    } catch (e: any) { A.pista('No se pudo generar el relieve: ' + (e.message || e) + ' Puedes hacerlo desde Terreno → «Generar terreno…».'); pendiente = ''; }
+  }
+  E.on('mapa', () => { generarSiToca(); });
+  setTimeout(generarSiToca, 500);
+
+  window.OOProcedural = { generar, abrir, ESTILOS, PREDETERMINADOS, mascara, sueloLejano, generarSiToca };
 })();

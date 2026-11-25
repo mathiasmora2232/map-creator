@@ -371,10 +371,20 @@
       const H = p.alto, Dc = p.diametroCopa, c = p.color, k = oscuro(c, 0.85), l = oscuro(c, 1.12), s = p.semilla | 0, a = [];
       if (p.copa === 'conica') { const hT = H * 0.18; a.push(Cy(0, hT / 2, 0, p.tronco, hT, p.colorTronco)); const n = 5; for (let i = 0; i < n; i++) { const t0 = i / n, yy = hT + (H - hT) * t0, d = Dc * (1 - t0 * 0.82); a.push(...[0, 1, 2].map((j?) => Cy(0, yy + (H - hT) / n * (j + 0.5) / 3 * 0.8, 0, d * (1 - j * 0.22), (H - hT) / n * 0.5, j % 2 ? k : c))); } return a; }
       if (p.copa === 'columnar') { const hT = H * 0.1; a.push(Cy(0, hT / 2, 0, p.tronco, hT, p.colorTronco), Sp(0, hT + (H - hT) / 2, 0, Dc, H - hT, Dc, c), Sp(0.1 * Dc, hT + (H - hT) * 0.42, 0.05 * Dc, Dc * 0.8, (H - hT) * 0.6, Dc * 0.8, k)); return a; }
-      const hT = H - Dc * 0.75; a.push(Cy(0, Math.max(0.3, hT) / 2, 0, p.tronco, Math.max(0.3, hT), p.colorTronco));
-      const yc = H - Dc / 2; a.push(Sp(0, yc, 0, Dc, Dc * 0.85, Dc, c));
-      const nb = p.copa === 'irregular' ? 7 : 4; for (let i = 0; i < nb; i++) { const g = (i / nb + hash(i, s) * 0.3) * 2 * PI, r = Dc * (0.28 + 0.12 * hash(i + 9, s)), d = Dc * (p.copa === 'irregular' ? 0.5 + 0.25 * hash(i + 3, s) : 0.55); a.push(Sp(Math.cos(g) * r, yc + (hash(i + 5, s) - 0.4) * Dc * 0.35, Math.sin(g) * r, d, d * 0.85, d, i % 2 ? k : l)); }
-      if (p.copa === 'irregular' && hT > 1) for (let i = 0; i < 3; i++) { const g = i * 2.1 + s; a.push(barra([0, hT * 0.8, 0], [Math.cos(g) * Dc * 0.3, hT + 0.4, Math.sin(g) * Dc * 0.3], p.tronco * 0.45, p.colorTronco)); }
+      /* (modelos 2) tronco que se estrecha, ramas que entran en la copa y copa de racimos: núcleo oscuro y racimos repartidos en
+         espiral (más claros arriba, donde da el sol, y más oscuros abajo), con tamaño y posición que varían con la semilla */
+      const hT = Math.max(0.3, H - Dc * 0.75), tr = p.tronco, ct = p.colorTronco;
+      a.push(Cy(0, hT * 0.3, 0, tr * 1.15, hT * 0.6, ct), Cy(0, hT * 0.78, 0, tr * 0.85, hT * 0.5, oscuro(ct, 1.08)));
+      const yc = H - Dc / 2, irr = p.copa === 'irregular';
+      if (hT > 1) for (let i = 0; i < (irr ? 4 : 3); i++) { const g = i * 2.1 + s * 0.7; a.push(barra([0, hT * 0.72, 0], [Math.cos(g) * Dc * 0.32, hT + Dc * 0.18, Math.sin(g) * Dc * 0.32], tr * 0.42, ct)); }
+      a.push(Sp(0, yc, 0, Dc * 0.82, Dc * 0.72, Dc * 0.82, oscuro(c, 0.72)));
+      const tonos = [oscuro(c, 0.78), k, c, l, oscuro(c, 1.22)], nb = irr ? 15 : 11, oro = PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < nb; i++) {
+        const t = (i + 0.5) / nb, yy = 1 - 2 * t * 0.85, rr = Math.sqrt(Math.max(0, 1 - yy * yy)), g = i * oro + hash(i, s) * 0.6;
+        const R = Dc * (irr ? 0.36 + 0.12 * hash(i + 9, s) : 0.33), d = Dc * (irr ? 0.36 + 0.2 * hash(i + 3, s) : 0.4 + 0.1 * hash(i + 3, s));
+        const tono = tonos[Math.max(0, Math.min(4, Math.round((yy * 0.5 + 0.5) * 3.2 + hash(i + 7, s) * 1.2)))];
+        a.push(Sp(Math.cos(g) * rr * R, yc + yy * Dc * 0.3 + (hash(i + 5, s) - 0.5) * Dc * 0.08, Math.sin(g) * rr * R, d, d * 0.82, d, tono));
+      }
       return a;
     } });
   def('palmera_proc', { n: 'Palmera', cat: 'naturaleza', def: { alto: 7, hojas: 9, inclinacion: 0.25, cocos: true, color: '#4a7a32', colorTronco: '#8a7356' },
@@ -395,7 +405,10 @@
     partes: (p?) => { const c = p.color, k = oscuro(c, 0.85), l = oscuro(c, 1.1), s = p.semilla | 0, a = [];
       if (p.forma === 'seto') { a.push(B(0, (p.alto - p.ancho * 0.2) / 2, 0, p.largo, p.alto - p.ancho * 0.2, p.ancho, c), CyX(0, p.alto - p.ancho * 0.25, 0, p.ancho * 0.5, p.largo, k, { s: [p.ancho * 0.5, p.largo, p.ancho] })); }
       else if (p.forma === 'mata') { for (let i = 0; i < 6; i++) { const g = hash(i, s) * 2 * PI, r = p.ancho * 0.25 * hash(i + 2, s), d = p.ancho * (0.45 + 0.2 * hash(i + 4, s)); a.push(Sp(Math.cos(g) * r, p.alto * (0.35 + 0.2 * hash(i + 6, s)), Math.sin(g) * r, d, p.alto * 0.7, d, i % 3 ? c : (i % 2 ? k : l))); } }
-      else a.push(Sp(0, p.alto / 2, 0, p.ancho, p.alto, p.ancho, c), Sp(p.ancho * 0.18, p.alto * 0.6, p.ancho * 0.1, p.ancho * 0.6, p.alto * 0.6, p.ancho * 0.6, l));
+      else { /* (modelos 2) bola de racimos con tonos, más clara arriba */
+        a.push(Sp(0, p.alto * 0.45, 0, p.ancho * 0.85, p.alto * 0.8, p.ancho * 0.85, oscuro(c, 0.78)));
+        for (let i = 0; i < 7; i++) { const g = i * 2.4 + hash(i, s), arriba = i % 3 === 0, d = p.ancho * (0.42 + 0.14 * hash(i + 2, s)); a.push(Sp(Math.cos(g) * p.ancho * 0.26, p.alto * (arriba ? 0.68 : 0.42), Math.sin(g) * p.ancho * 0.26, d, p.alto * 0.55, d, arriba ? l : (i % 2 ? k : c))); }
+      }
       if (p.flores) { const W = p.forma === 'seto' ? p.largo : p.ancho; for (let i = 0; i < 18; i++) { const x = (hash(i, s + 3) - 0.5) * W * 0.85, z = (hash(i + 30, s + 3) - 0.5) * (p.forma === 'seto' ? p.ancho : p.ancho) * 0.8; a.push(Sp(x, p.alto * (0.75 + 0.22 * hash(i + 60, s)), z, 0.08, 0.06, 0.08, p.colorFlores)); } }
       return a; } });
   def('maceta_proc', { n: 'Maceta', cat: 'naturaleza', def: { tipo: 'redonda', planta: 'arbusto', diametro: 0.5, alto: 0.45, color: '#8a5a3c', colorPlanta: '#4f8a3a' },

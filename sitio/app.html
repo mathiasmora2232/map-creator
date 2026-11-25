@@ -68,6 +68,22 @@
         <label class="campo"><span>Fondo (m)</span><input type="number" name="largo" min="10" max="2000" step="5" value="80"></label>
         <label class="campo"><span>Terreno</span><select name="terreno"><option value="cesped">Césped</option><option value="tierra">Tierra</option><option value="concreto">Concreto</option><option value="asfalto">Asfalto</option></select></label>
       </div>
+      <div id="nuevoRelieve">
+        <div class="fila2">
+          <label class="campo"><span>Relieve</span><select name="relieve">
+            <option value="">Sin relieve (plano)</option><option value="llanura">Llanura</option><option value="colinas">Colinas</option>
+            <option value="montanas">Montañas</option><option value="valle">Valle</option><option value="isla">Isla</option><option value="dunas">Dunas (desierto)</option></select></label>
+          <label class="campo relieve-opc"><span>Clima</span><select name="clima"><option value="templado">Templado</option><option value="humedo">Húmedo (mucho bosque)</option><option value="seco">Seco</option><option value="nevado">Con nieve</option></select></label>
+          <label class="campo relieve-opc"><span>Vegetación</span><select name="vegetacion"><option value="0">Ninguna</option><option value="1.2">Poca</option><option value="3" selected>Normal</option><option value="6">Mucha</option></select></label>
+        </div>
+        <div class="fila2 relieve-opc">
+          <label class="campo"><span>Zona plana: ancho (m)</span><input type="number" name="plano_ancho" min="10" max="2000" step="5" placeholder="35 % del ancho"></label>
+          <label class="campo"><span>Zona plana: fondo (m)</span><input type="number" name="plano_largo" min="10" max="2000" step="5" placeholder="35 % del fondo"></label>
+          <label class="campo"><span>Semilla</span><input type="number" name="semilla" min="0" step="1" placeholder="Al azar"></label>
+        </div>
+        <label class="chk relieve-opc"><input type="checkbox" name="rio"> Con un río</label>
+        <p class="ayuda relieve-opc">El ancho y el fondo de arriba son el tamaño total. La zona plana queda en el centro para construir; el relieve la rodea y se genera al abrir el mapa.</p>
+      </div>
       <p class="error-form" id="errNuevo" role="alert"></p>
     </div>
     <div class="dlg-pie"><button type="button" class="btn" data-a="cerrar-dlg">Cancelar</button><button class="btn prim" value="crear" id="bCrear">Crear y abrir</button></div>

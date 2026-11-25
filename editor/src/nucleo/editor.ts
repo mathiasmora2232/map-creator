@@ -29,7 +29,7 @@ const V3 = THREE.Vector3, Q4 = THREE.Quaternion, M4 = THREE.Matrix4;
 const { MATERIALES, MAT_MURO, MAT_SUELO, OBJ, COCHES, CONTS, CATEGORIAS, ITEMS, construir, tramos, huecoDe, oscuro } = window.OO;
 
 /* ====================== ajustes ====================== */
-const AJ_DEF = { sens: 1, velocidad: 1, invertirGiro: false, invertirZoom: false, orbitarCursor: true, ayudaHerr: false, ajuste: false, paso: 0.25, angulo: 15, inferencias: true, unidades: 'm', calidad: 'media', sombras: true, cotas: true, etiquetas: true, minimapa: true, fondo: '#a9c8e6', tema: 'oscuro', resolucion: 1, distancia: 2800, mallasReales: true }; /* (editor v2) tema oscuro por defecto, como el concepto; gráficos */
+const AJ_DEF = { color: 'realista', sens: 1, velocidad: 1, invertirGiro: false, invertirZoom: false, orbitarCursor: true, ayudaHerr: false, ajuste: false, paso: 0.25, angulo: 15, inferencias: true, unidades: 'm', calidad: 'media', sombras: true, cotas: true, etiquetas: true, minimapa: true, fondo: '#a9c8e6', tema: 'oscuro', resolucion: 1, distancia: 2800, mallasReales: true }; /* (editor v2) tema oscuro por defecto, como el concepto; gráficos */
 let AJ: any = Object.assign({}, AJ_DEF); try { Object.assign(AJ, JSON.parse(ls('oo-editor-ajustes') || '{}')); } catch (e) { }
 function guardarAjustes() { ls('oo-editor-ajustes', JSON.stringify(AJ)); }
 const fmtLen = (m?) => AJ.unidades === 'cm' ? fmt(m * 100, 0) + ' cm' : fmt(m, 2) + ' m';
@@ -170,6 +170,8 @@ const vistaEl = $('#vista');
 const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 renderer.localClippingEnabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+/* (color realista, nucleo/color.ts) imagen en sRGB con mapeo de tonos ACES; la exposición compensa que ACES oscurece algo */
+if (window.OOColor && OOColor.realista) { renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.45; }
 const dom = renderer.domElement; dom.id = 'lienzo'; dom.tabIndex = 0; dom.setAttribute('aria-label', 'Vista 3D del mapa');
 vistaEl.prepend(dom);
 const scene = new THREE.Scene();
@@ -2477,7 +2479,7 @@ const miniaturas = {}; let rendMini = null;
 function miniatura(it?) {
   if (miniaturas[it.id]) return miniaturas[it.id];
   try {
-    if (!rendMini) { rendMini = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); rendMini.setSize(128, 128, false); rendMini.setPixelRatio(1); }
+    if (!rendMini) { rendMini = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); rendMini.setSize(128, 128, false); rendMini.setPixelRatio(1); if (window.OOColor && OOColor.realista) { rendMini.outputEncoding = THREE.sRGBEncoding; rendMini.toneMapping = THREE.ACESFilmicToneMapping; rendMini.toneMappingExposure = 1.45; } }
     const sc = new THREE.Scene(); sc.add(new THREE.HemisphereLight(0xffffff, 0x777777, 0.9)); const dl = new THREE.DirectionalLight(0xffffff, 0.6); dl.position.set(-3, 5, 4); sc.add(dl);
     const datos = Object.assign({ x: 0, y: 0, z: 0, giroY: 0 }, clon(it.datos)); if (it.tipo === 'copia') datos.y = datos.d0[1] / 2;
     const parts = partesMundo({ tipo: it.tipo, datos, fotos: [] }); const box = new THREE.Box3();
@@ -2576,7 +2578,7 @@ function abrirAjustes() {
   abrirModal(`<div class="cab">Ajustes</div><div class="cont" id="ajForm"><div class="ajustes">
   <h4>Cámara</h4>${c('sens', 'Sensibilidad del ratón', 'rng', [0.2, 3, 0.1])}${c('velocidad', 'Velocidad con teclado', 'rng', [0.2, 4, 0.1])}${c('invertirGiro', 'Invertir el giro de la cámara', 'chk')}${c('orbitarCursor', 'Orbitar alrededor de lo que señala el cursor', 'chk')}${c('ayudaHerr', 'Mostrar la ayuda de la herramienta arriba de la vista', 'chk')}${c('invertirZoom', 'Invertir el zoom de la rueda', 'chk')}
   <h4>Edición</h4>${c('ajuste', 'Ajuste a rejilla', 'chk')}${c('inferencias', 'Inferencias (imantar a extremos, medios y ejes)', 'chk')}${c('paso', 'Paso de la rejilla', 'sel', [[0.05, '5 cm'], [0.1, '10 cm'], [0.25, '25 cm'], [0.5, '50 cm'], [1, '1 m'], [5, '5 m']])}${c('angulo', 'Paso del giro', 'sel', [[5, '5°'], [15, '15°'], [45, '45°'], [90, '90°']])}${c('unidades', 'Unidades de las medidas', 'sel', [['m', 'metros'], ['cm', 'centímetros']])}
-  <h4>Gráficos y rendimiento</h4>${c('calidad', 'Calidad de imagen', 'sel', [['baja', 'Baja (más fluido)'], ['media', 'Media'], ['alta', 'Alta']])}${c('resolucion', 'Resolución de la vista', 'sel', [[0.5, '50 % (muy fluido)'], [0.75, '75 %'], [1, '100 %']])}${c('distancia', 'Distancia de dibujado', 'sel', [[600, 'Corta (600 m)'], [1200, 'Media (1,2 km)'], [2800, 'Larga (2,8 km)'], [5000, 'Muy larga (5 km)']])}${c('sombras', 'Sombras del sol', 'chk')}${c('mallasReales', 'Mallas reales del juego (puertas, coches, objetos)', 'chk')}
+  <h4>Gráficos y rendimiento</h4>${c('calidad', 'Calidad de imagen', 'sel', [['baja', 'Baja (más fluido)'], ['media', 'Media'], ['alta', 'Alta']])}${c('color', 'Color (al recargar)', 'sel', [['realista', 'Realista (como en un motor de juego)'], ['clasico', 'Clásico (como antes)']])}${c('resolucion', 'Resolución de la vista', 'sel', [[0.5, '50 % (muy fluido)'], [0.75, '75 %'], [1, '100 %']])}${c('distancia', 'Distancia de dibujado', 'sel', [[600, 'Corta (600 m)'], [1200, 'Media (1,2 km)'], [2800, 'Larga (2,8 km)'], [5000, 'Muy larga (5 km)']])}${c('sombras', 'Sombras del sol', 'chk')}${c('mallasReales', 'Mallas reales del juego (puertas, coches, objetos)', 'chk')}
   <h4>Vista</h4>${c('cotas', 'Cotas de lo seleccionado', 'chk')}${c('etiquetas', 'Etiquetas de zonas y habitaciones', 'chk')}${c('minimapa', 'Minimapa', 'chk')}${c('fondo', 'Color del cielo', 'color')}${c('tema', 'Tema', 'sel', [['auto', 'Según el sistema'], ['claro', 'Claro'], ['oscuro', 'Oscuro']])}
   </div><p class="ayuda">Se guardan en este navegador.</p></div><div class="pie"><button data-a="disp-restablecer" title="Vuelve a poner los paneles en su sitio de fábrica">Restablecer disposición</button><button data-a="aj-reset">Restablecer ajustes</button><button data-a="m-no" class="prim">Cerrar</button></div>`);
 }
@@ -2659,7 +2661,7 @@ function actualizarMallaCalco(id?, d?) {
     const grp = new THREE.Group(); const mat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, color: 0xffffff });
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat); plane.rotation.x = -Math.PI / 2; grp.add(plane); grupoCalcos.add(grp);
     e = { grp, plane, mat, url, aspecto: 1, error: false }; calcoMallas.set(id, e);
-    texLoader.load(url, (tex?) => { e.mat.map = tex; e.mat.needsUpdate = true; if (tex.image && tex.image.width) e.aspecto = tex.image.height / tex.image.width; const dd = efectivos('calcos').get(id); if (dd) actualizarMallaCalco(id, dd); sucio = true; }, undefined, () => { e.error = true; renderListaCalcos(); });
+    texLoader.load(url, (tex?) => { tex.encoding = THREE.sRGBEncoding; e.mat.map = tex; e.mat.needsUpdate = true; if (tex.image && tex.image.width) e.aspecto = tex.image.height / tex.image.width; const dd = efectivos('calcos').get(id); if (dd) actualizarMallaCalco(id, dd); sucio = true; }, undefined, () => { e.error = true; renderListaCalcos(); });
   }
   const espejo = d.espejo ? -1 : 1, ancho = Math.max(0.1, +d.ancho || 100);
   e.grp.position.set(+d.x || 0, d.encima ? 0.08 : 0.05, +d.z || 0); e.grp.rotation.y = (+d.giro || 0) * DEG;
