@@ -70,6 +70,8 @@
     const o = Object.assign({}, PREDETERMINADOS, { altura: base.altura, escala: base.escala, rugosidad: base.rugosidad, erosion: base.erosion, humedad: base.humedad, nieve: base.nieve, densidad: base.densidad }, op, { estilo: est });
     const num = (v: any, d: number, mn: number, mx: number): number => { const n = +v; return isFinite(n) ? Math.max(mn, Math.min(mx, n)) : d; };
     const semilla = Math.floor(num(o.semilla, 0, 0, 2147483647)) || (1 + Math.floor(Math.random() * 2147483646));
+    /* versión automática antes de tocar nada (se puede volver a ella desde Historial → Versiones) */
+    if (op.guardarVersion !== false && window.OOProductividad && OOProductividad.guardarVersion) { try { await OOProductividad.guardarVersion('Antes de generar el terreno (' + base.n + ')', { auto: true }); } catch (e) { /* sin versión no se bloquea */ } }
     const t0 = performance.now();
     if (TR.datos()) TR.apilarDeshacer();
     const margen = num(o.margen, 120, 20, 1000);

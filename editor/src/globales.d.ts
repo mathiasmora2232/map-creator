@@ -86,3 +86,4 @@ declare var OOMaterialesPro: any;
 declare var OOMotor: { listo: Promise<boolean>; activo(): boolean; crc32(u8: Uint8Array): number | null; glb(paquete: Uint8Array): Uint8Array | null; terreno(params: Float64Array, mascara: Uint8Array): { alturas: Float32Array; zonas: Uint8Array; plantas: Float32Array } | null; version: number } | undefined;
 declare var OOProcedural: any;
 declare var OOGlbMotor: { exportar(raiz: any): ArrayBuffer | null; motivo(): string } | undefined;
+declare var OOAsistente: any;

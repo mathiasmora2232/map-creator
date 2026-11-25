@@ -47,3 +47,11 @@ URL_PUBLICA = os.environ.get("OO_URL_PUBLICA", "").strip().rstrip("/")
 # Cabecera con la IP real del visitante cuando hay un proxy delante (p. ej. cf-connecting-ip con Cloudflare). Vacía: la IP de la
 # conexión. Solo se usa para limitar intentos.
 IP_CABECERA = os.environ.get("OO_IP_CABECERA", "").strip().lower()
+
+# ── Asistente (bot del editor con Claude). Sin ANTHROPIC_API_KEY queda desactivado. En producción la inyecta el panel desde la bóveda
+#    (grupo map-creator-app), como el SMTP: nunca en el código ni en el repo. ──
+ANTHROPIC_API_KEY = _sin_comillas("ANTHROPIC_API_KEY")
+ASISTENTE_ACTIVO = bool(ANTHROPIC_API_KEY)
+ASISTENTE_MODELO = os.environ.get("OO_ASISTENTE_MODELO", "claude-opus-5-5").strip() or "claude-opus-5-5"
+ASISTENTE_ESFUERZO = os.environ.get("OO_ASISTENTE_ESFUERZO", "medium").strip() or "medium"   # low | medium | high | xhigh | max
+ASISTENTE_LIMITE_HORA = int(os.environ.get("OO_ASISTENTE_LIMITE_HORA", "120"))               # llamadas por usuario y hora

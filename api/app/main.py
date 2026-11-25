@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Resp
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db
-from .rutas import admin, cuenta, editor_datos, invitaciones, plantillas, proyectos
+from .rutas import admin, asistente, cuenta, editor_datos, invitaciones, plantillas, proyectos
 from .seguridad import usuario_opcional, verificado
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -68,6 +68,7 @@ app.include_router(admin.router)
 app.include_router(plantillas.router)
 app.include_router(proyectos.router)
 app.include_router(editor_datos.router)
+app.include_router(asistente.router)
 
 
 @app.get("/api/salud")

@@ -93,9 +93,13 @@
   let listaVer = [];
   async function versiones() { try { const r = await fetch('/api/db/versiones', { cache: 'no-store' }); const j = await r.json(); listaVer = (j.docs || []).filter((d?) => d.data && d.data.mapa === A.mapa).map((d?) => Object.assign({ id: d.id }, d.data, { docs: undefined, n: Object.keys(d.data.docs || {}).length })).sort((a?, b?) => String(b.fecha).localeCompare(String(a.fecha))); } catch (e) { listaVer = []; } return listaVer; }
   function fotoMapa() { const docs = {}; for (const [id, d] of A.efectivos()) if (d && d.mapa === A.mapa) docs[id] = d; return docs; }
+  /* (versiones 2) además de los cambios de objetos, las colecciones propias de cada mapa: terreno, grupos, zonas, guías, calcos,
+     etiquetas y reglas (las de todo el proyecto, como materiales o componentes, no van en la versión de un mapa) */
+  const COLS_VERSION = ['terreno', 'grupos', 'zonas', 'guias', 'calcos', 'etiquetas', 'reglas'];
+  function fotoColecciones() { const cols = {}; for (const c of COLS_VERSION) { const m = {}; for (const [id, d] of A.efectivos(c)) if (d && d.mapa === A.mapa) m[id] = d; cols[c] = m; } return cols; }
   let ultimaVersion = 0, pasosEnVersion = -1;
   async function guardarVersion(nombre?, o?) {
-    o = o || {}; const id = 'v-' + A.mapa + '-' + Date.now().toString(36) + (o.auto ? 'a' : ''), docs = fotoMapa(), data = { mapa: A.mapa, nombre: String(nombre || '').trim() || (o.auto ? 'Automática' : 'Versión') + ' ' + new Date().toLocaleString('es'), fecha: new Date().toISOString(), auto: !!o.auto, docs };
+    o = o || {}; const id = 'v-' + A.mapa + '-' + Date.now().toString(36) + (o.auto ? 'a' : ''), docs = fotoMapa(), data = { mapa: A.mapa, nombre: String(nombre || '').trim() || (o.auto ? 'Automática' : 'Versión') + ' ' + new Date().toLocaleString('es'), fecha: new Date().toISOString(), auto: !!o.auto, docs, cols: fotoColecciones(), formato: 2 };
     const r = await fetch('/api/db/versiones/' + encodeURIComponent(id), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) { A.pista('No se pudo guardar la versión.'); return null; }
     ultimaVersion = Date.now(); pasosEnVersion = cuentaPasos(); if (o.auto) await podar(); if (!o.auto) A.pista('Versión guardada: ' + data.nombre + ' (' + Object.keys(docs).length + ' cambios).'); return id;
   }
@@ -106,8 +110,17 @@
     const foto = v.data.docs || {}, act = fotoMapa(), lista = [], canon = (x?) => JSON.stringify(x);
     for (const id2 of Object.keys(act)) if (!(id2 in foto)) lista.push({ id: id2, data: null });
     for (const [id2, d] of Object.entries(foto)) if (!act[id2] || canon(act[id2]) !== canon(d)) lista.push({ id: id2, data: d });
-    if (!lista.length) { A.pista('Ya estás en esa versión.'); return 0; }
-    A.seleccionar([]); A.guardar(lista, { etiqueta: 'Restaurar la versión «' + v.data.nombre + '»', sinAnclajes: true }); A.pista('Versión restaurada (' + lista.length + ' cambios). Ctrl+Z la deshace.'); return lista.length;
+    /* colecciones del mapa (solo en versiones nuevas: las antiguas no las tenían y se dejan como están) */
+    let nCols = 0, terreno = false;
+    if (v.data.cols) for (const c of COLS_VERSION) {
+      const fc = v.data.cols[c] || {}, ac = {}; for (const [id2, d] of A.efectivos(c)) if (d && d.mapa === A.mapa) ac[id2] = d;
+      for (const id2 of Object.keys(ac)) if (!(id2 in fc)) { A.guardarCol(c, id2, null); nCols++; if (c === 'terreno') terreno = true; }
+      for (const [id2, d] of Object.entries(fc)) if (!ac[id2] || canon(ac[id2]) !== canon(d)) { A.guardarCol(c, id2, d); nCols++; if (c === 'terreno') terreno = true; }
+    }
+    if (terreno && window.OOTerreno) OOTerreno.cargar();
+    if (!lista.length && !nCols) { A.pista('Ya estás en esa versión.'); return 0; }
+    A.seleccionar([]); if (lista.length) A.guardar(lista, { etiqueta: 'Restaurar la versión «' + v.data.nombre + '»', sinAnclajes: true });
+    A.pista('Versión restaurada (' + (lista.length + nCols) + ' cambios' + (terreno ? ', con el terreno' : '') + ').' + (lista.length ? ' Ctrl+Z deshace lo de los objetos.' : '')); return lista.length + nCols;
   }
   const cuentaPasos = () => A.pasosDeshacer.reduce((s?, e?) => s + e.length, 0) + A.pasosDeshacer.length;
   setInterval(() => { const av = AJ.autoVersiones; if (!av.on || A.pendientes > 0) return; const n = cuentaPasos(); if (n === pasosEnVersion || !A.pasosDeshacer.length) return; if (Date.now() - (ultimaVersion || cargado) < Math.max(1, +av.min || 10) * 60000) return; guardarVersion('', { auto: true }); }, 30000);
