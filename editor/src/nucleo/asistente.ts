@@ -3,7 +3,7 @@
    herramientas se ejecutan en este editor y se vuelve a llamar con los resultados. La conversación se reenvía sin tocar (también los
    bloques de razonamiento, que la API exige tal cual) y se guarda en sessionStorage por proyecto.
    Herramientas: estado_mapa, buscar_catalogo, generar_terreno, colocar_objetos, pintar_vegetacion, borrar_objetos, guardar_version,
-   deshacer. API: OOAsistente.abrir(), enviar(texto), herramientas (para las pruebas). */
+   crear_modelo (piezas → biblioteca y proyecto, por /api/biblioteca/modelos), deshacer. API: OOAsistente.abrir(), enviar(texto), herramientas (para las pruebas). */
 (function () {
   'use strict';
   const E = window.OOEditor; if (!E || !E.api) return;
@@ -56,7 +56,7 @@
       if (objs.length > 200) throw new Error('Máximo 200 objetos por llamada.');
       const lista: any[] = [], ids: string[] = [], errores: string[] = [];
       objs.forEach((o: any, j: number) => {
-        const it = A.itemPorId(String(o.tipo || '')); const x = num(o.x), z = num(o.z);
+        const it = A.itemPorId(String(o.tipo || '').replace(/^modelo:/, 'asset:')); const x = num(o.x), z = num(o.z);
         if (!it) { errores.push(`#${j}: «${o.tipo}» no está en el catálogo (usa buscar_catalogo)`); return; }
         if (x == null || z == null) { errores.push(`#${j}: faltan x o z`); return; }
         const d = A.clon(it.datos || {}), y = num(o.y) ?? (window.OOTerreno ? OOTerreno.alturaEn(x, z) : 0), f = num(o.escala);
@@ -87,6 +87,16 @@
       if (!id) throw new Error('No se pudo guardar la versión.');
       return { id, como_volver: 'Historial (icono del reloj) → Versiones → Restaurar' };
     },
+    async crear_modelo(e) {
+      const r = await fetch('/api/biblioteca/modelos', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: e.nombre, piezas: e.piezas, descripcion: e.descripcion || '', categoria: e.categoria || 'general', proyecto: PROYECTO }) });
+      const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || ('Error ' + r.status));
+      const tipo = j.proyecto && j.proyecto.tipo_para_colocar; if (!tipo) throw new Error('El modelo se creó pero no se añadió al proyecto.');
+      /* el documento «assets» llega por la sincronización: espera a que el catálogo lo conozca para poder colocarlo */
+      const enCatalogo = tipo.replace(/^modelo:/, 'asset:');   /* el catálogo lista los modelos importados como asset:<id> */
+      for (let k = 0; k < 40 && !A.itemPorId(enCatalogo); k++) await new Promise((res) => setTimeout(res, 250));
+      return { tipo_para_colocar: tipo, listo: !!A.itemPorId(enCatalogo), tamano_m: j.resumen && j.resumen.tamano_m, biblioteca: j.asset && j.asset.id };
+    },
     deshacer(e) {
       if (e.que === 'terreno') { if (!window.OOTerreno) throw new Error('No hay terreno.'); OOTerreno.deshacer(); return { hecho: 'terreno' }; }
       A.hacerDeshacer(); return { hecho: 'objetos' };
@@ -97,7 +107,7 @@
     generar_terreno: (e) => 'Generando terreno (' + ((window.OOProcedural && OOProcedural.ESTILOS[e.estilo]) || { n: e.estilo }).n + ')',
     colocar_objetos: (e) => 'Colocando ' + ((e.objetos || []).length) + ' objetos', pintar_vegetacion: () => 'Pintando vegetación',
     borrar_objetos: (e) => 'Borrando ' + ((e.ids || []).length) + ' objetos', guardar_version: (e) => 'Guardando la versión «' + (e.nombre || '') + '»',
-    deshacer: (e) => 'Deshaciendo (' + (e.que || 'objetos') + ')'
+    deshacer: (e) => 'Deshaciendo (' + (e.que || 'objetos') + ')', crear_modelo: (e) => 'Diseñando «' + (e.nombre || 'modelo') + '» (' + ((e.piezas || []).length) + ' piezas)'
   };
 
   /* ───────── interfaz ───────── */
@@ -130,7 +140,7 @@
     <form><textarea rows="2" placeholder="Pídele algo: «rodea el complejo de colinas con un río»…" aria-label="Mensaje para el asistente"></textarea><button type="submit">Enviar</button></form>`;
   document.body.appendChild(caja);
   const msjs = caja.querySelector('.asis-msjs') as HTMLElement, form = caja.querySelector('form') as HTMLFormElement, ta = caja.querySelector('textarea') as HTMLTextAreaElement, bEnviar = form.querySelector('button') as HTMLButtonElement;
-  const SUGERENCIAS = ['Rodea el mapa de colinas con un río y bosque', 'Haz una isla tropical con playa y palmeras alrededor del mapa', 'Montañas nevadas al norte y un lago', '¿Qué hay en este mapa?'];
+  const SUGERENCIAS = ['Rodea el mapa de colinas con un río y bosque', 'Haz una isla tropical con playa y palmeras alrededor del mapa', 'Montañas nevadas al norte y un lago', 'Diseña una fuente de piedra y ponla en el centro', '¿Qué hay en este mapa?'];
 
   /* Markdown mínimo: párrafos, **negrita** y listas con «- » o «1. » */
   const formato = (t: string): string => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').split(/\n{2,}/).map((p) => {
@@ -145,7 +155,7 @@
   function pintarTodo(): void {
     msjs.innerHTML = '';
     if (!historial.length) {
-      msjs.innerHTML = `<div class="asis-vacio">Puedo generar terreno, colocar objetos del catálogo, pintar vegetación y guardar versiones antes de cambiar nada. Prueba:${SUGERENCIAS.map((s) => `<button type="button" data-sug="${esc(s)}">${esc(s)}</button>`).join('')}</div>`;
+      msjs.innerHTML = `<div class="asis-vacio">Puedo generar terreno, colocar objetos del catálogo, diseñar objetos nuevos, pintar vegetación y guardar versiones antes de cambiar nada. Prueba:${SUGERENCIAS.map((s) => `<button type="button" data-sug="${esc(s)}">${esc(s)}</button>`).join('')}</div>`;
       return;
     }
     for (const m of historial) {

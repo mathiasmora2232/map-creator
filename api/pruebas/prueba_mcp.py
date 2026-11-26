@@ -167,13 +167,31 @@ async def main():
         r3 = await m.llamar("publicar_asset_de_proyecto", proyecto=pid, asset=r["tipo_para_colocar"], nombre="Triángulo republicado", publicar=False)
         comprobar(r3.get("nombre") == "Triángulo republicado" and r3["visibilidad"] == "privada", "MCP: publicar_asset_de_proyecto")
 
+        piezas = [{"forma": "caja", "centro": [0, 0.45, 0], "tamano": [1.8, 0.06, 0.5], "color": "#8a5a2b"},
+                  {"forma": "cilindro", "centro": [-0.8, 0.22, 0], "tamano": [0.06, 0.44, 0.06], "color": "#333333", "metal": 0.8},
+                  {"forma": "prisma", "centro": [0, 1.2, 0], "tamano": [2, 0.5, 1], "giro": [0, 90, 0], "color": "#aa3322"},
+                  {"forma": "esfera", "centro": [0.5, 1.6, 0], "tamano": 0.3, "color": "#88ccff", "opacidad": 0.4, "brillo": True},
+                  {"forma": "cupula", "centro": [0, 2, 0], "tamano": [0.4, 0.2, 0.4]}, {"forma": "cono", "centro": [0.8, 0.3, 0], "tamano": [0.2, 0.6, 0.2]}]
+        cm = await m.llamar("crear_modelo", nombre="Banca IA", piezas=piezas, proyecto=pid, categoria="pruebas")
+        comprobar(cm.get("tipo_para_colocar", "").startswith("modelo:as-") and cm["asset"]["visibilidad"] == "privada"
+                  and abs(cm["resumen"]["tamano_m"][1] - 2.1) < 0.01, "MCP: crear_modelo (piezas → GLB en la biblioteca y en el proyecto)")
+        st, cab, d = Cliente().pedir("GET", "/api/biblioteca/assets/%s/archivo" % cm["asset"]["id"], cab={"Authorization": "Bearer " + ta["token"]})
+        comprobar(st == 200 and d[:4] == b"glTF" and len(d) == cm["resumen"]["bytes"], "crear_modelo: el GLB se descarga")
+        st, ax = Cliente().j("GET", "/api/biblioteca/assets/%s" % cm["asset"]["id"], cab={"Authorization": "Bearer " + ta["token"]})
+        comprobar(st == 200 and str(ax.get("mini", "")).startswith("data:image/svg+xml;base64,"), "crear_modelo: miniatura SVG")
+        r4 = await m.llamar("colocar_objetos", proyecto=pid, objetos=[{"tipo": cm["tipo_para_colocar"], "x": -10, "z": 5}])
+        comprobar(r4.get("colocados") == 1, "MCP: colocar el modelo creado")
+        mal = await m.llamar("crear_modelo", nombre="Mala", piezas=[{"forma": "toro"}])
+        comprobar("_error" in mal and "toro" in mal["_error"], "crear_modelo rechaza formas que no existen")
+
+        n_objs = (await m.llamar("listar_objetos", proyecto=pid))["total"]
         pm = await m.llamar("publicar_mapa", proyecto=pid, nombre="Plaza con habitación %s" % sufijo[-4:], descripcion="Desde MCP")
         bm = await m.llamar("buscar_biblioteca", tipo="mapas", texto="habitación")
         comprobar(pm.get("id", "").startswith("u:") and any(x["id"] == pm["id"] for x in bm["mapas"]), "MCP: publicar_mapa y buscarlo en la biblioteca")
         async with Mcp(tb["token"]) as mb:
             np_ = await mb.llamar("crear_proyecto", nombre="Desde la biblioteca", plantilla=pm["id"])
             lo5 = await mb.llamar("listar_objetos", proyecto=np_["id"])
-            comprobar(lo5["total"] == 7, "otro usuario crea un proyecto desde el mapa publicado (7 objetos)")
+            comprobar(lo5["total"] == n_objs, "otro usuario crea un proyecto desde el mapa publicado (%d objetos)" % n_objs)
 
         r = await m.llamar("duplicar_proyecto", proyecto=pid)
         comprobar(r.get("id") and r["id"] != pid, "MCP: duplicar_proyecto")

@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from .. import config, db, plataforma
+from .. import config, db, modelos, plataforma
 from ..seguridad import exigir_rol, parsear_uuid, usuario_actual
 
 router = APIRouter(prefix="/api/biblioteca", tags=["biblioteca"])
@@ -206,6 +206,23 @@ async def desde_proyecto(pid: str, asset_doc: str, usuario, visibilidad: str = "
     return await obtener(a["id"], usuario)
 
 
+async def crear_modelo(usuario, nombre: str, piezas, descripcion: str = "", categoria: str = "general", etiquetas=None,
+                       visibilidad: str = "privada", proyecto: str | None = None) -> dict:
+    """Modelo hecho con piezas simples (ver modelos.py) → asset de la biblioteca; con proyecto, además lo añade a ese proyecto."""
+    if proyecto:
+        await exigir_rol(proyecto, usuario, escritura=True)
+    try:
+        bruto, mini, resumen = modelos.generar(piezas, nombre or "Modelo")
+    except modelos.ErrorModelo as e:
+        raise HTTPException(400, {"error": str(e), "code": "invalid_argument"})
+    etq = _etiquetas(etiquetas) + ["piezas"]
+    a = _publico(await crear(usuario, bruto, nombre, descripcion, categoria, etq, visibilidad, 1, mini))
+    r = {"asset": a, "resumen": resumen}
+    if proyecto:
+        r["proyecto"] = await a_proyecto(a["id"], proyecto, usuario)
+    return r
+
+
 # ───────────── rutas REST ─────────────
 
 class CambioAsset(BaseModel):
@@ -230,6 +247,16 @@ class DesdeProyecto(BaseModel):
     visibilidad: str = Field(default="publica", pattern="^(privada|publica)$")
 
 
+class NuevoModelo(BaseModel):
+    nombre: str = Field(min_length=1, max_length=80)
+    piezas: list[dict]
+    descripcion: str = Field(default="", max_length=500)
+    categoria: str = Field(default="general", max_length=40)
+    etiquetas: list[str] | str | None = None
+    visibilidad: str = Field(default="privada", pattern="^(privada|publica)$")
+    proyecto: str | None = None
+
+
 def _publico(a: dict) -> dict:
     return {k: v for k, v in a.items() if not k.startswith("_")}
 
@@ -248,6 +275,12 @@ async def subir(request: Request, usuario=Depends(usuario_actual)):
     q = request.query_params
     a = await crear(usuario, bruto, q.get("nombre", ""), q.get("descripcion", ""), q.get("categoria", "general"), q.get("etiquetas", ""), q.get("visibilidad", "privada"))
     return _publico(a)
+
+
+@router.post("/modelos")
+async def nuevo_modelo(datos: NuevoModelo, usuario=Depends(usuario_actual)):
+    """Crea un modelo con piezas simples (caja, cilindro, cono, esfera, cupula, prisma). Ver app/modelos.py."""
+    return await crear_modelo(usuario, datos.nombre, datos.piezas, datos.descripcion, datos.categoria, datos.etiquetas, datos.visibilidad, datos.proyecto)
 
 
 @router.post("/assets/desde-proyecto")
