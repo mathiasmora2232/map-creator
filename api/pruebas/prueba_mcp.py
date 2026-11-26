@@ -181,6 +181,30 @@ async def main():
         comprobar(st == 200 and str(ax.get("mini", "")).startswith("data:image/svg+xml;base64,"), "crear_modelo: miniatura SVG")
         r4 = await m.llamar("colocar_objetos", proyecto=pid, objetos=[{"tipo": cm["tipo_para_colocar"], "x": -10, "z": 5}])
         comprobar(r4.get("colocados") == 1, "MCP: colocar el modelo creado")
+        # creador de assets: las piezas se guardan, el autor las cambia, otro solo las copia
+        A, B = {"Authorization": "Bearer " + ta["token"]}, {"Authorization": "Bearer " + tb["token"]}
+        st, pz = Cliente().j("GET", "/api/biblioteca/assets/%s/piezas" % cm["asset"]["id"], cab=A)
+        comprobar(st == 200 and len(pz["piezas"]) == 6 and pz["mio"] and pz["piezas"][3].get("brillo") is True
+                  and pz["piezas"][0]["color"] == "#8a5a2b" and "rugosidad" not in pz["piezas"][0], "creador: las piezas se guardan con el modelo")
+        cambio = pz["piezas"][:2] + [{"forma": "caja", "centro": [0, 1.5, 0], "tamano": [0.4, 3, 0.4], "color": "#123456", "nombre": "Torre"}]
+        st, up = Cliente().j("PUT", "/api/biblioteca/modelos/%s" % cm["asset"]["id"], {"piezas": cambio, "nombre": "Banca IA v2"}, cab=A)
+        comprobar(st == 200 and up["asset"]["nombre"] == "Banca IA v2" and abs(up["resumen"]["tamano_m"][1] - 3) < 0.01 and up["asset"]["con_piezas"],
+                  "creador: el autor actualiza el modelo (%s)" % (up if st != 200 else "ok"))
+        st, d = Cliente().pedir("GET", "/api/biblioteca/assets/%s/archivo" % cm["asset"]["id"], cab=A)[::2]
+        comprobar(st == 200 and len(d) == up["resumen"]["bytes"], "creador: el GLB nuevo sustituye al anterior")
+        st, pz2 = Cliente().j("GET", "/api/biblioteca/assets/%s/piezas" % cm["asset"]["id"], cab=A)
+        comprobar(st == 200 and len(pz2["piezas"]) == 3 and pz2["piezas"][2]["nombre"] == "Torre", "creador: las piezas nuevas (con nombre) quedan guardadas")
+        st, _ = Cliente().j("PUT", "/api/biblioteca/modelos/%s" % cm["asset"]["id"], {"piezas": cambio}, cab=B)
+        comprobar(st in (403, 404), "creador: otro usuario no puede cambiar el modelo (%d)" % st)
+        st, _ = Cliente().j("GET", "/api/biblioteca/assets/%s/piezas" % cm["asset"]["id"], cab=B)
+        comprobar(st == 404, "creador: las piezas de un modelo privado no se ven desde otra cuenta")
+        st, _ = Cliente().j("PUT", "/api/biblioteca/modelos/%s" % cm["asset"]["id"], {"piezas": [{"forma": "toro"}]}, cab=A)
+        comprobar(st == 400, "creador: actualizar con piezas no válidas da 400")
+        st, cab_, d = Cliente().pedir("POST", "/api/biblioteca/modelos/glb", {"piezas": cambio, "nombre": "Vista"}, cab=A)
+        comprobar(st == 200 and d[:4] == b"glTF", "creador: descargar el .glb sin guardar")
+        st, _ = Cliente().j("GET", "/api/biblioteca/assets/%s/piezas" % a["id"], cab=A)
+        comprobar(st == 409, "creador: un .glb subido no se abre en el creador (409)")
+
         mal = await m.llamar("crear_modelo", nombre="Mala", piezas=[{"forma": "toro"}])
         comprobar("_error" in mal and "toro" in mal["_error"], "crear_modelo rechaza formas que no existen")
 

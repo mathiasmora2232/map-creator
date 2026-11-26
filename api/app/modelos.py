@@ -189,9 +189,30 @@ def validar(piezas) -> list[dict]:
                 "opacidad": _num(p.get("opacidad"), 1, 0.05, 1, "opacidad"),
                 "brillo": bool(p.get("brillo")),
                 "arriba": _num(p.get("arriba"), 1, 0, 4, "arriba"),
+                "nombre": str(p.get("nombre") or "")[:40],
             })
         except ErrorModelo as e:
             raise ErrorModelo("Pieza %d: %s" % (i, e))
+    return out
+
+
+def a_json(ps: list[dict], desp=(0, 0, 0)) -> list[dict]:
+    """Piezas validadas → JSON compacto (lo que se guarda en la biblioteca para volver a editar): sin los valores por defecto y, con
+    desp, movidas como el modelo guardado (base en el suelo, centrado)."""
+    out = []
+    for p in ps:
+        d = {"forma": p["forma"], "centro": [round(x + o, 4) for x, o in zip(p["centro"], desp)], "tamano": [round(x, 4) for x in p["tamano"]],
+             "color": "#%02x%02x%02x" % p["color"]}
+        if any(p["giro"]):
+            d["giro"] = [round(x, 2) for x in p["giro"]]
+        for k, defecto in (("rugosidad", 0.75), ("metal", 0), ("opacidad", 1), ("arriba", 1)):
+            if abs(p[k] - defecto) > 1e-6:
+                d[k] = round(p[k], 3)
+        if p["brillo"]:
+            d["brillo"] = True
+        if p["nombre"]:
+            d["nombre"] = p["nombre"]
+        out.append(d)
     return out
 
 
@@ -216,8 +237,9 @@ def _lin(c: int) -> float:
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
 
-def construir(piezas: list[dict]) -> dict:
-    """Mallas agrupadas por material: {clave_material: {"mat":…, "v":[], "n":[], "t":[]}} ya recolocadas (base en 0)."""
+def construir(piezas: list[dict], desp: list | None = None) -> dict:
+    """Mallas agrupadas por material: {clave_material: {"mat":…, "v":[], "n":[], "t":[]}} ya recolocadas (base en 0). En desp (si se
+    pasa) deja el desplazamiento aplicado [dx, dy, dz]."""
     grupos: dict = {}
     for p in piezas:
         uv, un, ut = _unitaria(p["forma"], p["arriba"])
@@ -237,6 +259,8 @@ def construir(piezas: list[dict]) -> dict:
     mn = [min(v[k] for v in todos) for k in range(3)]
     mx = [max(v[k] for v in todos) for k in range(3)]
     dx, dy, dz = -(mn[0] + mx[0]) / 2, -mn[1], -(mn[2] + mx[2]) / 2
+    if desp is not None:
+        desp[:] = [dx, dy, dz]
     for g in grupos.values():
         g["v"] = [(v[0] + dx, v[1] + dy, v[2] + dz) for v in g["v"]]
     return grupos
@@ -341,11 +365,12 @@ def miniatura(grupos: dict, px: int = 256) -> str | None:
 
 
 def generar(piezas, nombre: str = "Modelo") -> tuple[bytes, str | None, dict]:
-    """Valida, construye y devuelve (glb, miniatura, resumen)."""
+    """Valida, construye y devuelve (glb, miniatura, resumen). resumen["piezas_json"] son las piezas normalizadas (para guardarlas)."""
     ps = validar(piezas)
-    grupos = construir(ps)
+    desp: list = []
+    grupos = construir(ps, desp)
     datos = glb(grupos, nombre)
     todos = [v for g in grupos.values() for v in g["v"]]
     tam = [round(max(v[k] for v in todos) - min(v[k] for v in todos), 3) for k in range(3)]
     return datos, miniatura(grupos), {"piezas": len(ps), "materiales": len(grupos), "triangulos": sum(len(g["t"]) for g in grupos.values()),
-                                      "tamano_m": tam, "bytes": len(datos)}
+                                      "tamano_m": tam, "bytes": len(datos), "piezas_json": a_json(ps, desp)}

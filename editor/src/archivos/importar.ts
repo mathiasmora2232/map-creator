@@ -128,7 +128,7 @@
       const el = $('#listaAssets'); if (!el) return;
       const ms = docs('modelo'), ts = docs('textura');
       const tarjeta = ([id, d], tipo?) => `<div class="asset"><img src="${esc(d.mini || '')}" alt=""><span><b>${esc(d.nombre || id)}</b><small>${tipo === 'modelo' && d.d0 ? A.fmt(d.d0[0]) + ' × ' + A.fmt(d.d0[1]) + ' × ' + A.fmt(d.d0[2]) + ' m' : 'Textura'}</small></span>${tipo === 'modelo' ? `<button data-asset-colocar="${esc(id)}" title="Colocar en el mapa">Colocar</button>${window.OOImportarPro ? `<button data-asset-editar="${esc(id)}" title="Nombre, categoría, escala y miniatura">Editar</button>` : ''}` : ''}<button data-asset-quitar="${esc(id)}" title="Quitar del catálogo (el archivo queda en referencias/assets_editor)" aria-label="Quitar">${svg('cerrar')}</button></div>`;
-      el.innerHTML = `<div class="fila"><button data-asset-imp="modelo" class="prim">${svg('subir')}Importar modelo (.glb)</button><button data-asset-imp="textura">${svg('subir')}Importar textura</button></div>
+      el.innerHTML = `<div class="fila"><button data-asset-imp="modelo" class="prim">${svg('subir')}Importar modelo (.glb)</button><button data-asset-imp="textura">${svg('subir')}Importar textura</button>${new URLSearchParams(location.search).get('p') ? `<button data-asset-imp="creador" title="Abre el creador de assets en otra pestaña: lo que guardes ahí con este mapa elegido aparece aquí">Crear objeto nuevo</button>` : ''}</div>
         <p class="ayuda">Los modelos van al catálogo de abajo (Importados) y las texturas a la pestaña Material. Se guardan en referencias/assets_editor.</p>
         <h3>Modelos (${ms.length})</h3>${ms.map((x?) => tarjeta(x, 'modelo')).join('') || '<p class="ayuda">Ninguno todavía.</p>'}
         <h3>Texturas (${ts.length})</h3>${ts.map((x?) => tarjeta(x, 'textura')).join('') || '<p class="ayuda">Ninguna todavía.</p>'}`;
@@ -137,6 +137,7 @@
       const b = e.target.closest('[data-asset-imp],[data-asset-colocar],[data-asset-quitar],[data-a="imp-modelo"],[data-a="imp-textura"]'); if (!b) return;
       if (b.dataset.a === 'imp-modelo' || b.dataset.assetImp === 'modelo') { if (window.OOImportarPro) OOImportarPro.importar(); else importarModelo(); } /* (2.1 pro f4) con nombre, categoría y escala */
       else if (b.dataset.a === 'imp-textura' || b.dataset.assetImp === 'textura') importarTextura();
+      else if (b.dataset.assetImp === 'creador') window.open('/creador?proyecto=' + encodeURIComponent(new URLSearchParams(location.search).get('p') || ''), '_blank');
       else if (b.dataset.assetColocar) { A.iniciarColocar('asset:' + b.dataset.assetColocar); }
       else if (b.dataset.assetQuitar) { const id = b.dataset.assetQuitar; if (await A.confirmar('¿Quitar del catálogo?', 'El archivo sigue en referencias/assets_editor; los objetos ya colocados dejarán de verse.', 'Quitar')) { A.guardarCol('assets', id, null); renderLista(); if (window.OOCatalogoUI) OOCatalogoUI.render(); } }
     });

@@ -13,7 +13,7 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 
 from .. import config, db, modelos, plataforma
@@ -22,7 +22,7 @@ from ..seguridad import exigir_rol, parsear_uuid, usuario_actual
 router = APIRouter(prefix="/api/biblioteca", tags=["biblioteca"])
 CARPETA = "_biblioteca"
 MAX_GLB = 50 * 1024 * 1024
-CAMPOS = "a.id, a.nombre, a.descripcion, a.categoria, a.etiquetas, a.visibilidad, a.tamano_m, a.escala, a.mini, a.bytes, a.usos, a.creado, a.actualizado, a.autor_id, u.nombre AS autor"
+CAMPOS = "a.id, a.nombre, a.descripcion, a.categoria, a.etiquetas, a.visibilidad, a.tamano_m, a.escala, a.mini, a.bytes, a.usos, a.creado, a.actualizado, a.autor_id, u.nombre AS autor, (a.piezas IS NOT NULL) AS con_piezas"
 
 
 def _fila(r, uid=None) -> dict:
@@ -113,7 +113,7 @@ async def obtener(aid, usuario, para_editar: bool = False) -> dict:
 
 
 async def crear(usuario, bruto: bytes, nombre: str, descripcion: str = "", categoria: str = "general", etiquetas=None,
-                visibilidad: str = "privada", escala: float = 1, mini: str | None = None) -> dict:
+                visibilidad: str = "privada", escala: float = 1, mini: str | None = None, piezas: list | None = None) -> dict:
     if len(bruto) > MAX_GLB:
         raise HTTPException(413, {"error": "El modelo pasa de %d MB." % (MAX_GLB // 1048576), "code": "resource_exhausted"})
     if bruto[:4] != b"glTF":
@@ -128,10 +128,11 @@ async def crear(usuario, bruto: bytes, nombre: str, descripcion: str = "", categ
         mini = None
     async with db.pool.acquire() as con:
         await con.execute(
-            "INSERT INTO biblioteca_assets (id, autor_id, nombre, descripcion, categoria, etiquetas, visibilidad, tamano_m, escala, mini, archivo, bytes) "
-            "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+            "INSERT INTO biblioteca_assets (id, autor_id, nombre, descripcion, categoria, etiquetas, visibilidad, tamano_m, escala, mini, archivo, bytes, piezas) "
+            "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
             aid, usuario["id"], nombre, (descripcion or "")[:500], (categoria or "general")[:40], _etiquetas(etiquetas),
-            "publica" if visibilidad == "publica" else "privada", json.dumps(tam) if tam else None, float(escala or 1), mini, rel, len(bruto))
+            "publica" if visibilidad == "publica" else "privada", json.dumps(tam) if tam else None, float(escala or 1), mini, rel, len(bruto),
+            json.dumps(piezas) if piezas else None)
     return await obtener(aid, usuario)
 
 
@@ -206,21 +207,62 @@ async def desde_proyecto(pid: str, asset_doc: str, usuario, visibilidad: str = "
     return await obtener(a["id"], usuario)
 
 
+def _generar(piezas, nombre: str):
+    try:
+        return modelos.generar(piezas, nombre or "Modelo")
+    except modelos.ErrorModelo as e:
+        raise HTTPException(400, {"error": str(e), "code": "invalid_argument"})
+
+
 async def crear_modelo(usuario, nombre: str, piezas, descripcion: str = "", categoria: str = "general", etiquetas=None,
                        visibilidad: str = "privada", proyecto: str | None = None) -> dict:
     """Modelo hecho con piezas simples (ver modelos.py) → asset de la biblioteca; con proyecto, además lo añade a ese proyecto."""
     if proyecto:
         await exigir_rol(proyecto, usuario, escritura=True)
-    try:
-        bruto, mini, resumen = modelos.generar(piezas, nombre or "Modelo")
-    except modelos.ErrorModelo as e:
-        raise HTTPException(400, {"error": str(e), "code": "invalid_argument"})
+    bruto, mini, resumen = _generar(piezas, nombre)
     etq = _etiquetas(etiquetas) + ["piezas"]
-    a = _publico(await crear(usuario, bruto, nombre, descripcion, categoria, etq, visibilidad, 1, mini))
-    r = {"asset": a, "resumen": resumen}
+    pj = resumen.pop("piezas_json")
+    a = _publico(await crear(usuario, bruto, nombre, descripcion, categoria, etq, visibilidad, 1, mini, pj))
+    r = {"asset": a, "resumen": resumen, "piezas": pj}
     if proyecto:
         r["proyecto"] = await a_proyecto(a["id"], proyecto, usuario)
     return r
+
+
+async def actualizar_modelo(aid, usuario, piezas, nombre: str | None = None, descripcion: str | None = None,
+                            categoria: str | None = None, proyecto: str | None = None) -> dict:
+    """Vuelve a generar un modelo con piezas (solo su autor). Los proyectos que ya lo tenían guardan su copia: con proyecto, se añade
+    la versión nueva a ese proyecto."""
+    a = await obtener(aid, usuario, para_editar=True)
+    if proyecto:
+        await exigir_rol(proyecto, usuario, escritura=True)
+    nombre = (nombre or "").strip()[:80] or a["nombre"]
+    bruto, mini, resumen = _generar(piezas, nombre)
+    (config.DIR_ARCHIVOS / a["_archivo"]).write_bytes(bruto)
+    tam = plataforma.tamano_glb(bruto)
+    pj = resumen.pop("piezas_json")
+    async with db.pool.acquire() as con:
+        await con.execute(
+            "UPDATE biblioteca_assets SET nombre = $2, descripcion = $3, categoria = $4, tamano_m = $5, mini = $6, bytes = $7, piezas = $8, "
+            "actualizado = now() WHERE id = $1",
+            parsear_uuid(a["id"]), nombre, (a["descripcion"] if descripcion is None else descripcion)[:500],
+            ((a["categoria"] if categoria is None else categoria) or "general")[:40], json.dumps(tam) if tam else None, mini, len(bruto),
+            json.dumps(pj))
+    r = {"asset": _publico(await obtener(aid, usuario)), "resumen": resumen, "piezas": pj}
+    if proyecto:
+        r["proyecto"] = await a_proyecto(a["id"], proyecto, usuario)
+    return r
+
+
+async def piezas_de(aid, usuario) -> dict:
+    """Las piezas de un modelo (suyo o público) para abrirlo en el creador de assets."""
+    a = await obtener(aid, usuario)
+    async with db.pool.acquire() as con:
+        p = await con.fetchval("SELECT piezas FROM biblioteca_assets WHERE id = $1", parsear_uuid(a["id"]))
+    if p is None:
+        raise HTTPException(409, {"error": "Este modelo no se hizo con piezas: no se puede abrir en el creador.", "code": "failed_precondition"})
+    return {"id": a["id"], "nombre": a["nombre"], "descripcion": a["descripcion"], "categoria": a["categoria"],
+            "visibilidad": a["visibilidad"], "mio": a["mio"], "piezas": json.loads(p) if isinstance(p, str) else p}
 
 
 # ───────────── rutas REST ─────────────
@@ -257,6 +299,19 @@ class NuevoModelo(BaseModel):
     proyecto: str | None = None
 
 
+class CambioModelo(BaseModel):
+    piezas: list[dict]
+    nombre: str | None = Field(default=None, max_length=80)
+    descripcion: str | None = Field(default=None, max_length=500)
+    categoria: str | None = Field(default=None, max_length=40)
+    proyecto: str | None = None
+
+
+class VistaModelo(BaseModel):
+    piezas: list[dict]
+    nombre: str = Field(default="Modelo", max_length=80)
+
+
 def _publico(a: dict) -> dict:
     return {k: v for k, v in a.items() if not k.startswith("_")}
 
@@ -281,6 +336,24 @@ async def subir(request: Request, usuario=Depends(usuario_actual)):
 async def nuevo_modelo(datos: NuevoModelo, usuario=Depends(usuario_actual)):
     """Crea un modelo con piezas simples (caja, cilindro, cono, esfera, cupula, prisma). Ver app/modelos.py."""
     return await crear_modelo(usuario, datos.nombre, datos.piezas, datos.descripcion, datos.categoria, datos.etiquetas, datos.visibilidad, datos.proyecto)
+
+
+@router.post("/modelos/glb")
+async def modelo_glb(datos: VistaModelo, usuario=Depends(usuario_actual)):
+    """El .glb de unas piezas sin guardarlo (Descargar del creador de assets)."""
+    bruto, _mini, _r = _generar(datos.piezas, datos.nombre)
+    nombre = re.sub(r"[^A-Za-z0-9_.\-]", "_", datos.nombre)[:70] or "modelo"
+    return Response(bruto, media_type="model/gltf-binary", headers={"Content-Disposition": 'attachment; filename="%s.glb"' % nombre})
+
+
+@router.put("/modelos/{aid}")
+async def cambiar_modelo(aid: str, datos: CambioModelo, usuario=Depends(usuario_actual)):
+    return await actualizar_modelo(aid, usuario, datos.piezas, datos.nombre, datos.descripcion, datos.categoria, datos.proyecto)
+
+
+@router.get("/assets/{aid}/piezas")
+async def ver_piezas(aid: str, usuario=Depends(usuario_actual)):
+    return await piezas_de(aid, usuario)
 
 
 @router.post("/assets/desde-proyecto")

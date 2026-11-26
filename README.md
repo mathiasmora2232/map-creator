@@ -28,6 +28,10 @@ correos apunten a tu dominio. En producción las variables SMTP las inyecta el p
 («rodea el mapa de colinas con un río», «pon bancas y farolas en la plaza») y usa las herramientas del editor (terreno procedural,
 catálogo, vegetación, versiones). Guarda una versión antes de los cambios grandes. Sin la variable no aparece.
 
+**Creador de assets** (panel → Crear assets, `/creador`): haz objetos 3D sin saber modelar, con plantillas (banco, árbol, casa, coche…),
+formas que se añaden con un clic, colores y acabados con botones y, si el asistente está activo, pidiéndoselo a la IA («un buzón rojo»,
+«hazlo más alto»). Se guardan en tu biblioteca (y se pueden volver a editar), se añaden a un mapa o se descargan en `.glb`.
+
 **MCP** (conectar Claude Code, Claude Desktop, Cursor…): Cuenta → Conexiones (MCP) → crear un token, y
 `claude mcp add --transport http map-creator https://<servidor>/mcp --header "Authorization: Bearer mc_…"`. Ver `docs/MCP.md`.
 
