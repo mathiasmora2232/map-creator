@@ -1,4 +1,4 @@
-/* Map Creator: panel del usuario (/app). Vistas por hash: #inicio, #mapas, #compartidos, #favoritos, #plantillas, #papelera,
+/* Map Creator: panel del usuario (/app). Vistas por hash: #inicio, #asistente, #mapas, #compartidos, #favoritos, #plantillas, #papelera,
    #atajos, #cuenta y #admin (solo administradores). Este módulo elige la vista, reparte los clics y arranca el panel. */
 import { api, aviso, esc } from '../comun';
 import { $, $$ } from '../dom';
@@ -18,10 +18,11 @@ import { pintarSesiones, ponerPestanaCuenta, vistaCuenta } from './vistas/cuenta
 import { vistaInicio } from './vistas/inicio';
 import { vistaLista, vistaPapelera } from './vistas/mapas';
 import { vistaPlantillas } from './vistas/plantillas';
+import { vistaAsistente } from './vistas/asistente';
 import { clicBiblioteca, vistaBiblioteca } from './vistas/biblioteca';
 import { clicConexiones } from './vistas/conexiones';
 
-const TITULOS: Record<string, string> = { inicio: 'Inicio', mapas: 'Mis mapas', compartidos: 'Compartidos conmigo', favoritos: 'Favoritos', plantillas: 'Plantillas', biblioteca: 'Biblioteca', papelera: 'Papelera', atajos: 'Atajos', cuenta: 'Cuenta', admin: 'Administración' };
+const TITULOS: Record<string, string> = { inicio: 'Inicio', mapas: 'Mis mapas', compartidos: 'Compartidos conmigo', favoritos: 'Favoritos', plantillas: 'Plantillas', biblioteca: 'Biblioteca', asistente: 'Asistente', papelera: 'Papelera', atajos: 'Atajos', cuenta: 'Cuenta', admin: 'Administración' };
 
 async function mostrar(): Promise<void> {
   let vista = (location.hash || '#inicio').slice(1);
@@ -33,6 +34,7 @@ async function mostrar(): Promise<void> {
     if (vista === 'mapas' || vista === 'compartidos' || vista === 'favoritos') vistaLista(vista);
     else if (vista === 'plantillas') vistaPlantillas();
     else if (vista === 'biblioteca') await vistaBiblioteca();
+    else if (vista === 'asistente') await vistaAsistente();
     else if (vista === 'papelera') await vistaPapelera();
     else if (vista === 'atajos') vistaAtajos();
     else if (vista === 'cuenta') vistaCuenta();

@@ -40,7 +40,10 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
   operaciones sobre datos van en `api/app/plataforma.py` (mismo formato de documentos que el editor). Detalles en `docs/MCP.md`.
 - Una herramienta nueva: función en `plataforma.py` (o en la ruta que toque) + `@mcp.tool` en `mcp_servidor.py` + comprobación en
   `api/pruebas/prueba_mcp.py`. Lo que necesite el motor del navegador (terreno, exportar 3D) se deja pedido para el editor.
-- Biblioteca de assets: `api/app/rutas/biblioteca.py`; los `.glb` de `api/biblioteca/` se publican al arrancar.
+- Biblioteca de assets: `api/app/rutas/biblioteca.py`; los `.glb` de `api/biblioteca/` se publican al arrancar. Modelos con piezas
+  (`crear_modelo`): `api/app/modelos.py` (GLB y miniatura SVG sin dependencias).
+- El chat del panel (`sitio/src/panel/vistas/asistente.ts` → `POST /api/asistente`) usa las herramientas del MCP: una herramienta nueva
+  del MCP aparece sola en el chat. Lanza `ToolError` (no `ValueError`) para que el mensaje llegue al cliente.
 
 ## Producción
 
