@@ -56,6 +56,21 @@ y `subir_asset`) con la sesión del usuario: `POST /api/asistente` (en `api/app/
 ejecutadas en el servidor) y el navegador repite mientras haga falta. Necesita `CLAUDE_API`/`ANTHROPIC_API_KEY`, como el asistente del editor,
 que también tiene `crear_modelo` (por `POST /api/biblioteca/modelos`).
 
+## Creador de assets
+
+`/creador` (panel → **Crear assets**, Biblioteca → **Crear asset**, editor → Importados → **Crear objeto nuevo**) es un editor sencillo de
+modelos con las mismas piezas que `crear_modelo`: plantillas para empezar, formas con un clic, flechas para mover/girar/escalar, colores y
+acabados (mate, satinado, brillante, metal, vidrio, luz), deshacer, borrador automático por cuenta y una barra de IA que crea o cambia el
+modelo con palabras. Código en `sitio/src/creador/` (three.js empaquetado con esbuild); las formas de `formas.ts` son las de `api/app/modelos.py`.
+
+- Las piezas se guardan con el asset (columna `biblioteca_assets.piezas`, ya apoyadas en el suelo y centradas como el GLB): los modelos hechos
+  con piezas se pueden volver a abrir (`/creador?id=<asset>`; los de otros, como copia). Un `.glb` subido no (409).
+- `GET /api/biblioteca/assets/{id}/piezas`, `PUT /api/biblioteca/modelos/{id}` (solo el autor; vuelve a generar GLB y miniatura; los proyectos
+  que ya lo tenían guardan su copia) y `POST /api/biblioteca/modelos/glb` (descargar sin guardar).
+- IA: `POST /api/asistente/piezas` `{pedido, piezas?, nombre?, seleccion?}` → `{piezas, nombre, mensaje}`. Una llamada a Claude con la
+  herramienta `definir_modelo` (si las piezas no valen, se le devuelve el error una vez). Responde con espacios cada 10 s mientras espera
+  (Cloudflare corta a los 100 s sin datos): los errores a mitad llegan como `{error, status}` con HTTP 200.
+
 ## Biblioteca
 
 - **Mapas**: las plantillas (del sistema y las publicadas). `publicar_mapa` publica el mapa de un proyecto; `crear_proyecto(plantilla=<id>)` crea uno desde él.

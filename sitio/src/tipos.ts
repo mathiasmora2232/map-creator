@@ -172,6 +172,24 @@ export interface AssetBiblioteca {
   autor_id: string | null;
   mio: boolean;
   url: string;
+  con_piezas?: boolean;
+}
+
+/* Modelos con piezas (api/app/modelos.py): el creador de assets y crear_modelo */
+export type FormaPieza = 'caja' | 'cilindro' | 'cono' | 'esfera' | 'cupula' | 'prisma';
+export type V3 = [number, number, number];
+export interface Pieza {
+  forma: FormaPieza;
+  centro: V3;
+  tamano: V3;
+  giro?: V3;
+  color: string;
+  rugosidad?: number;
+  metal?: number;
+  opacidad?: number;
+  brillo?: boolean;
+  arriba?: number;
+  nombre?: string;
 }
 
 /* Tokens de acceso personales (api/app/rutas/tokens.py) */

@@ -42,6 +42,8 @@ Vienen del grupo `map-creator-app` de la bóveda, que las toma por referencia de
   `api/pruebas/prueba_mcp.py`. Lo que necesite el motor del navegador (terreno, exportar 3D) se deja pedido para el editor.
 - Biblioteca de assets: `api/app/rutas/biblioteca.py`; los `.glb` de `api/biblioteca/` se publican al arrancar. Modelos con piezas
   (`crear_modelo`): `api/app/modelos.py` (GLB y miniatura SVG sin dependencias).
+- Creador de assets: página `/creador` (`sitio/src/creador/`, con `three` de npm empaquetado). Sus formas (`formas.ts`) tienen que coincidir
+  con las de `api/app/modelos.py`; si añades una forma, va en los dos sitios (y en los esquemas de `crear_modelo`). Detalles en `docs/MCP.md`.
 - El chat del panel (`sitio/src/panel/vistas/asistente.ts` → `POST /api/asistente`) usa las herramientas del MCP: una herramienta nueva
   del MCP aparece sola en el chat. Lanza `ToolError` (no `ValueError`) para que el mensaje llegue al cliente.
 

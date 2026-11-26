@@ -19,6 +19,7 @@ function tarjeta(a: AssetBiblioteca): string {
       <div class="pl-acc">
         ${editables.length ? `<select class="sel-proy" data-asset="${esc(a.id)}" aria-label="Añadir a un proyecto"><option value="">Añadir a un proyecto…</option>${editables.map(p => `<option value="${esc(p.id)}">${esc(p.nombre)}</option>`).join('')}</select>` : ''}
         <a class="btn fantasma peq" href="${esc(a.url)}" download>Descargar .glb</a>
+        ${a.con_piezas ? `<a class="btn fantasma peq" href="/creador?id=${encodeURIComponent(a.id)}${a.mio ? '' : '&copia=1'}">${a.mio ? 'Editar' : 'Copiar y editar'}</a>` : ''}
         ${a.mio ? `<button class="btn fantasma peq" data-a="as-visibilidad" data-id="${esc(a.id)}" data-v="${a.visibilidad === 'publica' ? 'privada' : 'publica'}">${a.visibilidad === 'publica' ? 'Hacer privado' : 'Publicar para todos'}</button>
         <button class="btn fantasma peq peligro" data-a="as-borrar" data-id="${esc(a.id)}">Borrar</button>` : ''}
       </div></div></article>`;
@@ -30,14 +31,15 @@ async function cargar(): Promise<void> {
   const c = $('#bibLista'); if (!c) return;
   c.innerHTML = lista.length ? `<div class="tarjetas">${lista.map(tarjeta).join('')}</div>`
     : `<div class="vacio"><h3>${filtro ? 'Nada coincide con «' + esc(filtro) + '»' : soloMios ? 'Todavía no has subido modelos' : 'La biblioteca está vacía'}</h3>
-       <p>Sube un modelo .glb (por ejemplo, exportado desde Blender) o publícalo desde un proyecto con el asistente o el MCP.</p></div>`;
+       <p>Crea uno con el <a href="/creador">creador de assets</a> (con plantillas, formas y la IA), sube un modelo .glb (por ejemplo, exportado desde Blender) o publícalo desde un proyecto con el asistente o el MCP.</p></div>`;
 }
 
 export async function vistaBiblioteca(): Promise<void> {
   principal.innerHTML = cabecera('Biblioteca', 'Modelos 3D para tus mapas: los que publica cualquiera en este servidor y los tuyos. Los mapas para empezar están en <a href="#plantillas">Plantillas</a>.',
     `<input type="search" id="bibBuscar" placeholder="Buscar modelos…" aria-label="Buscar modelos" value="${esc(filtro)}">
      <label class="chk"><input type="checkbox" id="bibMios"${soloMios ? ' checked' : ''}> Solo los míos</label>
-     <label class="btn prim"><input type="file" accept=".glb,model/gltf-binary" id="bibSubir" hidden>Subir modelo (.glb)</label>`)
+     <a class="btn prim" href="/creador">Crear asset</a>
+     <label class="btn"><input type="file" accept=".glb,model/gltf-binary" id="bibSubir" hidden>Subir modelo (.glb)</label>`)
     + '<div id="bibLista"><div class="cargando">Cargando…</div></div>';
   const b = $('#bibBuscar') as HTMLInputElement; let t = 0;
   b.addEventListener('input', () => { clearTimeout(t); t = window.setTimeout(() => { filtro = b.value.trim(); cargar(); }, 250); });
