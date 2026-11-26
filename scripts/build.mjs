@@ -25,6 +25,7 @@ const PAGINAS = {
   recuperar: 'sitio/src/paginas/recuperar.ts',
   invitacion: 'sitio/src/paginas/invitacion.ts',
   panel: 'sitio/src/panel/index.ts',
+  creador: 'sitio/src/creador/index.ts',
   recorrido: 'sitio/src/recorrido.ts'
 };
 

@@ -7,6 +7,7 @@ Las herramientas trabajan sobre los datos del servidor con los mismos permisos q
 motor 3D del navegador (calcular el terreno, exportar GLB/Unity/Godot) se deja pedido y lo hace el editor al abrir el mapa.
 """
 import json
+from contextvars import ContextVar
 from typing import Any, Literal
 
 from fastapi import HTTPException
@@ -14,6 +15,7 @@ from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.auth.provider import AccessToken
 from mcp.server.auth.settings import AuthSettings
 from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import ToolAnnotations
 
@@ -21,14 +23,27 @@ from . import config, db, plataforma
 from .rutas import biblioteca as BIB
 from .seguridad import exigir_rol, parsear_uuid, usuario_de_token
 
+INSTRUCCIONES_MODELO = """crear_modelo arma un modelo 3D con piezas simples y lo guarda en la biblioteca (privado salvo publicar=true);
+con proyecto, lo añade también al proyecto y devuelve el tipo 'modelo:<id>' para colocar_objetos. Piezas en metros, con la base del modelo
+en y = 0: cada pieza tiene forma (caja, cilindro, cono, esfera, cupula, prisma), centro [x, y, z] (el centro de la pieza, así que una caja
+de alto 1 apoyada en el suelo va en y = 0.5), tamano [ancho X, alto Y, fondo Z], giro [rx, ry, rz] en grados, color #rrggbb y opcionales
+rugosidad, metal, opacidad (vidrio ≈ 0.35), brillo (luces) y arriba (cilindro: radio de arriba / radio de abajo, para troncos de cono).
+El prisma es un tejado a dos aguas: sección triangular en XY con la cumbrera a lo largo de Z. Usa medidas reales, entre 3 y 150 piezas y
+colores con matices (no solo primarios)."""
+
 INSTRUCCIONES = """Map Creator es un editor de mapas 3D para juegos (exporta a Unity y Godot) y planos. Un proyecto tiene un mapa
 principal (`mapa_inicial`). Coordenadas en metros: X hacia el este, Z hacia el sur, Y es la altura; el giro es en grados alrededor de Y.
 
 Flujo típico: listar_proyectos o crear_proyecto → ver_proyecto (límites y objetos) → buscar_catalogo → colocar_objetos / crear_paredes
 → guardar_version antes de cambios grandes. El terreno procedural (generar_terreno) y las exportaciones 3D los calcula el editor del
 navegador: quedan pedidos y se hacen al abrir el mapa (enlace `editor` de ver_proyecto). La biblioteca tiene mapas (plantillas) y modelos
-GLB que se pueden añadir a un proyecto y colocar con tipo `modelo:<id>`."""
+GLB que se pueden añadir a un proyecto y colocar con tipo `modelo:<id>`.
 
+""" + INSTRUCCIONES_MODELO
+
+
+# Los errores de las herramientas son ToolError: el SDK solo pasa al cliente el mensaje de ToolError (los demás salen como
+# «Error executing tool …»).
 
 class Verificador:
     async def verify_token(self, token: str) -> AccessToken | None:
@@ -48,13 +63,18 @@ CREAR = ToolAnnotations(read_only_hint=False, destructive_hint=False, open_world
 CAMBIAR = ToolAnnotations(read_only_hint=False, destructive_hint=True, open_world_hint=False)
 
 
+# El asistente del panel (rutas/asistente.py) llama a estas mismas herramientas sin token: deja aquí el id del usuario de la sesión.
+usuario_sesion: ContextVar[str | None] = ContextVar("usuario_sesion", default=None)
+
+
 async def _usuario():
-    t = get_access_token()
-    uid = parsear_uuid(t.subject) if t else None
+    sesion = usuario_sesion.get()
+    t = None if sesion else get_access_token()
+    uid = parsear_uuid(sesion or (t.subject if t else None))
     async with db.pool.acquire() as con:
         u = await con.fetchrow("SELECT id, email, nombre, es_admin, email_verificado, dos_pasos FROM usuarios WHERE id = $1", uid) if uid else None
     if not u:
-        raise ValueError("Token no válido o revocado.")
+        raise ToolError("Token no válido o revocado.")
     return u
 
 
@@ -68,7 +88,7 @@ async def _proy(proyecto: str, escritura: bool = False):
     try:
         rol = await exigir_rol(proyecto, u, escritura=escritura)
     except HTTPException as e:
-        raise ValueError(_msg(e))
+        raise ToolError(_msg(e))
     pid = parsear_uuid(proyecto)
     async with db.pool.acquire() as con:
         p = await plataforma.proyecto(con, pid)
@@ -83,7 +103,7 @@ async def _llamar(f, *a, **k):
     try:
         return await f(*a, **k)
     except HTTPException as e:
-        raise ValueError(_msg(e))
+        raise ToolError(_msg(e))
 
 
 def _sin_internos(d):
@@ -120,7 +140,7 @@ async def crear_proyecto(nombre: str, plantilla: str = "vacio", ancho: float = 1
     try:
         p = await P.crear(P.NuevoProyecto(nombre=nombre, plantilla=plantilla, ancho=ancho, largo=largo, terreno=terreno, generar=gen), u)
     except HTTPException as e:
-        raise ValueError(_msg(e))
+        raise ToolError(_msg(e))
     return {"id": p["id"], "nombre": p["nombre"], "mapa": p["mapa_inicial"], "editor": "%s/editor/?p=%s&m=%s" % (url_base, p["id"], p["mapa_inicial"]),
             "relieve": "se generará al abrir el editor" if gen else None}
 
@@ -272,7 +292,7 @@ async def importar_proyecto(exportacion_json: str, nombre: str | None = None) ->
     try:
         datos = json.loads(exportacion_json)
     except ValueError:
-        raise ValueError("exportacion_json no es JSON válido.")
+        raise ToolError("exportacion_json no es JSON válido.")
     r = await _llamar(plataforma.importar, datos, u, nombre)
     r["editor"] = "%s/editor/?p=%s&m=%s" % (url_base, r["proyecto"], r["mapa"])
     return r
@@ -305,20 +325,33 @@ async def subir_asset(nombre: str, url: str | None = None, glb_base64: str | Non
         try:
             bruto = base64.b64decode(glb_base64)
         except ValueError:
-            raise ValueError("glb_base64 no es base64 válido.")
+            raise ToolError("glb_base64 no es base64 válido.")
     elif url:
         if not url.startswith("https://"):
-            raise ValueError("La url tiene que ser https.")
+            raise ToolError("La url tiene que ser https.")
         import urllib.request
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "MapCreator"}), timeout=30) as r:
                 bruto = r.read(BIB.MAX_GLB + 1)
         except Exception as e:
-            raise ValueError("No se pudo descargar: %s" % e)
+            raise ToolError("No se pudo descargar: %s" % e)
     else:
-        raise ValueError("Pasa url o glb_base64.")
+        raise ToolError("Pasa url o glb_base64.")
     a = await _llamar(BIB.crear, u, bruto, nombre, descripcion, categoria, etiquetas, "publica" if publicar else "privada")
     return _sin_internos(dict(a, url=url_base + a["url"], mini=None))
+
+
+@mcp.tool(description="Crea un modelo 3D (asset) con piezas simples y lo guarda en tu biblioteca. " + INSTRUCCIONES_MODELO, annotations=CREAR)
+async def crear_modelo(nombre: str, piezas: list[dict[str, Any]], descripcion: str = "", categoria: str = "general",
+                       etiquetas: list[str] | None = None, publicar: bool = False, proyecto: str | None = None) -> dict:
+    u = await _usuario()
+    r = await _llamar(BIB.crear_modelo, u, nombre, piezas, descripcion, categoria, etiquetas, "publica" if publicar else "privada", proyecto)
+    a = r["asset"]
+    out = {"asset": {"id": a["id"], "nombre": a["nombre"], "visibilidad": a["visibilidad"], "tamano_m": a.get("tamano_m"), "url": url_base + a["url"]},
+           "resumen": r["resumen"]}
+    if r.get("proyecto"):
+        out["tipo_para_colocar"] = r["proyecto"]["tipo_para_colocar"]
+    return out
 
 
 @mcp.tool(description="Añade un asset de la biblioteca a un proyecto. Devuelve el tipo 'modelo:<id>' para colocarlo con colocar_objetos.", annotations=CREAR)

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creador de assets · Map Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/sitio/css/sitio.css">
+<link rel="stylesheet" href="/sitio/css/creador.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e2690b'/%3E%3Cpath d='M16 7l8 4.5v9L16 25l-8-4.5v-9z' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body class="creador">
+<header class="cr-barra">
+  <a class="btn fantasma" href="/app#biblioteca" title="Volver al panel">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span class="solo-ancho">Panel</span></a>
+  <div class="cr-titulo">
+    <span class="cr-marca">Creador de assets</span>
+    <input type="text" id="crNombre" value="Mi objeto" maxlength="80" aria-label="Nombre del objeto" spellcheck="false">
+    <span class="cr-estado" id="crEstado"></span>
+  </div>
+  <div class="cr-acciones">
+    <button class="btn icono fantasma" data-a="deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+    <button class="btn icono fantasma" data-a="rehacer" title="Rehacer (Ctrl+Y)" aria-label="Rehacer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+    <button class="btn fantasma" data-a="nuevo" title="Empezar un objeto nuevo">Nuevo</button>
+    <button class="btn fantasma" data-a="descargar" title="Descargar el modelo .glb (Unity, Godot, Blender…)">.glb</button>
+    <button class="btn prim" data-a="guardar">Guardar<span class="solo-ancho">en mi biblioteca</span></button>
+  </div>
+</header>
+
+<div class="cr-cuerpo">
+  <aside class="cr-izq" aria-label="Formas y plantillas">
+    <div class="cr-pestanas" role="tablist">
+      <button role="tab" class="activa" data-pestana="formas" aria-selected="true">Formas</button>
+      <button role="tab" data-pestana="plantillas" aria-selected="false">Plantillas</button>
+    </div>
+    <section data-panel="formas">
+      <p class="cr-ayuda">Haz clic en una forma para añadirla. Si tienes una pieza elegida, la nueva va encima.</p>
+      <div class="cr-formas" id="crFormas"></div>
+      <h3 class="cr-sub">Piezas del modelo <span id="crNPiezas"></span></h3>
+      <ol class="cr-lista" id="crLista"></ol>
+    </section>
+    <section data-panel="plantillas" hidden>
+      <p class="cr-ayuda">Empieza desde un objeto hecho y cámbialo a tu gusto.</p>
+      <div class="cr-plantillas" id="crPlantillas"></div>
+    </section>
+  </aside>
+
+  <main class="cr-vista" id="crVista">
+    <div class="cr-herr" role="toolbar" aria-label="Herramientas de la vista">
+      <div class="cr-grupo" role="group" aria-label="Modo">
+        <button data-modo="translate" class="activa" title="Mover (W)">Mover</button>
+        <button data-modo="rotate" title="Girar (E)">Girar</button>
+        <button data-modo="scale" title="Cambiar tamaño (R)">Tamaño</button>
+      </div>
+      <div class="cr-grupo" role="group" aria-label="Opciones">
+        <button data-a="iman" class="activa" title="Ajustar a pasos de 5 cm y 15°">Imán</button>
+        <button data-a="persona" class="activa" title="Persona de 1,75 m para comparar el tamaño">Persona</button>
+      </div>
+      <div class="cr-grupo" role="group" aria-label="Cámara">
+        <button data-vista="frente" title="Vista de frente">Frente</button>
+        <button data-vista="lado" title="Vista de lado">Lado</button>
+        <button data-vista="arriba" title="Vista de arriba">Arriba</button>
+        <button data-vista="encuadrar" title="Encuadrar el modelo (F)">Encuadrar</button>
+      </div>
+    </div>
+    <div class="cr-guia" id="crGuia" hidden>
+      <h2>Crea un objeto en tres pasos</h2>
+      <ol>
+        <li><b>Empieza</b> con una <a href="#" data-a="ver-plantillas">plantilla</a>, añadiendo formas o pidiéndoselo a la IA abajo.</li>
+        <li><b>Ajusta</b>: arrastra las flechas para mover, y cambia color, acabado y tamaño en el panel de la derecha.</li>
+        <li><b>Guarda</b> en tu biblioteca y úsalo en cualquier mapa, o descárgalo en .glb.</li>
+      </ol>
+      <button class="btn peq" data-a="cerrar-guia">Entendido</button>
+    </div>
+    <div class="cr-medidas mono" id="crMedidas"></div>
+    <form class="cr-ia" id="crIa" autocomplete="off">
+      <div class="cr-ia-fila">
+        <span class="cr-ia-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.4l-4.7 1.8L12 16l-1.8-4.8L5.5 9.4l4.7-1.8z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>
+        <input type="text" id="crIaTexto" placeholder="Pídeselo a la IA: «un buzón rojo», «hazlo más alto», «añade ventanas»…" maxlength="2000" aria-label="Pedido para la IA">
+        <button class="btn prim" type="submit" id="crIaBtn">Generar</button>
+      </div>
+      <div class="cr-ia-opc">
+        <label class="chk" id="crIaCambiarL"><input type="checkbox" id="crIaCambiar" checked> Cambiar el modelo actual</label>
+        <span class="cr-ia-ej" id="crIaEj"></span>
+      </div>
+      <p class="cr-ia-msj" id="crIaMsj" hidden></p>
+    </form>
+  </main>
+
+  <aside class="cr-der" id="crProps" aria-label="Propiedades"></aside>
+</div>
+
+<dialog class="cr-dialogo" id="crGuardar">
+  <form method="dialog" id="crGuardarForm">
+    <h2>Guardar en tu biblioteca</h2>
+    <label class="campo"><span>Nombre</span><input type="text" name="nombre" maxlength="80" required></label>
+    <div class="cr-dos">
+      <label class="campo"><span>Categoría</span><select name="categoria" id="crCategoria"></select></label>
+      <label class="campo"><span>Quién lo ve</span><select name="visibilidad"><option value="privada">Solo yo</option><option value="publica">Todos en este servidor</option></select></label>
+    </div>
+    <label class="campo"><span>Descripción <small>(opcional)</small></span><textarea name="descripcion" maxlength="500" rows="2"></textarea></label>
+    <label class="campo"><span>Añadirlo también a un mapa <small>(opcional)</small></span><select name="proyecto" id="crProyecto"><option value="">— Ninguno —</option></select>
+      <small>Aparecerá en el catálogo del editor → Importados.</small></label>
+    <p class="error-form" id="crGuardarErr"></p>
+    <div class="cr-dialogo-pie">
+      <button class="btn fantasma" value="cancelar" formnovalidate>Cancelar</button>
+      <button class="btn" value="copia" id="crGuardarCopia" hidden>Guardar como nuevo</button>
+      <button class="btn prim" value="guardar" id="crGuardarOk">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="/sitio/js/creador.js"></script>
+</body>
+</html>

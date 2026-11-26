@@ -37,7 +37,7 @@ Los tokens se revocan en la misma pestaña y dejan de funcionar al momento. El m
 | Mapa | `buscar_catalogo`, `listar_objetos`, `colocar_objetos`, `crear_paredes`, `editar_objetos`, `borrar_objetos`, `generar_terreno` |
 | Versiones | `guardar_version`, `listar_versiones`, `restaurar_version` (guarda antes una automática) |
 | Intercambio | `exportar_proyecto` (JSON «map-creator-proyecto»; si es grande, URL de descarga), `importar_proyecto` |
-| Biblioteca | `buscar_biblioteca` (assets o mapas), `subir_asset` (GLB por URL https o base64), `anadir_asset_a_proyecto`, `editar_asset` (publicar, nombre…), `publicar_asset_de_proyecto`, `publicar_mapa` |
+| Biblioteca | `buscar_biblioteca` (assets o mapas), `crear_modelo` (diseña un modelo 3D con piezas: caja, cilindro, cono, esfera, cúpula, prisma; GLB y miniatura en el servidor), `subir_asset` (GLB por URL https o base64), `anadir_asset_a_proyecto`, `editar_asset` (publicar, nombre…), `publicar_asset_de_proyecto`, `publicar_mapa` |
 
 Coordenadas en metros: X hacia el este, Z hacia el sur, Y es la altura; giro en grados alrededor de Y.
 
@@ -48,6 +48,28 @@ El terreno procedural y las exportaciones 3D (GLB, Unity, Godot) los calcula el 
 - `generar_terreno` deja la petición en `terreno/gen-<mapa>`. Se genera en cuanto alguien con permiso de edición abre el mapa, o al momento si ya está abierto (antes guarda una versión automática).
 - Los objetos que crea o cambia el MCP aparecen al momento en un editor abierto en ese proyecto.
 - Para un GLB o un .zip de Unity, abre el enlace `editor` que devuelven las herramientas y usa **Exportar**.
+
+## Asistente del panel
+
+El panel tiene un chat (**Asistente IA**, `#asistente`) que usa estas mismas herramientas (menos `exportar_proyecto`, `importar_proyecto`
+y `subir_asset`) con la sesión del usuario: `POST /api/asistente` (en `api/app/rutas/asistente.py`) hace una vuelta (Claude + herramientas
+ejecutadas en el servidor) y el navegador repite mientras haga falta. Necesita `CLAUDE_API`/`ANTHROPIC_API_KEY`, como el asistente del editor,
+que también tiene `crear_modelo` (por `POST /api/biblioteca/modelos`).
+
+## Creador de assets
+
+`/creador` (panel → **Crear assets**, Biblioteca → **Crear asset**, editor → Importados → **Crear objeto nuevo**) es un editor sencillo de
+modelos con las mismas piezas que `crear_modelo`: plantillas para empezar, formas con un clic, flechas para mover/girar/escalar, colores y
+acabados (mate, satinado, brillante, metal, vidrio, luz), deshacer, borrador automático por cuenta y una barra de IA que crea o cambia el
+modelo con palabras. Código en `sitio/src/creador/` (three.js empaquetado con esbuild); las formas de `formas.ts` son las de `api/app/modelos.py`.
+
+- Las piezas se guardan con el asset (columna `biblioteca_assets.piezas`, ya apoyadas en el suelo y centradas como el GLB): los modelos hechos
+  con piezas se pueden volver a abrir (`/creador?id=<asset>`; los de otros, como copia). Un `.glb` subido no (409).
+- `GET /api/biblioteca/assets/{id}/piezas`, `PUT /api/biblioteca/modelos/{id}` (solo el autor; vuelve a generar GLB y miniatura; los proyectos
+  que ya lo tenían guardan su copia) y `POST /api/biblioteca/modelos/glb` (descargar sin guardar).
+- IA: `POST /api/asistente/piezas` `{pedido, piezas?, nombre?, seleccion?}` → `{piezas, nombre, mensaje}`. Una llamada a Claude con la
+  herramienta `definir_modelo` (si las piezas no valen, se le devuelve el error una vez). Responde con espacios cada 10 s mientras espera
+  (Cloudflare corta a los 100 s sin datos): los errores a mitad llegan como `{error, status}` con HTTP 200.
 
 ## Biblioteca
 

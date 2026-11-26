@@ -79,6 +79,7 @@ app.include_router(plantillas.router)
 app.include_router(proyectos.router)
 app.include_router(editor_datos.router)
 app.include_router(asistente.router)
+app.include_router(asistente.panel)
 app.include_router(biblioteca.router)
 app.include_router(tokens.router)
 app.include_router(intercambio.router)
@@ -94,8 +95,8 @@ async def salud():
 
 # ───────────────────────── Sitio ─────────────────────────
 PAGINAS = {"/": "index.html", "/entrar": "entrar.html", "/registro": "registro.html", "/app": "app.html",
-           "/verificar": "verificar.html", "/recuperar": "recuperar.html"}
-PRIVADAS = {"/app", "/verificar"}
+           "/verificar": "verificar.html", "/recuperar": "recuperar.html", "/creador": "creador.html"}
+PRIVADAS = {"/app", "/verificar", "/creador"}
 
 
 # Versión de los archivos del sitio: cambia con cada despliegue (fecha de modificación de sitio/ y editor/). Se añade como ?v= a los
@@ -142,8 +143,8 @@ for _ruta, _archivo in PAGINAS.items():
         u = await usuario_opcional(request)
         if _r in PRIVADAS and u is None:
             return RedirectResponse("/entrar?siguiente=" + quote(_r), 302)
-        if _r == "/app" and not verificado(u):
-            return _a_verificar("/app")
+        if _r in ("/app", "/creador") and not verificado(u):
+            return _a_verificar(_r)
         if _r == "/verificar" and verificado(u):
             return RedirectResponse(_siguiente_seguro(request), 302)
         if _r in ("/entrar", "/registro") and u is not None:
